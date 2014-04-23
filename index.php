@@ -1,17 +1,32 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title></title>
-    </head>
-    <body>
-        <?php
-        // put your code here
-        ?>
-    </body>
-</html>
+<?php
+
+define('EXT', '.php');
+require_once 'lib/MySheet' . EXT;
+
+use MySheet\MySheet;
+
+$mysheet = new MySheet();
+
+$code = <<<TEXT
+h1 
+    color black
+    font-size 10px
+    sort abc
+        
+body
+    padding 0
+    margin 0
+        
+    .title
+        font-size 24px
+        color red
+        
+        .colored
+            color purple
+        
+TEXT;
+        
+
+$result = $mysheet->parseCode($code);
+
+var_dump($result);
