@@ -101,12 +101,38 @@ class Parser implements IParser {
     
     protected function linebyline() {
         $this->curLine = 0;
+        $curLine = $this->curline();
         
-        if ($result = $this->parseRuleset()) {
-            $this->curBlock->addChild($result);
-            $this->curBlock = $result;
+        
+        do {
+            $result = false;
             
-        }
+            if ($result = $this->parseRuleset()) {
+                $this->curBlock->addChild($result);
+                
+            }
+            
+            if (!$result) {
+                //throw unrecognized sequence
+            }
+            
+            var_dump($result ? $result->getSelectors() : null);
+            
+            $nextLine = $this->getLine($this->getLineNumber() + 1);
+            var_dump('status: ', $curLine, $this->curline(), $nextLine);
+            if ($nextLine) {
+                if ($nextLine[0] == $this->curline()[0]) {
+                    $this->curBlock = $result;
+//                    var_dump('indent + 1 : ', $result->getSelectors());
+                } else if ($nextLine[0] < $curLine[0] ) {
+                    //todo: get real parent
+                    $this->curBlock = $this->curBlock->getParent();
+                } else {
+                    //throw bad tab indentation
+                }
+            }
+        } 
+        while ($curLine = $this->nextline());
     }
     
     protected function prevline() {
@@ -147,17 +173,23 @@ class Parser implements IParser {
         $this->curLine = intval($nn);
     }
     
+    protected function tryParse($blockType) {
+        //savestate
+        
+        ///parse
+        
+        //restore in cae of bad try
+    }
+    
     protected function parseRuleset() {
         $firstLine = $curLine = $this->curline();
         $ruleset = new Ruleset($this->curBlock);
         do {
             if ($curLine[0] == $firstLine[0]) {
-                $selector = new Selector();
+                $selector = new Selector($curLine[1]);
                 $ruleset->addSelector($selector);
             } else if ($curLine[0] == $firstLine[0] + 1) {
-                $declaration = new Declaration();
-                $ruleset->addDeclaration($declaration);
-
+                
                 $nextline = $this->getLine($this->getLineNumber() + 1);
                 if ($nextline) {
                     if ($firstLine[0] == $nextline[0]) {
@@ -167,11 +199,17 @@ class Parser implements IParser {
                         return $ruleset;
                     }
                 }
+                
+                $declaration = new Declaration($curLine[1]);
+                $ruleset->addDeclaration($declaration);
             } else {
-                //throw bad tab on cur line
+                return false;
             }
         } 
         while ($curLine = $this->nextline());
+        
+        if ($ruleset->countDeclarations() > 0)
+            return $ruleset;
         
         return false;
     }

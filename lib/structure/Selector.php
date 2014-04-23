@@ -8,5 +8,11 @@ namespace MySheet\Structure;
  * @author dobby007
  */
 class Selector {
+    private $path;
+    
+    public function __construct($path) {
+        $this->path = $path;
+    }
+
     
 }

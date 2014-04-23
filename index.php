@@ -23,6 +23,8 @@ body
         
         .colored
             color purple
+            .colorsd
+                
         
 TEXT;
         
