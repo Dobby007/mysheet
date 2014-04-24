@@ -1,3 +1,4 @@
+<pre>
 <?php
 
 define('EXT', '.php');
@@ -11,7 +12,8 @@ $code = <<<TEXT
 h1 
     color black
     font-size 10px
-    sort abc
+    .sort abc
+        color sdfsd
         
 body
     padding 0
@@ -32,3 +34,6 @@ TEXT;
 $result = $mysheet->parseCode($code);
 
 var_dump($result);
+
+?>
+</pre>

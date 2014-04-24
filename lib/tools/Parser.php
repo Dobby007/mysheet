@@ -5,11 +5,13 @@ namespace MySheet\Tools;
 require_once 'IParser' . EXT;
 require_once ROOTDIR . 'structure/Document' . EXT;
 require_once ROOTDIR . 'structure/Ruleset' . EXT;
+require_once ROOTDIR . 'error/ParseException' . EXT;
 
 use MySheet\Structure\Document;
 use MySheet\Structure\Ruleset;
 use MySheet\Structure\Selector;
 use MySheet\Structure\Declaration;
+use MySheet\error\ParseException;
 
 /**
  * Description of Parser
@@ -22,12 +24,11 @@ class Parser implements IParser {
     private $lines;
     private $curLine = false;
     private $curBlock = null;
-    
     private $doc = null;
-
+    private $savedCursor = null;
+    
     public function __construct($code) {
         $this->setCode($code);
-        
     }
 
     public function getCode() {
@@ -42,15 +43,17 @@ class Parser implements IParser {
     public function comeon() {
         $this->doc = new Document();
         $this->curBlock = $this->doc;
-        
+
         $this->divideIntoLines();
         $this->linebyline();
-        var_dump($this->lines);
+//        var_dump($this->lines);
         var_dump($this->doc);
     }
 
     protected function divideIntoLines() {
         $this->lines = split("\n|\r\n", $this->code);
+        
+        
         $tabsize = false;
         $class = $this;
         $is_tabbed = false;
@@ -76,10 +79,16 @@ class Parser implements IParser {
 
             $lines[] = [$level, rtrim(substr($line, $spaces_count))];
         });
-        
+
         $this->lines = $lines;
     }
-
+    
+    /**
+     * 
+     * @param string $line Text line
+     * @param boolean $count_tabs True if you want to count \t characters instead of spaces
+     * @return int|boolean Returns the number of spaces till the first meaning character
+     */
     protected function linespaces($line, $count_tabs = false) {
         $linelen = strlen($line);
         $i = 0;
@@ -98,43 +107,41 @@ class Parser implements IParser {
 
         return false;
     }
-    
+
     protected function linebyline() {
         $this->curLine = 0;
         $curLine = $this->curline();
-        
-        
+
+
         do {
             $result = false;
-            
-            if ($result = $this->parseRuleset()) {
+
+            if ($result = $this->tryParse('ruleset')) {
                 $this->curBlock->addChild($result);
-                
             }
-            
+
             if (!$result) {
                 //throw unrecognized sequence
             }
-            
+
             var_dump($result ? $result->getSelectors() : null);
-            
+
             $nextLine = $this->getLine($this->getLineNumber() + 1);
-            var_dump('status: ', $curLine, $this->curline(), $nextLine);
+//            var_dump('status: ', $curLine, $this->curline(), $nextLine);
             if ($nextLine) {
                 if ($nextLine[0] == $this->curline()[0]) {
                     $this->curBlock = $result;
 //                    var_dump('indent + 1 : ', $result->getSelectors());
-                } else if ($nextLine[0] < $curLine[0] ) {
+                } else if ($nextLine[0] < $curLine[0]) {
                     //todo: get real parent
                     $this->curBlock = $this->curBlock->getParent();
                 } else {
                     //throw bad tab indentation
                 }
             }
-        } 
-        while ($curLine = $this->nextline());
+        } while ($curLine = $this->nextline());
     }
-    
+
     protected function prevline() {
         if ($this->curLine > 0) {
             $this->curLine --;
@@ -142,7 +149,7 @@ class Parser implements IParser {
         }
         return false;
     }
-    
+
     protected function nextline() {
         if ($this->curLine + 1 < count($this->lines)) {
             $this->curLine ++;
@@ -150,69 +157,97 @@ class Parser implements IParser {
         }
         return false;
     }
-    
+
     protected function curline() {
         if ($this->curLine === false)
             return false;
-        
+
         return $this->lines[$this->curLine];
     }
-    
+
     protected function getLine($line_number) {
         if ($line_number >= count($this->lines))
             return false;
-        
+
         return $this->lines[$line_number];
     }
-    
+
     protected function getLineNumber() {
         return $this->curLine;
     }
-    
+
     protected function setLineCursor($nn) {
         $this->curLine = intval($nn);
     }
-    
-    protected function tryParse($blockType) {
-        //savestate
-        
-        ///parse
-        
-        //restore in cae of bad try
+
+    protected function saveCursorState() {
+        $this->savedCursor = $this->getLineNumber();
     }
-    
+
+    protected function restoreCursorState() {
+        if ($this->savedCursor !== null) {
+            $this->setLineCursor($this->savedCursor);
+            return true;
+        }
+        return false;
+    }
+
+    protected function tryParse($blockType) {
+        $result = false;
+        $method = 'parse' . ucfirst($blockType);
+        $this->saveCursorState();
+
+        try {
+
+            if (
+                    !method_exists($this, $method) || 
+                    !($result = $this->$method())
+            ) {
+                throw new ParseException();
+            }
+        } catch (Exception $ex) {
+            $this->restoreCursorState();
+        }
+        return $result;
+    }
+
     protected function parseRuleset() {
         $firstLine = $curLine = $this->curline();
         $ruleset = new Ruleset($this->curBlock);
         do {
             if ($curLine[0] == $firstLine[0]) {
+                var_dump('selector:', $curLine);
                 $selector = new Selector($curLine[1]);
                 $ruleset->addSelector($selector);
             } else if ($curLine[0] == $firstLine[0] + 1) {
-                
                 $nextline = $this->getLine($this->getLineNumber() + 1);
+                var_dump('decl:', $curLine, $nextline, $firstLine);
+                $declaration = new Declaration($curLine[1]);
+
                 if ($nextline) {
-                    if ($firstLine[0] == $nextline[0]) {
+                    if ($firstLine[0] >= $nextline[0]) {
+                        $ruleset->addDeclaration($declaration);
                         return $ruleset;
                     } else if ($nextline[0] > $curLine[0]) {
                         $this->prevline();
                         return $ruleset;
                     }
                 }
-                
-                $declaration = new Declaration($curLine[1]);
+
                 $ruleset->addDeclaration($declaration);
             } else {
+                
                 return false;
             }
-        } 
-        while ($curLine = $this->nextline());
-        
+        } while ($curLine = $this->nextline());
+
         if ($ruleset->countDeclarations() > 0)
             return $ruleset;
+
         
         return false;
     }
+
 //    
 //    protected function checkSelector() {
 //        
@@ -221,13 +256,12 @@ class Parser implements IParser {
 //    protected function checkDeclaration() {
 //        
 //    }
-    
+
     protected function is_space_symbol($char) {
         if ($char === ' ' || $char === "\t")
             return true;
 
         return false;
     }
-    
 
 }
