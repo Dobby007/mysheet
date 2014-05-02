@@ -2,16 +2,14 @@
 
 namespace MySheet\Tools;
 
-require_once 'IParser' . EXT;
-require_once ROOTDIR . 'structure/Document' . EXT;
-require_once ROOTDIR . 'structure/Ruleset' . EXT;
-require_once ROOTDIR . 'error/ParseException' . EXT;
 
+use MySheet\Tools\IParser;
 use MySheet\Structure\Document;
 use MySheet\Structure\Ruleset;
 use MySheet\Structure\Selector;
 use MySheet\Structure\Declaration;
-use MySheet\error\ParseException;
+use MySheet\Error\ParseException;
+use MySheet\Error\ErrorTable;
 
 /**
  * Description of Parser
@@ -40,14 +38,20 @@ class Parser implements IParser {
             $this->code = $code;
     }
 
-    public function comeon() {
+    public function comeon() 
+    {
         $this->doc = new Document();
         $this->curBlock = $this->doc;
-
-        $this->divideIntoLines();
-        $this->linebyline();
+        
+        try
+        {
+            $this->divideIntoLines();
+            $this->linebyline();
+        } catch (ParseException $exc) {
+            echo 'Error happened: ' . $exc->getErrorCode() . ' in file ' . $exc->getFile() . ':' . $exc->getLine() . "\n";
+        }
 //        var_dump($this->lines);
-        var_dump($this->doc);
+        return $this->doc;
     }
 
     protected function divideIntoLines() {
@@ -61,7 +65,7 @@ class Parser implements IParser {
         array_walk($this->lines, function($line, $index) use(&$tabsize, &$is_tabbed, &$lines, $class) {
             $spaces_count = 0;
             if ($tabsize === false) {
-                if ($line[0] === "\t")
+                if (substr($line, 0, 1) === "\t")
                     $is_tabbed = true;
 
                 $spaces_count = $class->linespaces($line, $is_tabbed);
@@ -112,23 +116,26 @@ class Parser implements IParser {
         $this->curLine = 0;
         $curLine = $this->curline();
 
-
         do {
-            $result = false;
-
-            if ($result = $this->tryParse('ruleset')) {
-                $this->curBlock->addChild($result);
+            $result = $this->tryParse('mixin');
+            
+            if (!$result) {
+                $result = $this->tryParse('ruleset');
             }
-
+//            var_dump('new result:', $curLine, $this->curBlock, $result);
+//            var_dump($this->curBlock, $curLine, $result);
             if (!$result) {
                 //throw unrecognized sequence
+                throw new ParseException(ErrorTable::E_UNRECOGNIZED_SEQUENCE);
+            } else {
+                $this->curBlock->addChild($result);
             }
-
-            var_dump($result ? $result->getSelectors() : null);
+            
+            var_dump($curLine,$result ? $result->getSelectors()[0]->getPath() : null);
 
             $nextLine = $this->getLine($this->getLineNumber() + 1);
 //            var_dump('status: ', $curLine, $this->curline(), $nextLine);
-            if ($nextLine) {
+            if ($result && $nextLine) {
                 if ($nextLine[0] == $this->curline()[0]) {
                     $this->curBlock = $result;
 //                    var_dump('indent + 1 : ', $result->getSelectors());
@@ -203,26 +210,29 @@ class Parser implements IParser {
                     !method_exists($this, $method) || 
                     !($result = $this->$method())
             ) {
-                throw new ParseException();
+                throw new ParseException(ErrorTable::E_UNRECOGNIZED_SEQUENCE);
             }
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             $this->restoreCursorState();
         }
         return $result;
     }
-
+    
+    protected function parseMixin() {
+        
+    }
+    
     protected function parseRuleset() {
         $firstLine = $curLine = $this->curline();
         $ruleset = new Ruleset($this->curBlock);
         do {
             if ($curLine[0] == $firstLine[0]) {
-                var_dump('selector:', $curLine);
-                $selector = new Selector($curLine[1]);
-                $ruleset->addSelector($selector);
+//                var_dump('selector:', $curLine);
+                $selector = split(',', $curLine[1]);
+                $ruleset->addSelectors($selector);
             } else if ($curLine[0] == $firstLine[0] + 1) {
                 $nextline = $this->getLine($this->getLineNumber() + 1);
-                var_dump('decl:', $curLine, $nextline, $firstLine);
-                $declaration = new Declaration($curLine[1]);
+                $declaration = $curLine[1];
 
                 if ($nextline) {
                     if ($firstLine[0] >= $nextline[0]) {
@@ -231,12 +241,14 @@ class Parser implements IParser {
                     } else if ($nextline[0] > $curLine[0]) {
                         $this->prevline();
                         return $ruleset;
+                    } else if (!Declaration::canBeDeclaration($nextline[1])) {
+                        $ruleset->addDeclaration($declaration);
+                        return $ruleset;
                     }
                 }
 
                 $ruleset->addDeclaration($declaration);
             } else {
-                
                 return false;
             }
         } while ($curLine = $this->nextline());

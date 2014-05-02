@@ -3,22 +3,22 @@
 namespace MySheet\Structure;
 
 abstract class Block {
+
     private $childrens = array();
     private $parent = null;
-    
+
     public function __construct($parent) {
         $this->setParent($parent);
     }
 
-    
     public function addChild($item) {
         $this->childrens[] = $item;
     }
-    
+
     public function removeChild($index) {
         unset($this->childrens[$index]);
     }
-    
+
     public function remove() {
         if ($this->parent) {
             $childs = $this->parent->getChildren();
@@ -28,11 +28,11 @@ abstract class Block {
             }
         }
     }
-    
+
     public function getChildrens() {
         return $this->childrens;
     }
-    
+
     public function getParent() {
         return $this->parent;
     }
@@ -40,9 +40,13 @@ abstract class Block {
     public function setParent($parent) {
         if ($parent === null)
             return;
-        
+
         if ($parent instanceof Block)
             $this->parent = $parent;
+    }
+
+    public function getCssPath() {
+        return '';
     }
 
     public function lastChild() {
@@ -52,6 +56,32 @@ abstract class Block {
         }
         return false;
     }
-    
-    
+
+    /**
+     * @return array Array of compiled lines
+     */
+    protected function compileRealCss() {
+        $lines = [];
+        foreach ($this->getChildrens() as $child) {
+            \MySheet\array_concat($lines, $child->compileRealCss());
+        }
+        return $lines;
+    }
+
+    public function toRealCss($as_array = false) {
+        $compiled = $this->compileRealCss();
+        if (!is_array($compiled)) {
+            return false;
+        }
+
+        $result = false;
+        if ($as_array === false) {
+            $result = implode("\n", $compiled);
+        } else {
+            $result = $compiled;
+        }
+
+        return $result;
+    }
+
 }
