@@ -2,6 +2,8 @@
 
 namespace MySheet\Structure;
 
+use MySheet\Structure\RuleValue;
+
 /**
  * Description of Selector
  *
@@ -9,7 +11,8 @@ namespace MySheet\Structure;
  */
 class Declaration {
     private $ruleName;
-    private $ruleValue;
+    private $ruleValue = array();
+    
     
     public function __construct($declaration) {
         $this->setDeclaration($declaration);
@@ -28,7 +31,7 @@ class Declaration {
     }
 
     public function setRuleValue($ruleValue) {
-        $this->ruleValue = trim($ruleValue);
+        $this->ruleValue = new RuleValue($ruleValue);
     }
     
     public function setDeclaration($declaration) {

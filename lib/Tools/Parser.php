@@ -4,6 +4,7 @@ namespace MySheet\Tools;
 
 
 use MySheet\Tools\IParser;
+use \MySheet\Structure\Block;
 use MySheet\Structure\Document;
 use MySheet\Structure\Ruleset;
 use MySheet\Structure\Selector;
@@ -117,6 +118,7 @@ class Parser implements IParser {
         $curLine = $this->curline();
 
         do {
+            $curLineNumber = $this->getLineNumber();
             $result = $this->tryParse('mixin');
             
             if (!$result) {
@@ -127,8 +129,10 @@ class Parser implements IParser {
             if (!$result) {
                 //throw unrecognized sequence
                 throw new ParseException(ErrorTable::E_UNRECOGNIZED_SEQUENCE);
-            } else {
+            } else if ($this->curBlock instanceof Block) {
                 $this->curBlock->addChild($result);
+            } else {
+                //throw can not get parent object of $curLineNumber
             }
             
             var_dump($curLine,$result ? $result->getSelectors()[0]->getPath() : null);
@@ -140,8 +144,13 @@ class Parser implements IParser {
                     $this->curBlock = $result;
 //                    var_dump('indent + 1 : ', $result->getSelectors());
                 } else if ($nextLine[0] < $curLine[0]) {
-                    //todo: get real parent
-                    $this->curBlock = $this->curBlock->getParent();
+                    $steps_back = $curLine[0] - $nextLine[0];
+                    while ($steps_back--) {
+                        $this->curBlock = $this->curBlock->getParent();
+                        if ($this->curBlock === null) {
+                            //throw can not get parent object of $this->getLineNumber() + 1
+                        }
+                    }
                 } else {
                     //throw bad tab indentation
                 }

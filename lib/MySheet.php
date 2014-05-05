@@ -42,5 +42,18 @@ class MySheet
         $this->autoload->restoreAutoload();
         return $result;
     }
+    
+    public function registerPlugin($plugin)
+    {
+        if (is_string($plugin)) {
+            
+        }
+        return $this;
+    }
+    
+    public function registerPlugins($plugin0, $_plugins = null)
+    {
+        
+    }
 
 }

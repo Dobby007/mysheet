@@ -19,7 +19,8 @@ h1 , h2, h3,h4
     .sort abc
         color sdfsd
         .underline
-            text-decoration underline
+            text-decoration underline ;; ;
+            border-bottom :    1px           solid     gray  ;
 body
     padding 0
     margin 0
