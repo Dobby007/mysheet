@@ -7,6 +7,11 @@ use MySheet\Error\ErrorTable;
 use MySheet\Structure\Ruleset;
 use MySheet\Structure\PathGroup;
 
+
+//Workaround: autoload is unregistered before PathGroup is loaded (I don't know why it worked before today)
+require_once 'PathGroup' . EXT;
+
+
 /**
  * Description of Selector
  *

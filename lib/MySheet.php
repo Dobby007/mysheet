@@ -4,11 +4,12 @@ namespace MySheet;
 
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOTDIR', __DIR__ . DS);
+define('MSSNS', 'MySheet');
 
-require_once ROOTDIR . 'Autoload' . EXT;
+require_once ROOTDIR . 'Essentials' . DS . 'Autoload' . EXT;
 require_once ROOTDIR . 'Functions' . EXT;
-require_once ROOTDIR . 'HandlerFactory' . EXT;
 
+use MySheet\Essentials\Autoload;
 
 /**
  * Description of MySheet
@@ -32,10 +33,13 @@ class MySheet
     public function __construct() 
     {
         $this->autoload = new Autoload();
-        $this->hf = new HandlerFactory();
-        
+     
         $this->autoload->registerAutoload();
+        
+        $this->hf = new \MySheet\Helpers\HandlerFactory();
+        
         $this->registerPlugin('Mixin');
+        
         $this->autoload->restoreAutoload();
     }
 
@@ -48,7 +52,9 @@ class MySheet
     {
         $this->autoload->registerAutoload();
         
+        /* @var $parser MySheet\Tools\IParser */
         $parser = new $this->parser($code, $this);
+        $parser->addParserExtension(new Internal\ParserExtensions\RulesetParserExtension());
         $result = $parser->comeon();
         
         $this->autoload->restoreAutoload();

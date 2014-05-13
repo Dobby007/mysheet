@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace MySheet;
+namespace MySheet\Helpers;
 
 /**
  * Description of HandlerFactory

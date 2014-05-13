@@ -3,6 +3,8 @@
 namespace MySheet\Structure;
 
 use MySheet\Structure\RuleValue;
+use MySheet\Traits\RootClassTrait;
+use MySheet\Traits\HandlerCallTrait;
 
 /**
  * Description of Selector
@@ -10,7 +12,7 @@ use MySheet\Structure\RuleValue;
  * @author dobby007
  */
 class Declaration {
-    use \MySheet\Traits\RootClassTrait;
+    use RootClassTrait, HandlerCallTrait;
     
     private $ruleName;
     private $ruleValue = array();
@@ -18,7 +20,6 @@ class Declaration {
     
     public function __construct($declaration) {
         $this->setDeclaration($declaration);
-//        $this->setRoot($root);
     }
     
     public function getRuleName() {
@@ -26,7 +27,7 @@ class Declaration {
     }
     
     public function setRuleName($ruleName) {
-        $this->ruleName = trim($ruleName);
+        $this->ruleName = strtolower(trim($ruleName));
     }
     
     public function getRuleValue() {
@@ -49,9 +50,9 @@ class Declaration {
     }
     
     public function toRealCss() {
-        $result = $this->getRoot()->getHandlerFactory()->executeHandler('Declaration', 'renderCss', null, $handled);
-        if ($handled) {
-            return $result;
+        $result = $this->renderCssHandler($this->getRuleName());
+        if ($result->handled()) {
+            return $result->result();
         }
         
         return $this->getRuleName() . ': ' . $this->getRuleValue();

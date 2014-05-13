@@ -11,8 +11,9 @@ abstract class Block {
         $this->setParent($parent);
     }
 
-    public function addChild($item) {
+    public function addChild(Block $item) {
         $this->childrens[] = $item;
+        $item->setParent($this);
     }
 
     public function removeChild($index) {

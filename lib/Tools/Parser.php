@@ -6,11 +6,13 @@ namespace MySheet\Tools;
 use MySheet\Tools\IParser;
 use MySheet\Structure\Block;
 use MySheet\Structure\Document;
-use MySheet\Structure\Ruleset;
-use MySheet\Structure\Selector;
-use MySheet\Structure\Declaration;
 use MySheet\Error\ParseException;
 use MySheet\Error\ErrorTable;
+use MySheet\Essentials\ParserExtension;
+use MySheet\Essentials\ParserContext;
+use MySheet\Traits\RootClassTrait;
+use MySheet\Traits\ParserLinesTrait;
+use MySheet\Traits\ParserCursorStateTrait;
 
 /**
  * Description of Parser
@@ -18,14 +20,13 @@ use MySheet\Error\ErrorTable;
  * @author dobby007
  */
 class Parser implements IParser {
-    use \MySheet\Traits\RootClassTrait;
+    use RootClassTrait, ParserLinesTrait, ParserCursorStateTrait;
     
     private $code = null;
-    private $lines;
-    private $curLine = false;
     private $curBlock = null;
     private $doc = null;
-    private $savedCursor = null;
+    
+    protected $extensions = array();
     
     public function __construct($code, $rootInstance) {
         $this->setRoot($rootInstance);
@@ -39,9 +40,13 @@ class Parser implements IParser {
     public function setCode($code) {
         $this->code = (string) $code;
     }
+    
+    public function addParserExtension(ParserExtension $extension) {
+        $extension->setRoot($this->getRoot());
+        $this->extensions[] = $extension;
+    }
 
-    public function comeon() 
-    {
+    public function comeon() {
         $this->doc = new Document();
         $this->curBlock = $this->doc;
         
@@ -120,11 +125,12 @@ class Parser implements IParser {
 
         do {
             $curLineNumber = $this->getLineNumber();
-            $result = $this->tryParse('mixin');
+            $result = false;
             
-            if (!$result) {
-                $result = $this->tryParse('ruleset');
+            foreach ($this->extensions as $extension) {
+                $result = $this->tryParse($extension);
             }
+            
 //            var_dump('new result:', $curLine, $this->curBlock, $result);
 //            var_dump($this->curBlock, $curLine, $result);
             if (!$result) {
@@ -136,7 +142,7 @@ class Parser implements IParser {
                 //throw can not get parent object of $curLineNumber
             }
             
-            var_dump($curLine,$result ? $result->getSelectors()[0]->getPath() : null);
+//            var_dump($curLine,$result ? $result->getSelectors()[0]->getPath() : null);
 
             $nextLine = $this->getLine($this->getLineNumber() + 1);
 //            var_dump('status: ', $curLine, $this->curline(), $nextLine);
@@ -159,138 +165,33 @@ class Parser implements IParser {
         } while ($curLine = $this->nextline());
     }
 
-    protected function prevline() {
-        if ($this->curLine > 0) {
-            $this->curLine --;
-            return $this->curline();
-        }
-        return false;
-    }
 
-    protected function nextline() {
-        if ($this->curLine + 1 < count($this->lines)) {
-            $this->curLine ++;
-            return $this->curline();
-        }
-        return false;
-    }
 
-    protected function curline() {
-        if ($this->curLine === false)
-            return false;
-
-        return $this->lines[$this->curLine];
-    }
-
-    protected function getLine($line_number) {
-        if ($line_number >= count($this->lines))
-            return false;
-
-        return $this->lines[$line_number];
-    }
-
-    protected function getLineNumber() {
-        return $this->curLine;
-    }
-
-    protected function setLineCursor($nn) {
-        $this->curLine = intval($nn);
-    }
-
-    protected function saveCursorState() {
-        $this->savedCursor = $this->getLineNumber();
-    }
-
-    protected function restoreCursorState() {
-        if ($this->savedCursor !== null) {
-            $this->setLineCursor($this->savedCursor);
-            return true;
-        }
-        return false;
-    }
-
-    protected function tryParse($blockType) {
+    protected function tryParse(ParserExtension $extension) {
         $result = false;
-        $method = 'parse' . ucfirst($blockType);
+        $context = new ParserContext($this, $this->lines, $this->getLineNumber());
+        
+        
         $this->saveCursorState();
 
         try {
-
-            if (
-                    !method_exists($this, $method) || 
-                    !($result = $this->$method())
-            ) {
+            $result = $context->parse($extension);
+            if (!$result) {
                 throw new ParseException(ErrorTable::E_UNRECOGNIZED_SEQUENCE);
             }
         } catch (\Exception $ex) {
             $this->restoreCursorState();
         }
+        
+        $this->applyParserContext($context);
+        
         return $result;
     }
     
-    protected function parseMixin() {
-        $firstLine = $curLine = $this->curline();
-        
-        if (substr($firstLine[1], 0, 6) !== '@mixin')
-            return false;
-        
-        if ($firstLine[0] !== 0)
-            throw new ParseException(ErrorTable::E_BAD_INDENTATION);
-        
-        
-        do {
-            
-        } while ($curLine = $this->nextline());
-    }
     
-    protected function parseRuleset() {
-        $firstLine = $curLine = $this->curline();
-        $ruleset = new Ruleset($this->curBlock);
-        $ruleset->setRoot($this->getRoot());
-        do {
-            if ($curLine[0] == $firstLine[0]) {
-//                var_dump('selector:', $curLine);
-                $selector = split(',', $curLine[1]);
-                $ruleset->addSelectors($selector);
-            } else if ($curLine[0] == $firstLine[0] + 1) {
-                $nextline = $this->getLine($this->getLineNumber() + 1);
-                $declaration = $curLine[1];
-
-                if ($nextline) {
-                    if ($firstLine[0] >= $nextline[0]) {
-                        $ruleset->addDeclaration($declaration);
-                        return $ruleset;
-                    } else if ($nextline[0] > $curLine[0]) {
-                        $this->prevline();
-                        return $ruleset;
-                    } else if (!Declaration::canBeDeclaration($nextline[1])) {
-                        $ruleset->addDeclaration($declaration);
-                        return $ruleset;
-                    }
-                }
-
-                $ruleset->addDeclaration($declaration);
-            } else {
-                return false;
-            }
-        } while ($curLine = $this->nextline());
-
-        if ($ruleset->countDeclarations() > 0) {
-            return $ruleset;
-        }
-
-
-        return false;
+    protected function applyParserContext(ParserContext $context) {
+        $this->setLineCursor($context->getLineNumber());
     }
-
-//    
-//    protected function checkSelector() {
-//        
-//    }
-//    
-//    protected function checkDeclaration() {
-//        
-//    }
 
     protected function is_space_symbol($char) {
         if ($char === ' ' || $char === "\t")

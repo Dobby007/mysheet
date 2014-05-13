@@ -24,8 +24,9 @@ class PluginMixin extends PluginBase {
         return true;
     }
     
-    public function mixinHandler(&$handled) {
-        $handled = true;
+    public function mixinHandler(&$handled, $ruleName) {
+        if ($ruleName === 'color')
+            $handled = true;
         return 'handled!!!!';
     }
 }
