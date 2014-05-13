@@ -11,6 +11,8 @@ use MySheet\Structure\Declaration;
  * @author dobby007
  */
 class Ruleset extends Block {
+    use \MySheet\Traits\RootClassTrait;
+    
     private $selectors = array();
     private $declarations = array();
     
@@ -48,7 +50,8 @@ class Ruleset extends Block {
 
     public function addDeclaration($declaration) {
         if (is_string($declaration)) {
-            $this->declarations[] = new Declaration($declaration, $this);
+            $this->declarations[] = (new Declaration($declaration))
+                ->setRoot($this->getRoot());
         }
     }
     

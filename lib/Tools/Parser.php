@@ -4,7 +4,7 @@ namespace MySheet\Tools;
 
 
 use MySheet\Tools\IParser;
-use \MySheet\Structure\Block;
+use MySheet\Structure\Block;
 use MySheet\Structure\Document;
 use MySheet\Structure\Ruleset;
 use MySheet\Structure\Selector;
@@ -18,7 +18,8 @@ use MySheet\Error\ErrorTable;
  * @author dobby007
  */
 class Parser implements IParser {
-
+    use \MySheet\Traits\RootClassTrait;
+    
     private $code = null;
     private $lines;
     private $curLine = false;
@@ -26,7 +27,8 @@ class Parser implements IParser {
     private $doc = null;
     private $savedCursor = null;
     
-    public function __construct($code) {
+    public function __construct($code, $rootInstance) {
+        $this->setRoot($rootInstance);
         $this->setCode($code);
     }
 
@@ -35,8 +37,7 @@ class Parser implements IParser {
     }
 
     public function setCode($code) {
-        if (is_string($code))
-            $this->code = $code;
+        $this->code = (string) $code;
     }
 
     public function comeon() 
@@ -228,12 +229,24 @@ class Parser implements IParser {
     }
     
     protected function parseMixin() {
+        $firstLine = $curLine = $this->curline();
         
+        if (substr($firstLine[1], 0, 6) !== '@mixin')
+            return false;
+        
+        if ($firstLine[0] !== 0)
+            throw new ParseException(ErrorTable::E_BAD_INDENTATION);
+        
+        
+        do {
+            
+        } while ($curLine = $this->nextline());
     }
     
     protected function parseRuleset() {
         $firstLine = $curLine = $this->curline();
         $ruleset = new Ruleset($this->curBlock);
+        $ruleset->setRoot($this->getRoot());
         do {
             if ($curLine[0] == $firstLine[0]) {
 //                var_dump('selector:', $curLine);
@@ -262,10 +275,11 @@ class Parser implements IParser {
             }
         } while ($curLine = $this->nextline());
 
-        if ($ruleset->countDeclarations() > 0)
+        if ($ruleset->countDeclarations() > 0) {
             return $ruleset;
+        }
 
-        
+
         return false;
     }
 

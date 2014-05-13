@@ -10,4 +10,5 @@ namespace MySheet\Error;
 class ErrorTable {
     const E_UNRECOGNIZED_SEQUENCE = 101;
     const E_BAD_SELECTOR = 102;
+    const E_BAD_INDENTATION = 103;
 }

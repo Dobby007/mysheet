@@ -36,7 +36,7 @@ class Selector {
         $right_selector = self::canBeSelector($path);
         
         if ($right_selector) {
-            $this->path = $path;
+            $this->path = preg_replace(['/\s+/', '/\s+:\s*(\S+)/'], [' ', ':$1'], $path) ;
         } else {
             throw new ParseException(ErrorTable::E_BAD_SELECTOR);
         }
@@ -63,6 +63,6 @@ class Selector {
     }
     
     public static function canBeSelector($string, &$matches = null) {
-        return !!preg_match('/^[a-z0-9\[\]. :\'"=^$#()*]+$/i', $string, $matches);
+        return !!preg_match('/^[a-z0-9\[\].\s!:\'"=^$#()*]+$/i', $string, $matches);
     }
 }

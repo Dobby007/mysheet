@@ -16,7 +16,7 @@ $code = <<<TEXT
 h1 , h2, h3,h4
     color black
     font-size 10px
-    .sort abc
+    .sort 
         color sdfsd
         .underline
             text-decoration underline ;; ;
@@ -34,6 +34,12 @@ body
             color purple
             .colorsd
                 width 300px
+        
+        
+@mixin border-radius ()
+    -webkit-border-radius 3px
+    -moz-border-radius 3px
+    border-radius 3px
         
 TEXT;
         

@@ -10,12 +10,15 @@ use MySheet\Structure\RuleValue;
  * @author dobby007
  */
 class Declaration {
+    use \MySheet\Traits\RootClassTrait;
+    
     private $ruleName;
     private $ruleValue = array();
     
     
     public function __construct($declaration) {
         $this->setDeclaration($declaration);
+//        $this->setRoot($root);
     }
     
     public function getRuleName() {
@@ -46,6 +49,11 @@ class Declaration {
     }
     
     public function toRealCss() {
+        $result = $this->getRoot()->getHandlerFactory()->executeHandler('Declaration', 'renderCss', null, $handled);
+        if ($handled) {
+            return $result;
+        }
+        
         return $this->getRuleName() . ': ' . $this->getRuleValue();
     }
     
