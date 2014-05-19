@@ -10,5 +10,8 @@ use MySheet\Essentials\ParserExtension;
  */
 interface IParser {
     public function comeon();
-    public function addParserExtension(ParserExtension $extension);
+    public function addParserExtension($extension);
+
+    public function getCode();
+    public function setCode($code);
 }

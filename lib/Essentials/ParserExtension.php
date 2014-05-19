@@ -42,4 +42,6 @@ abstract class ParserExtension
     public function setContext(ParserContext $context) {
         $this->context = $context;
     }
+    
+    public abstract function parse();
 }

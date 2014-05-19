@@ -2,7 +2,6 @@
 
 namespace MySheet\Tools;
 
-
 use MySheet\Tools\IParser;
 use MySheet\Structure\Block;
 use MySheet\Structure\Document;
@@ -20,14 +19,16 @@ use MySheet\Traits\ParserCursorStateTrait;
  * @author dobby007
  */
 class Parser implements IParser {
-    use RootClassTrait, ParserLinesTrait, ParserCursorStateTrait;
-    
+
+    use RootClassTrait,
+        ParserLinesTrait,
+        ParserCursorStateTrait;
+
     private $code = null;
     private $curBlock = null;
     private $doc = null;
-    
     protected $extensions = array();
-    
+
     public function __construct($code, $rootInstance) {
         $this->setRoot($rootInstance);
         $this->setCode($code);
@@ -39,19 +40,25 @@ class Parser implements IParser {
 
     public function setCode($code) {
         $this->code = (string) $code;
+        $this->resetCursor();
     }
-    
-    public function addParserExtension(ParserExtension $extension) {
-        $extension->setRoot($this->getRoot());
-        $this->extensions[] = $extension;
+
+    public function addParserExtension($extension) {
+        if (is_string($extension) && class_exists($extension)) {
+            $extension = new $extension();
+        }
+        
+        if ($extension instanceof ParserExtension) {
+            $extension->setRoot($this->getRoot());
+            $this->extensions[] = $extension;
+        }
     }
 
     public function comeon() {
         $this->doc = new Document();
         $this->curBlock = $this->doc;
-        
-        try
-        {
+
+        try {
             $this->divideIntoLines();
             $this->linebyline();
         } catch (ParseException $exc) {
@@ -63,8 +70,7 @@ class Parser implements IParser {
 
     protected function divideIntoLines() {
         $this->lines = split("\n|\r\n", $this->code);
-        
-        
+
         $tabsize = false;
         $class = $this;
         $is_tabbed = false;
@@ -93,7 +99,78 @@ class Parser implements IParser {
 
         $this->lines = $lines;
     }
-    
+
+    protected function linebyline() {
+        $this->curLine = 0;
+        $curLine = $this->curline();
+
+        do {
+            $curLineNumber = $this->getLineNumber();
+            $result = false;
+
+            foreach ($this->extensions as $extension) {
+                $result = $this->tryParse($extension);
+                if ($result !== false)
+                    break;
+            }
+            
+//            var_dump('new result:', $curLine, $this->curBlock, $result);
+//            var_dump($this->curBlock, $curLine, $result);
+            if (
+                $this->curBlock instanceof Block && 
+                $result !== null
+            ) {
+                $this->curBlock->addChild($result);
+            } else if ($result === false) {
+                //throw unrecognized sequence
+                throw new ParseException(ErrorTable::E_UNRECOGNIZED_SEQUENCE);
+            } else {
+                //throw can not get parent object of $curLineNumber
+            }
+
+//            var_dump($curLine,$result ? $result->getSelectors()[0]->getPath() : null);
+
+            $nextLine = $this->getLine($this->getLineNumber() + 1);
+//            var_dump('status: ', $curLine, $this->curline(), $nextLine);
+            if ($result && $nextLine) {
+                if (
+                    $result instanceof Block && 
+                    $nextLine[0] == $this->curline()[0]
+                ) {
+                    $this->curBlock = $result;
+//                    var_dump('indent + 1 : ', $result->getSelectors());
+                } else if ($nextLine[0] < $curLine[0]) {
+                    $steps_back = $curLine[0] - $nextLine[0];
+                    while ($steps_back--) {
+                        $this->curBlock = $this->curBlock->getParent();
+                        if ($this->curBlock === null) {
+                            //throw can not get parent object of $this->getLineNumber() + 1
+                        }
+                    }
+                } else {
+                    //throw bad tab indentation
+                }
+            }
+        } while ($curLine = $this->nextline());
+    }
+
+    protected function tryParse(ParserExtension $extension) {
+        $result = false;
+        $context = new ParserContext($this, $this->lines, $this->getLineNumber());
+
+        $result = $context->parse($extension);
+        if (!$result) {
+            return false;
+        }
+        $this->applyParserContext($context);
+
+        return $result;
+    }
+
+    protected function applyParserContext(ParserContext $context) {
+        $this->setLineCursor($context->getLineNumber());
+    }
+
     /**
      * 
      * @param string $line Text line
@@ -117,80 +194,6 @@ class Parser implements IParser {
         }
 
         return false;
-    }
-
-    protected function linebyline() {
-        $this->curLine = 0;
-        $curLine = $this->curline();
-
-        do {
-            $curLineNumber = $this->getLineNumber();
-            $result = false;
-            
-            foreach ($this->extensions as $extension) {
-                $result = $this->tryParse($extension);
-            }
-            
-//            var_dump('new result:', $curLine, $this->curBlock, $result);
-//            var_dump($this->curBlock, $curLine, $result);
-            if (!$result) {
-                //throw unrecognized sequence
-                throw new ParseException(ErrorTable::E_UNRECOGNIZED_SEQUENCE);
-            } else if ($this->curBlock instanceof Block) {
-                $this->curBlock->addChild($result);
-            } else {
-                //throw can not get parent object of $curLineNumber
-            }
-            
-//            var_dump($curLine,$result ? $result->getSelectors()[0]->getPath() : null);
-
-            $nextLine = $this->getLine($this->getLineNumber() + 1);
-//            var_dump('status: ', $curLine, $this->curline(), $nextLine);
-            if ($result && $nextLine) {
-                if ($nextLine[0] == $this->curline()[0]) {
-                    $this->curBlock = $result;
-//                    var_dump('indent + 1 : ', $result->getSelectors());
-                } else if ($nextLine[0] < $curLine[0]) {
-                    $steps_back = $curLine[0] - $nextLine[0];
-                    while ($steps_back--) {
-                        $this->curBlock = $this->curBlock->getParent();
-                        if ($this->curBlock === null) {
-                            //throw can not get parent object of $this->getLineNumber() + 1
-                        }
-                    }
-                } else {
-                    //throw bad tab indentation
-                }
-            }
-        } while ($curLine = $this->nextline());
-    }
-
-
-
-    protected function tryParse(ParserExtension $extension) {
-        $result = false;
-        $context = new ParserContext($this, $this->lines, $this->getLineNumber());
-        
-        
-        $this->saveCursorState();
-
-        try {
-            $result = $context->parse($extension);
-            if (!$result) {
-                throw new ParseException(ErrorTable::E_UNRECOGNIZED_SEQUENCE);
-            }
-        } catch (\Exception $ex) {
-            $this->restoreCursorState();
-        }
-        
-        $this->applyParserContext($context);
-        
-        return $result;
-    }
-    
-    
-    protected function applyParserContext(ParserContext $context) {
-        $this->setLineCursor($context->getLineNumber());
     }
 
     protected function is_space_symbol($char) {

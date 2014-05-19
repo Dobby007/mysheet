@@ -9,6 +9,8 @@
 namespace MySheet\Plugins\Mixin;
 
 use MySheet\Essentials\ParserExtension;
+use MySheet\Error\ParseException;
+use MySheet\Error\ErrorTable;
 
 /**
  * Description of MixinParserExtension
@@ -16,9 +18,19 @@ use MySheet\Essentials\ParserExtension;
  * @author dobby007
  */
 class MixinParserExtension extends ParserExtension {
+    /**
+     * Reference to plugin object
+     * @var PluginMixin
+     */
+    private $plugin;
     
-    protected function parse() {
-        $firstLine = $curLine = $this->curline();
+    public function __construct(PluginMixin $plugin) {
+        $this->plugin = $plugin;
+    }
+    
+    public function parse() {
+        $context = $this->getContext();
+        $firstLine = $curLine = $context->curline();
         
         if (substr($firstLine[1], 0, 6) !== '@mixin')
             return false;
@@ -26,9 +38,20 @@ class MixinParserExtension extends ParserExtension {
         if ($firstLine[0] !== 0)
             throw new ParseException(ErrorTable::E_BAD_INDENTATION);
         
+        if (!preg_match('/^@mixin\s+([-a-z][a-z\d_-]*)\s*\(\s*\)$/', $firstLine[1], $mixin_decl))
+            throw new ParseException(ErrorTable::E_BAD_INDENTATION);
         
-        do {
-            
-        } while ($curLine = $this->nextline());
+        
+        $mixin = new Mixin($mixin_decl[1]);
+        
+        while ($curLine = $context->nextline()) {
+            if ($curLine[0] > $firstLine[0]) {
+                $mixin->addDeclaration($curLine[1]);
+            } else break;
+        }
+        
+        $this->plugin->registerMixin($mixin);
+        
+        return null;
     }
 }

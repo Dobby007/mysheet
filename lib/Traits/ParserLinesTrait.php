@@ -34,7 +34,7 @@ trait ParserLinesTrait {
     }
 
     public function curline() {
-        if ($this->curLine === false)
+        if ($this->curLine === false || count($this->lines) === 0)
             return false;
 
         return $this->lines[$this->curLine];
@@ -72,5 +72,9 @@ trait ParserLinesTrait {
             return $this->curLine;
         }
         return false;
+    }
+    
+    public function resetCursor() {
+        $this->setLineCursor(0);
     }
 }

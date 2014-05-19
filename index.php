@@ -34,6 +34,7 @@ body
             color purple
             .colorsd
                 width 300px
+                border-radius 4px
         
         
 @mixin border-radius ()

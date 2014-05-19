@@ -5,6 +5,8 @@ namespace MySheet\Structure;
 use MySheet\Structure\RuleValue;
 use MySheet\Traits\RootClassTrait;
 use MySheet\Traits\HandlerCallTrait;
+use MySheet\Error\ParseException;
+use MySheet\Error\ErrorTable;
 
 /**
  * Description of Selector
@@ -63,7 +65,7 @@ class Declaration {
     }
     
     public static function canBeDeclaration($string, &$matches = null) {
-        $res = !!preg_match('/^([a-z][a-z\d_-]*)\s*(?::|\s)\s*([\d"\'.a-z].*)$/i', $string, $matches);
+        $res = !!preg_match('/^([-a-z][a-z\d_-]*)\s*(?::|\s)\s*([\d"\'.a-z].*)$/i', $string, $matches);
 //        var_dump('REGEX::: ', $string,$res, $matches);
         return $res;
     }

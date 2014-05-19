@@ -10,6 +10,8 @@ require_once ROOTDIR . 'Essentials' . DS . 'Autoload' . EXT;
 require_once ROOTDIR . 'Functions' . EXT;
 
 use MySheet\Essentials\Autoload;
+use MySheet\Helpers\HandlerFactory;
+use MySheet\Tools\IParser;
 
 /**
  * Description of MySheet
@@ -18,7 +20,10 @@ use MySheet\Essentials\Autoload;
  */
 class MySheet 
 {
-
+    
+    /**
+     * @var IParser Reference to parser object
+     */
     public $parser = 'MySheet\Tools\Parser';
     public $cacher = 'Cacher';
     
@@ -30,32 +35,35 @@ class MySheet
     protected $hf;
 
 
-    public function __construct() 
-    {
+    public function __construct() {
         $this->autoload = new Autoload();
-     
         $this->autoload->registerAutoload();
         
-        $this->hf = new \MySheet\Helpers\HandlerFactory();
-        
-        $this->registerPlugin('Mixin');
+        $this->parser = new $this->parser(null, $this);
+        $this->initPlugins();
+        $this->initExtensions();
         
         $this->autoload->restoreAutoload();
     }
-
-    public function parseFile($file) 
-    {
+    
+    protected function initPlugins() {
+        $this->plugins = [];
+        $this->hf = new HandlerFactory();
+        $this->registerPlugin('Mixin');
+    }
+    
+    protected function initExtensions() {
+        $this->parser->addParserExtension('\MySheet\Internal\ParserExtensions\RulesetParserExtension');
+    }
+    
+    public function parseFile($file) {
         return $this->parseCode($code);
     }
 
-    public function parseCode($code) 
-    {
+    public function parseCode($code) {
         $this->autoload->registerAutoload();
-        
-        /* @var $parser MySheet\Tools\IParser */
-        $parser = new $this->parser($code, $this);
-        $parser->addParserExtension(new Internal\ParserExtensions\RulesetParserExtension());
-        $result = $parser->comeon();
+        $this->parser->setCode($code);
+        $result = $this->parser->comeon();
         
         $this->autoload->restoreAutoload();
         return $result;
@@ -75,8 +83,7 @@ class MySheet
         return $this;
     }
     
-    public function registerPlugins($plugin0, $_plugins = null)
-    {
+    public function registerPlugins($plugin0, $_plugins = null) {
         
     }
     
@@ -85,6 +92,13 @@ class MySheet
      */
     public function getHandlerFactory() {
         return $this->hf;
+    }
+
+    /**
+     * @return IParser Instance of HandlerFactory class
+     */
+    public function getParser() {
+        return $this->parser;
     }
 
 
