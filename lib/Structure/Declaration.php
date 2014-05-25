@@ -8,6 +8,8 @@ use MySheet\Traits\HandlerCallTrait;
 use MySheet\Error\ParseException;
 use MySheet\Error\ErrorTable;
 
+require_once 'RuleGroup' . EXT;
+
 /**
  * Description of Selector
  *
@@ -61,7 +63,7 @@ class Declaration {
     }
     
     public function __toString() {
-        return $this->toRealCss();
+        return (string)$this->toRealCss();
     }
     
     public static function canBeDeclaration($string, &$matches = null) {

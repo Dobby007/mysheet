@@ -25,7 +25,7 @@ class PluginMixin extends PluginBase {
     
     public function registerMixin(Mixin $mixin) {
         $this->mixins[$mixin->getName()] = $mixin;
-        var_dump($mixin);
+//        var_dump($mixin);
     }
     
     public function getMixin($name) {
@@ -33,7 +33,7 @@ class PluginMixin extends PluginBase {
     }
     
     public function isMixin($name) {
-        return true;
+        return isset($this->mixins[$name]);
     }
     
     public function mixinHandler(&$handled, $ruleName) {

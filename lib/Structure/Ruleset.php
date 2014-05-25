@@ -4,6 +4,7 @@ namespace MySheet\Structure;
 
 use MySheet\Structure\Selector;
 use MySheet\Structure\Declaration;
+use MySheet\Structure\RuleGroup;
 
 /**
  * Description of Ruleset
@@ -75,6 +76,8 @@ class Ruleset extends Block {
         return $combined;
     }
     
+    
+    
     protected function compileRealCss() {
         $lines = [];
         $selectors = $this->getCssPath();
@@ -89,11 +92,24 @@ class Ruleset extends Block {
             return [];
         }
         
-        $declarations = array_map(function($decl) {
-            return '    ' . (string)$decl;
-        }, $declarations);
+        $compiled_declarations = [];
+
+        array_walk($declarations, function($decl) use (&$compiled_declarations) {
+            $result = $decl->toRealCss();
+//            var_dump(gettype($result), get_class($result));
+            
+            if ($result instanceof RuleGroup) {
+                foreach ($result->getLines(': ') as $line) {
+                    var_dump($line);
+                    $compiled_declarations[] = '    ' . (string)$line;
+                }
+            } else {
+                $compiled_declarations[] = '    ' . (string)$result;
+            }
+        });
         
-        \MySheet\array_concat($lines, implode(",\n", $selectors), '{', implode(";\n", $declarations), '}', parent::compileRealCss());
+        
+        \MySheet\array_concat($lines, implode(",\n", $selectors), '{', implode(";\n", $compiled_declarations), '}', parent::compileRealCss());
         
         return $lines;
     }

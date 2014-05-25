@@ -22,7 +22,8 @@ trait HandlerCallTrait {
     public function __call($name, array $arguments) {
         if (substr($name, -7) === 'Handler')
             $handlerName = substr($name, 0, -7);
-            
+        else return;
+        
         $class = substr(strrchr(get_class(), '\\'), 1);
         if ($class === false) {
             $class = get_class();

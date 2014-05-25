@@ -18,6 +18,7 @@ class PathGroup {
 
     public function addPath($path) {
         $this->paths[] = $path;
+        return $this;
     }
     
     public function getPaths() {

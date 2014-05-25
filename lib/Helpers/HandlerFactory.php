@@ -18,7 +18,7 @@ class HandlerFactory {
     
     public function executeHandler($class, $name, $arguments = null, &$handled = null) {
         $handled = false;
-        var_dump('asad', $class, $name);
+//        var_dump('asad', $class, $name);
         if (isset($this->map[$class][$name])) {
             $arguments = array_merge([&$handled], is_array($arguments) ? $arguments : []);
 //            var_dump($arguments);
@@ -43,7 +43,7 @@ class HandlerFactory {
         }
         
         $this->map[$class][$name][] = $callback;
-        var_dump($this->map);
+//        var_dump($this->map);
         return $this;
     }
 }
