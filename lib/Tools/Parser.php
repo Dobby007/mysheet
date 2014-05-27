@@ -56,6 +56,7 @@ class Parser implements IParser {
 
     public function comeon() {
         $this->doc = new Document();
+        $this->doc->setRoot($this->getRoot());
         $this->curBlock = $this->doc;
 
         try {

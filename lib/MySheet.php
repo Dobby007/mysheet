@@ -7,7 +7,6 @@ define('ROOTDIR', __DIR__ . DS);
 define('MSSNS', 'MySheet');
 
 require_once ROOTDIR . 'Essentials' . DS . 'Autoload' . EXT;
-require_once ROOTDIR . 'Functions' . EXT;
 
 use MySheet\Essentials\Autoload;
 use MySheet\Helpers\HandlerFactory;
@@ -101,6 +100,12 @@ class MySheet
         return $this->parser;
     }
 
+    /**
+     * @return Autoload Instance of Autoload class
+     */
+    public function getAutoload() {
+        return $this->autoload;
+    }
 
 
 }

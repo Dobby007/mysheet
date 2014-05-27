@@ -5,6 +5,7 @@ namespace MySheet\Structure;
 use MySheet\Structure\Selector;
 use MySheet\Structure\Declaration;
 use MySheet\Structure\RuleGroup;
+use MySheet\Helpers\ArrayHelper;
 
 /**
  * Description of Ruleset
@@ -100,7 +101,7 @@ class Ruleset extends Block {
             
             if ($result instanceof RuleGroup) {
                 foreach ($result->getLines(': ') as $line) {
-                    var_dump($line);
+//                    var_dump($line);
                     $compiled_declarations[] = '    ' . (string)$line;
                 }
             } else {
@@ -109,7 +110,7 @@ class Ruleset extends Block {
         });
         
         
-        \MySheet\array_concat($lines, implode(",\n", $selectors), '{', implode(";\n", $compiled_declarations), '}', parent::compileRealCss());
+        ArrayHelper::concat($lines, implode(",\n", $selectors), '{', implode(";\n", $compiled_declarations), '}', parent::compileRealCss());
         
         return $lines;
     }

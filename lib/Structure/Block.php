@@ -2,8 +2,12 @@
 
 namespace MySheet\Structure;
 
-abstract class Block {
+use MySheet\Helpers\ArrayHelper;
+use MySheet\Traits\RootClassTrait;
 
+abstract class Block {
+    use RootClassTrait;
+    
     private $childrens = array();
     private $parent = null;
 
@@ -13,6 +17,7 @@ abstract class Block {
 
     public function addChild(Block $item) {
         $this->childrens[] = $item;
+        $item->setRoot($this->getRoot());
         $item->setParent($this);
     }
 
@@ -64,12 +69,14 @@ abstract class Block {
     protected function compileRealCss() {
         $lines = [];
         foreach ($this->getChildrens() as $child) {
-            \MySheet\array_concat($lines, $child->compileRealCss());
+            ArrayHelper::concat($lines, $child->compileRealCss());
         }
         return $lines;
     }
 
     public function toRealCss($as_array = false) {
+        $this->getRoot()->getAutoload()->registerAutoload();
+        
         $compiled = $this->compileRealCss();
         if (!is_array($compiled)) {
             return false;
@@ -81,7 +88,8 @@ abstract class Block {
         } else {
             $result = $compiled;
         }
-
+        
+        $this->getRoot()->getAutoload()->restoreAutoload();
         return $result;
     }
 

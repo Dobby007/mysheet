@@ -2,6 +2,8 @@
 
 namespace MySheet\Structure;
 
+use MySheet\Essentials\VariableScope;
+
 /**
  * Description of RuleValue
  *
@@ -40,8 +42,12 @@ class RuleValue {
         }
     }
     
-    public function __toString() {
+    public function toRealCss(VariableScope $vars = null) {
         return $this->getValue();
+    }
+    
+    public function __toString() {
+        return $this->toRealCss();
     }
 
 

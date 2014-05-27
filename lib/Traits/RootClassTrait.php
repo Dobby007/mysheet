@@ -29,4 +29,8 @@ trait RootClassTrait {
     public function getRoot() {
         return $this->root;
     }
+    
+    public function isRootSet() {
+        return $this->root !== null;
+    }
 }

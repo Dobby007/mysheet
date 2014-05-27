@@ -7,6 +7,7 @@ use MySheet\Traits\RootClassTrait;
 use MySheet\Traits\HandlerCallTrait;
 use MySheet\Error\ParseException;
 use MySheet\Error\ErrorTable;
+use MySheet\Essentials\VariableScope;
 
 require_once 'RuleGroup' . EXT;
 
@@ -34,6 +35,10 @@ class Declaration {
         $this->ruleName = strtolower(trim($ruleName));
     }
     
+    /**
+     * 
+     * @return RuleValue
+     */
     public function getRuleValue() {
         return $this->ruleValue;
     }
@@ -53,7 +58,7 @@ class Declaration {
         }
     }
     
-    public function toRealCss() {
+    public function toRealCss(VariableScope $arguments = null) {
         $result = $this->renderCssHandler($this->getRuleName());
         if ($result->handled()) {
             return $result->result();
