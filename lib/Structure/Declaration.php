@@ -19,11 +19,19 @@ require_once 'RuleGroup' . EXT;
 class Declaration {
     use RootClassTrait, HandlerCallTrait;
     
+    /**
+     * @var string
+     */
     private $ruleName;
-    private $ruleValue = array();
+
+    /**
+     * @var RuleValue
+     */
+    private $ruleValue;
     
     
-    public function __construct($declaration) {
+    public function __construct($root, $declaration) {
+        $this->setRoot($root);
         $this->setDeclaration($declaration);
     }
     
@@ -44,7 +52,12 @@ class Declaration {
     }
 
     public function setRuleValue($ruleValue) {
-        $this->ruleValue = new RuleValue($ruleValue);
+        if (is_string($ruleValue))
+            $ruleValue = new RuleValue($this->getRoot(), $ruleValue);
+        
+        if ($ruleValue instanceof RuleValue) {
+            $this->ruleValue = $ruleValue;
+        }
     }
     
     public function setDeclaration($declaration) {
@@ -54,17 +67,17 @@ class Declaration {
             $this->setRuleName($matches[1]);
             $this->setRuleValue($matches[2]);
         } else {
-            throw new ParseException(ErrorTable::E_BAD_SELECTOR);
+            throw new ParseException(ErrorTable::E_BAD_SELECTOR, [$declaration]);
         }
     }
     
     public function toRealCss(VariableScope $arguments = null) {
-        $result = $this->renderCssHandler($this->getRuleName());
+        $result = $this->renderCssEvent($this, $arguments);
         if ($result->handled()) {
             return $result->result();
         }
         
-        return $this->getRuleName() . ': ' . $this->getRuleValue();
+        return $this->getRuleName() . ': ' . $this->getRuleValue()->getValue($arguments);
     }
     
     public function __toString() {
@@ -72,7 +85,7 @@ class Declaration {
     }
     
     public static function canBeDeclaration($string, &$matches = null) {
-        $res = !!preg_match('/^([-a-z][a-z\d_-]*)\s*(?::|\s)\s*([\d"\'.a-z].*)$/i', $string, $matches);
+        $res = !!preg_match('/^([-a-z][a-z\d_-]*)\s*(?::|\s)\s*([\d"\'.a-z$@].*)$/i', $string, $matches);
 //        var_dump('REGEX::: ', $string,$res, $matches);
         return $res;
     }

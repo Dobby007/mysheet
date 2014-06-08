@@ -9,6 +9,8 @@
 namespace MySheet\Plugins\Mixin;
 
 use MySheet\Plugins\PluginBase;
+use MySheet\Structure\Declaration;
+use MySheet\Essentials\VariableScope;
 
 /**
  * Description of Mixin
@@ -21,6 +23,9 @@ class PluginMixin extends PluginBase {
     public function init() {
         $this->getRoot()->getHandlerFactory()->registerHandler('Declaration', 'renderCss', [$this, 'mixinHandler']);
         $this->getRoot()->getParser()->addParserExtension(new MixinParserExtension($this));
+        $this->getRoot()->getHandlerFactory()->registerHandler('Block', 'cssRenderingStarted', function() {
+            $this->cleanMixins();
+        });
     }
     
     public function registerMixin(Mixin $mixin) {
@@ -36,10 +41,22 @@ class PluginMixin extends PluginBase {
         return isset($this->mixins[$name]);
     }
     
-    public function mixinHandler(&$handled, $ruleName) {
-        $mixin = $this->getMixin($ruleName);
-        if ($mixin)
+    public function cleanMixins() {
+        $this->mixins = [];
+    }
+    
+    public function mixinHandler(&$handled, Declaration $rule, VariableScope $userRuleScope = null) {
+        
+        /* @var $mixin Mixin */
+        $mixin = $this->getMixin($rule->getRuleName());
+        if ($mixin) {
             $handled = true;
+            $vs = new VariableScope();
+            $vs->setMap($rule->getRuleValue()->getValue($userRuleScope, true));
+            
+            return $mixin->render($vs);
+        }
+        
         return 'handled!!!!';
     }
 }

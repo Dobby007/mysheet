@@ -4,25 +4,17 @@ namespace MySheet\Structure;
 
 use MySheet\Helpers\ArrayHelper;
 use MySheet\Traits\RootClassTrait;
+use MySheet\Traits\HandlerCallTrait;
+use MySheet\Essentials\VariableScope;
 
 abstract class Block {
-    use RootClassTrait;
-    
-    private $childrens = array();
+
+    use RootClassTrait, HandlerCallTrait;
+
     private $parent = null;
 
     public function __construct($parent) {
         $this->setParent($parent);
-    }
-
-    public function addChild(Block $item) {
-        $this->childrens[] = $item;
-        $item->setRoot($this->getRoot());
-        $item->setParent($this);
-    }
-
-    public function removeChild($index) {
-        unset($this->childrens[$index]);
     }
 
     public function remove() {
@@ -35,47 +27,30 @@ abstract class Block {
         }
     }
 
-    public function getChildrens() {
-        return $this->childrens;
-    }
-
     public function getParent() {
         return $this->parent;
     }
 
     public function setParent($parent) {
-        if ($parent === null)
-            return;
-
-        if ($parent instanceof Block)
+        if ($parent instanceof NodeBlock)
             $this->parent = $parent;
-    }
-
-    public function getCssPath() {
-        return '';
-    }
-
-    public function lastChild() {
-        $size = count($this->childrens);
-        if ($size > 0) {
-            return $this->childrens[$size - 1];
-        }
-        return false;
     }
 
     /**
      * @return array Array of compiled lines
      */
-    protected function compileRealCss() {
-        $lines = [];
-        foreach ($this->getChildrens() as $child) {
-            ArrayHelper::concat($lines, $child->compileRealCss());
-        }
-        return $lines;
+    protected function compileRealCss(VariableScope $vars = null) {
+        return [];
     }
 
+    public function toMss() {
+        
+    }
+    
     public function toRealCss($as_array = false) {
         $this->getRoot()->getAutoload()->registerAutoload();
+        $this->cssRenderingStartedEvent($this);
+        
         
         $compiled = $this->compileRealCss();
         if (!is_array($compiled)) {
@@ -88,7 +63,8 @@ abstract class Block {
         } else {
             $result = $compiled;
         }
-        
+
+        $this->cssRenderingEndedEvent($this);
         $this->getRoot()->getAutoload()->restoreAutoload();
         return $result;
     }

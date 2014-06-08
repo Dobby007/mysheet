@@ -27,7 +27,9 @@ class VariableScope implements \ArrayAccess {
     }
     
     public function set($name, $value) {
-        if (self::canBeVariable($name))
+        if (is_null($name))
+            $this->map[] = $value;
+        else if (is_int($name) || self::canBeVariable($name))
             $this->map[$name] = $value;
         else
             throw new Exception ('Can not be variable');
@@ -40,7 +42,7 @@ class VariableScope implements \ArrayAccess {
             return $this->map[$name];
         }
         
-        if (isset($this->isRootSet())) {
+        if ($this->isRootSet()) {
             return $this->getRoot()->getVars()->get($name);
         }
         
@@ -60,9 +62,7 @@ class VariableScope implements \ArrayAccess {
     }
 
     public function offsetSet($offset, $value) {
-        if (!is_null($offset)) {
-            $this->set($offset, $value);
-        }
+        $this->set($offset, $value);
     }
 
     public function offsetUnset($offset) {
@@ -79,6 +79,17 @@ class VariableScope implements \ArrayAccess {
 
     public function __set($name, $value) {
         $this->set($name, $value);
+    }
+    
+    public function clean() {
+        $this->map = [];
+    }
+    
+    public function asArray(callable $filter_function = null) {
+        if (is_null($filter_function))
+            return $this->map;
+        
+        return array_filter($this->map, $filter_function);
     }
     
     public static function canBeVariable($name) {

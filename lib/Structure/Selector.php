@@ -43,7 +43,7 @@ class Selector {
         if ($right_selector) {
             $this->path = preg_replace(['/\s+/', '/\s+:\s*(\S+)/'], [' ', ':$1'], $path) ;
         } else {
-            throw new ParseException(ErrorTable::E_BAD_SELECTOR);
+            throw new ParseException(ErrorTable::E_BAD_SELECTOR, [$path]);
         }
     }
 

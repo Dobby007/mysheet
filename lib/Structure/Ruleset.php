@@ -12,9 +12,7 @@ use MySheet\Helpers\ArrayHelper;
  *
  * @author dobby007
  */
-class Ruleset extends Block {
-    use \MySheet\Traits\RootClassTrait;
-    
+class Ruleset extends NodeBlock {
     private $selectors = array();
     private $declarations = array();
     
@@ -52,17 +50,25 @@ class Ruleset extends Block {
 
     public function addDeclaration($declaration) {
         if (is_string($declaration)) {
-            $this->declarations[] = (new Declaration($declaration))
+            $this->declarations[] = (new Declaration($this->getRoot(), $declaration))
                 ->setRoot($this->getRoot());
         }
     }
     
     public function getParentPath() {
-        $parent_paths = $this->getParent()->getCssPath();
-        if (!is_array($parent_paths)) {
-            $parent_paths = [(string) $parent_paths];
-        }
-        return $parent_paths;
+        $parent = $this->getParent();
+        do {
+            if ($parent instanceof Ruleset) {
+                $parent_paths = $parent->getCssPath();
+                if (!is_array($parent_paths)) {
+                    $parent_paths = [(string) $parent_paths];
+                }
+                return $parent_paths;
+            }
+        } while ($parent = $parent->getParent());
+        
+        return [];
+        
     }
     
     public function getCssPath() {
@@ -79,7 +85,7 @@ class Ruleset extends Block {
     
     
     
-    protected function compileRealCss() {
+    protected function compileRealCss(VariableScope $vars = null) {
         $lines = [];
         $selectors = $this->getCssPath();
         $declarations = $this->getDeclarations();

@@ -11,6 +11,7 @@ namespace MySheet\Plugins\Mixin;
 use MySheet\Essentials\ParserExtension;
 use MySheet\Error\ParseException;
 use MySheet\Error\ErrorTable;
+use MySheet\Traits\PluginClassTrait;
 
 /**
  * Description of MixinParserExtension
@@ -18,6 +19,7 @@ use MySheet\Error\ErrorTable;
  * @author dobby007
  */
 class MixinParserExtension extends ParserExtension {
+    use PluginClassTrait;
     /**
      * Reference to plugin object
      * @var PluginMixin
@@ -25,7 +27,7 @@ class MixinParserExtension extends ParserExtension {
     private $plugin;
     
     public function __construct(PluginMixin $plugin) {
-        $this->plugin = $plugin;
+        $this->setPlugin($plugin);
     }
     
     public function parse() {
@@ -42,16 +44,16 @@ class MixinParserExtension extends ParserExtension {
             throw new ParseException(ErrorTable::E_BAD_INDENTATION);
         
         
-        $mixin = new Mixin($mixin_decl[1]);
+        $mixin = new Mixin($this->plugin, $mixin_decl[1]);
+        $mixin->setRoot($this->getRoot());
         
         while ($curLine = $context->nextline()) {
             if ($curLine[0] > $firstLine[0]) {
                 $mixin->addDeclaration($curLine[1]);
             } else break;
         }
-        
-        $this->plugin->registerMixin($mixin);
-        
-        return null;
+        $context->prevline();
+//        var_dump($context->curline());
+        return $mixin;
     }
 }

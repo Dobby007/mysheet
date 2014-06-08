@@ -13,6 +13,11 @@ $mysheet = new MySheet();
 
 $code = <<<TEXT
 
+@mixin border-radius ()
+    -webkit-border-radius \$arguments
+    -moz-border-radius 3px
+    border-radius \$arguments
+    
 h1 , h2, h3,h4
     color black
     font-size 10px
@@ -37,10 +42,7 @@ body
                 border-radius 4px
         
         
-@mixin border-radius ()
-    -webkit-border-radius 3px
-    -moz-border-radius 3px
-    border-radius 3px
+
         
 TEXT;
         

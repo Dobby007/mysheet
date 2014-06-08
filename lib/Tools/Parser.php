@@ -3,7 +3,7 @@
 namespace MySheet\Tools;
 
 use MySheet\Tools\IParser;
-use MySheet\Structure\Block;
+use MySheet\Structure\NodeBlock;
 use MySheet\Structure\Document;
 use MySheet\Error\ParseException;
 use MySheet\Error\ErrorTable;
@@ -63,14 +63,14 @@ class Parser implements IParser {
             $this->divideIntoLines();
             $this->linebyline();
         } catch (ParseException $exc) {
-            echo 'Error happened: ' . $exc->getErrorCode() . ' in file ' . $exc->getFile() . ':' . $exc->getLine() . "\n";
+            echo 'Error happened: ' . $exc->getErrorCode() . ' in file ' . $exc->getFile() . ':' . $exc->getLine() . "\n" . implode($exc->getArguments(), ', ') . "\n";
         }
 //        var_dump($this->lines);
         return $this->doc;
     }
 
     protected function divideIntoLines() {
-        $this->lines = split("\n|\r\n", $this->code);
+        $this->lines = preg_split("/\n|\r\n/", $this->code);
 
         $tabsize = false;
         $class = $this;
@@ -118,7 +118,7 @@ class Parser implements IParser {
 //            var_dump('new result:', $curLine, $this->curBlock, $result);
 //            var_dump($this->curBlock, $curLine, $result);
             if (
-                $this->curBlock instanceof Block && 
+                $this->curBlock instanceof NodeBlock && 
                 $result !== null
             ) {
                 $this->curBlock->addChild($result);
@@ -135,14 +135,14 @@ class Parser implements IParser {
 //            var_dump('status: ', $curLine, $this->curline(), $nextLine);
             if ($result && $nextLine) {
                 if (
-                    $result instanceof Block && 
+                    $result instanceof NodeBlock && 
                     $nextLine[0] == $this->curline()[0]
                 ) {
                     $this->curBlock = $result;
 //                    var_dump('indent + 1 : ', $result->getSelectors());
                 } else if ($nextLine[0] < $curLine[0]) {
                     $steps_back = $curLine[0] - $nextLine[0];
-                    while ($steps_back--) {
+                    while ($steps_back --) {
                         $this->curBlock = $this->curBlock->getParent();
                         if ($this->curBlock === null) {
                             //throw can not get parent object of $this->getLineNumber() + 1

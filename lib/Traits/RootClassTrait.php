@@ -18,6 +18,9 @@ use MySheet\MySheet;
 trait RootClassTrait {
     protected $root = null;
     
+    /**
+     * @return this
+     */
     public function setRoot(MySheet $root) {
         $this->root = $root;
         return $this;

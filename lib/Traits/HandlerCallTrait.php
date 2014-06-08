@@ -20,16 +20,16 @@ require_once ROOTDIR . 'Helpers' . DS . 'HandlerCallResult' . EXT;
 trait HandlerCallTrait {
     private $_handlerMap = null;
     public function __call($name, array $arguments) {
-        if (substr($name, -7) === 'Handler')
-            $handlerName = substr($name, 0, -7);
+        if (substr($name, -5) === 'Event')
+            $handlerName = substr($name, 0, -5);
         else return;
         
-        $class = substr(strrchr(get_class(), '\\'), 1);
+        $class = substr(strrchr(__CLASS__, '\\'), 1);
         if ($class === false) {
-            $class = get_class();
+            $class = __CLASS__;
         }
         
-        $result = $this->getRoot()->getHandlerFactory()->executeHandler($class, $handlerName, $arguments, $handled);
+        $result = $this->getRoot()->getHandlerFactory()->triggerEvent($class, $handlerName, $arguments, $handled);
         
         return new HandlerCallResult($handled, $result);
         

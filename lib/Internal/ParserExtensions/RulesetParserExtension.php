@@ -24,10 +24,11 @@ class RulesetParserExtension extends ParserExtension
         $firstLine = $curLine = $context->curline();
         $ruleset = new Ruleset(null);
         $ruleset->setRoot($this->getRoot());
+        
         do {
             if ($curLine[0] == $firstLine[0]) {
-                $selector = split(',', $curLine[1]);
-                $ruleset->addSelectors($selector);
+                $selectors = explode(',', $curLine[1]);
+                $ruleset->addSelectors($selectors);
             } else if ($curLine[0] == $firstLine[0] + 1) {
                 $nextline = $context->getLine($context->getLineNumber() + 1);
                 $declaration = $curLine[1];

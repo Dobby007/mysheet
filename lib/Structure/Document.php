@@ -7,10 +7,11 @@ namespace MySheet\Structure;
  *
  * @author dobby007
  */
-class Document extends Block {
+class Document extends NodeBlock {
     public function __construct() {
         parent::__construct(null);
     }
+    
     
     
 

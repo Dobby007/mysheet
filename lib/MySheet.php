@@ -11,6 +11,10 @@ require_once ROOTDIR . 'Essentials' . DS . 'Autoload' . EXT;
 use MySheet\Essentials\Autoload;
 use MySheet\Helpers\HandlerFactory;
 use MySheet\Tools\IParser;
+use MySheet\Tools\Settings;
+use MySheet\Essentials\FuncListManager;
+use MySheet\Essentials\RuleParam;
+use MySheet\Essentials\VariableScope;
 
 /**
  * Description of MySheet
@@ -29,25 +33,48 @@ class MySheet
     
     /** @var Autoload */
     private $autoload;
+    private $hf;
+    private $flm;
+    private $vs;
     
+    protected $settings;
     protected $plugins = array();
-    protected $hf;
 
 
     public function __construct() {
         $this->autoload = new Autoload();
-        $this->autoload->registerAutoload();
         
+        $this->autoload->registerAutoload();
+        $this->setSettings(new Settings());
+        $this->autoload->restoreAutoload();
+        
+        $this->init();
+    }
+    
+    public function init() {
+        $this->autoload->registerAutoload();
         $this->parser = new $this->parser(null, $this);
+        $this->hf = new HandlerFactory();
+        $this->vs = new VariableScope();
+        $this->getHandlerFactory()->registerHandler('Block', 'cssRenderingEnded', function() {
+            $this->getVars()->clean();
+        });
+        $this->flm = new FuncListManager();
+        
+        $ruleParamNs = 'MySheet\\Functionals\\RuleParam\\';
+        foreach ($this->getSettings()->paramPriority as $paramClass) {
+            $class = $ruleParamNs . ucfirst($paramClass) . 'Param';
+            $this->getListManager()->addFunctional('RuleParam', $class);
+        }
+        
         $this->initPlugins();
         $this->initExtensions();
-        
         $this->autoload->restoreAutoload();
     }
     
     protected function initPlugins() {
         $this->plugins = [];
-        $this->hf = new HandlerFactory();
+        
         $this->registerPlugin('Mixin');
     }
     
@@ -86,6 +113,20 @@ class MySheet
         
     }
     
+    
+    /**
+     * @return Settings Instance of Settings class
+     */
+    public function getSettings() {
+        return $this->settings;
+    }
+
+    public function setSettings(Settings $settings) {
+        $this->settings = $settings;
+    }
+
+        
+    
     /**
      * @return HandlerFactory Instance of HandlerFactory class
      */
@@ -93,6 +134,8 @@ class MySheet
         return $this->hf;
     }
 
+    
+    
     /**
      * @return IParser Instance of HandlerFactory class
      */
@@ -106,6 +149,21 @@ class MySheet
     public function getAutoload() {
         return $this->autoload;
     }
+
+    /**
+     * @return FuncListManager Instance of FuncListManager class
+     */
+    public function getListManager() {
+        return $this->flm;
+    }
+    
+    /**
+     * @return VariableScope
+     */
+    public function getVars() {
+        return $this->vs;
+    }
+
 
 
 }
