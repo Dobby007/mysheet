@@ -56,6 +56,7 @@ class Declaration {
             $ruleValue = new RuleValue($this->getRoot(), $ruleValue);
         
         if ($ruleValue instanceof RuleValue) {
+            $ruleValue->setRoot($this->getRoot());
             $this->ruleValue = $ruleValue;
         }
     }

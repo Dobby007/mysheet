@@ -39,7 +39,10 @@ class VariableParam extends RuleParam {
 
         
     public function toRealCss(VariableScope $vars = null) {
-        return '$' . $this->getVarName();
+        $vars = $this->getRoot()->getVars()->createScope($vars);
+        $varval = $vars[$this->getVarName()];
+        
+        return is_array($varval) ? implode(' ', $varval) : (string) $varval;
     }
 
     

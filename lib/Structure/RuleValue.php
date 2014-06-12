@@ -41,6 +41,8 @@ class RuleValue {
         
         
         if ($param instanceof RuleParam) {
+            $param->setRoot($this->getRoot());
+            
             if ($index === null) {
                 $this->params[] = $param;
             } else {

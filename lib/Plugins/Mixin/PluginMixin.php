@@ -52,6 +52,7 @@ class PluginMixin extends PluginBase {
         if ($mixin) {
             $handled = true;
             $vs = new VariableScope();
+            $vs->enableNumericVars(true);
             $vs->setMap($rule->getRuleValue()->getValue($userRuleScope, true));
             
             return $mixin->render($vs);

@@ -13,10 +13,10 @@ $mysheet = new MySheet();
 
 $code = <<<TEXT
 
-@mixin border-radius ()
-    -webkit-border-radius \$arguments
+@mixin border-radius (left right )
+    -webkit-border-radius \$left \$right
     -moz-border-radius 3px
-    border-radius \$arguments
+    border-radius \$arguments \$left \$right \$left \$right
     
 h1 , h2, h3,h4
     color black
@@ -39,7 +39,7 @@ body
             color purple
             .colorsd
                 width 300px
-                border-radius 4px
+                border-radius 4px 5px 6px 7px 8px 9px
         
         
 

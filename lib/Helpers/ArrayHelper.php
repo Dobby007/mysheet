@@ -14,19 +14,20 @@ namespace MySheet\Helpers;
  * @author dobby007
  */
 abstract class ArrayHelper {
+
     public static function implode_objects($glue, array $source, $method_name = null, $_args = null) {
         $result = [];
-        
+
         if (!empty($method_name) && is_string($method_name)) {
             $right_args = array_slice(func_get_args(), 3);
             array_walk($source, function($item) use($method_name, $right_args, &$result) {
                 $result[] = call_user_method_array($method_name, $item, $right_args);
             });
         }
-        
+
         return implode($glue, $result);
     }
-    
+
     public static function insert_pair(array &$input, $key, $val) {
         if (!is_int($key) && $key !== null) {
             $input[$key] = $val;
@@ -34,7 +35,7 @@ abstract class ArrayHelper {
             $input[] = $val;
         }
     }
-    
+
     public static function concat(array &$input, $val1, $_val = null) {
         $values = array_slice(func_get_args(), 1);
 
@@ -46,7 +47,22 @@ abstract class ArrayHelper {
             } else {
                 $input[] = $value;
             }
-
         });
     }
+
+    public static function filter(array $array, callable $callback = null) {
+        if ($callback == null) {
+            $callback = function($key, $val) {
+                return (bool) $val;
+            };
+        }
+        $return = array();
+        foreach ($array as $key => $val) {
+            if ($callback($key, $val)) {
+                $return[$key] = $val;
+            }
+        }
+        return $return;
+    }
+
 }

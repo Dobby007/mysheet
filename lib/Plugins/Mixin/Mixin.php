@@ -28,9 +28,11 @@ class Mixin extends LeafBlock {
     protected $name;
     protected $locals = array();
     
-    public function __construct(PluginMixin $plugin, $name) {
+    public function __construct(PluginMixin $plugin, $name, array $locals = []) {
         $this->setPlugin($plugin);
         $this->setName($name);
+        $this->setLocals($locals);
+        
     }
     
     public function getName() {
@@ -43,6 +45,16 @@ class Mixin extends LeafBlock {
     
     public function getLocals() {
         return $this->locals;
+    }
+    
+    public function addLocal($name) {
+        if (!array_search($name, $this->locals))
+            $this->locals[] = $name;
+        //else //throw
+    }
+    
+    public function setLocals(array $locals) {
+        $this->locals = array_unique($locals);
     }
     
     /**
@@ -69,19 +81,27 @@ class Mixin extends LeafBlock {
     }
     
     public function render(VariableScope $arguments = null) {
-        $renderScope = new VariableScope($arguments);
+        $renderScope = VariableScope::merge($arguments);
         $renderScope['arguments'] = $renderScope->asArray(function($varname) {
             return is_int($varname);
         });
         
+        
+        
         foreach ($this->locals as $index => $local) {
+            if (!isset($renderScope[$index])) {
+                break;
+            }
+            
             $renderScope[$local] = $renderScope[$index];
         }
+        
+        var_dump($renderScope);
         
         $rendered_rules = new RuleGroup();
         foreach ($this->getDeclarations() as $declaration) {
             $rendered_rules->addRule($declaration->getRuleName(), $declaration->getRuleValue()->getValue($renderScope));
-        }
+            }
         
         return $rendered_rules;
     }

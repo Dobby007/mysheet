@@ -56,6 +56,7 @@ class MySheet
         $this->parser = new $this->parser(null, $this);
         $this->hf = new HandlerFactory();
         $this->vs = new VariableScope();
+        $this->vs->setRoot($this);
         $this->getHandlerFactory()->registerHandler('Block', 'cssRenderingEnded', function() {
             $this->getVars()->clean();
         });

@@ -9,6 +9,7 @@
 namespace MySheet\Essentials;
 
 use MySheet\Traits\RootClassTrait;
+use MySheet\Helpers\ArrayHelper;
 
 /**
  * Description of VariableList
@@ -19,6 +20,12 @@ class VariableScope implements \ArrayAccess {
     use RootClassTrait;
     
     private $map = array();
+    private $numericVars = false;
+    
+    public function __construct() {
+        
+    }
+
     
     public function setMap(array $map) {
         foreach ($map as $key => $value) {
@@ -26,12 +33,19 @@ class VariableScope implements \ArrayAccess {
         }
     }
     
+    public function appendScope(VariableScope $scope) {
+        ArrayHelper::concat($this->map, $scope->asArray());;
+    }
+    
     public function set($name, $value) {
         if (is_null($name))
             $this->map[] = $value;
-        else if (is_int($name) || self::canBeVariable($name))
+        else if (self::canBeVariable($name)) {
+            if (is_int($name) && !$this->numericVarsEnabled())
+                return false;
+                
             $this->map[$name] = $value;
-        else
+        } else
             throw new Exception ('Can not be variable');
         
         return $this;
@@ -49,12 +63,20 @@ class VariableScope implements \ArrayAccess {
         return null;
     }
     
+    public function enableNumericVars($bool) {
+        $this->numericVars = !!$bool;
+    }
+    
+    public function numericVarsEnabled() {
+        return $this->numericVars;
+    }
+    
     public function exists($name) {
         return isset($this->map[$name]);
     }
     
     public function offsetExists($offset) {
-        return $this->exists($name);
+        return $this->exists($offset);
     }
 
     public function offsetGet($offset) {
@@ -89,11 +111,37 @@ class VariableScope implements \ArrayAccess {
         if (is_null($filter_function))
             return $this->map;
         
-        return array_filter($this->map, $filter_function);
+        return ArrayHelper::filter($this->map, $filter_function);
     }
     
     public static function canBeVariable($name) {
-        return preg_match('/[a-z_][a-z0-9_]*/i', $name);
+        return preg_match('/[a-z_][a-z0-9_]*|[0-9]+/i', $name);
+    }
+    
+    public static function merge(VariableScope $_scopes = null) {
+        $result = new self();
+        $args = func_get_args();
+        
+        foreach ($args as $scope) {
+            if ($scope instanceof VariableScope) {
+                $result->appendScope($scope);
+            }
+        }
+        
+        return $result;
+    }
+    
+    public static function newScope(VariableScope $scope = null) {
+        if ($scope)
+            return $scope;
+        
+        return new self();
+    }
+    
+    public function createScope(VariableScope $scope = null) {
+        $scope = self::newScope($scope);
+        $scope->setRoot($this->getRoot());
+        return $scope;
     }
 
 }

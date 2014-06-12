@@ -40,11 +40,16 @@ class MixinParserExtension extends ParserExtension {
         if ($firstLine[0] !== 0)
             throw new ParseException(ErrorTable::E_BAD_INDENTATION);
         
-        if (!preg_match('/^@mixin\s+([-a-z][a-z\d_-]*)\s*\(\s*\)$/', $firstLine[1], $mixin_decl))
+        if (!preg_match('/^@mixin\s+([-a-z][a-z\d_-]*)\s*\((.*)\)$/', $firstLine[1], $mixin_decl))
             throw new ParseException(ErrorTable::E_BAD_INDENTATION);
         
+        preg_match_all('/(?:[a-z_][a-z0-9_]*)/i', $mixin_decl[2], $mixin_locals, PREG_PATTERN_ORDER);
         
-        $mixin = new Mixin($this->plugin, $mixin_decl[1]);
+        
+        
+        
+        
+        $mixin = new Mixin($this->plugin, $mixin_decl[1], $mixin_locals[0]);
         $mixin->setRoot($this->getRoot());
         
         while ($curLine = $context->nextline()) {
