@@ -1,5 +1,10 @@
 <?php
 
 return [
-    'paramPriority' => 'variable metric'
+    'paramPriority' => 'variable color metric',
+    'colors' => [
+        'lib' => 'mrcolor',
+        'libpath' => '../../../php_libs/mrcolor',
+        'rendered_format' => 'hex'
+    ]
 ];

@@ -19,7 +19,8 @@ $code = <<<TEXT
     border-radius \$arguments \$left \$right \$left \$right
     
 h1 , h2, h3,h4
-    color black
+    color rgb(1,.3003px,   3 )
+    background-color #000000
     font-size 10px
     .sort 
         color sdfsd

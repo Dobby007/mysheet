@@ -96,12 +96,12 @@ class Mixin extends LeafBlock {
             $renderScope[$local] = $renderScope[$index];
         }
         
-        var_dump($renderScope);
+//        var_dump($renderScope);
         
         $rendered_rules = new RuleGroup();
         foreach ($this->getDeclarations() as $declaration) {
             $rendered_rules->addRule($declaration->getRuleName(), $declaration->getRuleValue()->getValue($renderScope));
-            }
+        }
         
         return $rendered_rules;
     }
