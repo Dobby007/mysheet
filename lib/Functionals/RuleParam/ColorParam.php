@@ -10,6 +10,7 @@ namespace MySheet\Functionals\RuleParam;
 
 use MySheet\Essentials\RuleParam;
 use MySheet\Helpers\StringHelper;
+use MySheet\MySheet;
 
 /**
  * Description of MetricParam
@@ -21,7 +22,8 @@ class ColorParam extends RuleParam {
     protected $type;
     protected $color;
     
-    public function __construct($type, array $color = []) {
+    public function __construct(MySheet $rootInstance, $type, array $color = []) {
+        $this->setRoot($rootInstance);
         $this->setType($type);
         $this->setColor($color);
     }
@@ -129,13 +131,12 @@ class ColorParam extends RuleParam {
         return $result;
     }
     
-    public static function parse(&$string) {
-//            var_dump($string);
-        if (preg_match('/^(#\d{3}|#\xdigit{6}|(?:rgb|rgba|hsl|hsla|hsb)\(.+\))(?:$|\s)/i', $string, $matches)) {
+    public static function parse(MySheet $rootInstance, &$string) {
+        if (preg_match('/^(#[[:xdigit:]]{3}|#[[:xdigit:]]{6}|(?:rgb|rgba|hsl|hsla|hsb)\(.+\))(?:$|\s)/i', $string, $matches)) {
             $color = self::parseColorString($matches[1]);
             var_dump($color);
             parent::trimStringBy($string, strlen($matches[0]));
-            return new self($color['type'], $color['color']);
+            return new self($rootInstance, $color['type'], $color['color']);
         }
         return false;
     }

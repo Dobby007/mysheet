@@ -9,6 +9,7 @@
 namespace MySheet\Functionals\RuleParam;
 
 use MySheet\Essentials\RuleParam;
+use MySheet\MySheet;
 
 /**
  * Description of MetricParam
@@ -44,7 +45,7 @@ class OtherParam extends RuleParam {
         return true;
     }
         
-    public static function parse(&$string) {
+    public static function parse(MySheet $rootInstance, &$string) {
 //            var_dump($string);
         if (preg_match('/^(\S+)/', $string, $matches)) {
             parent::trimStringBy($string, strlen($matches[0]));

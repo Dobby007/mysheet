@@ -33,6 +33,10 @@ trait RootClassTrait {
         return $this->root;
     }
     
+    public function getSettings() {
+        return $this->getRoot()->getSettings();
+    }
+    
     public function isRootSet() {
         return $this->root !== null;
     }

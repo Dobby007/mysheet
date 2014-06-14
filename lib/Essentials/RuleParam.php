@@ -9,6 +9,7 @@
 namespace MySheet\Essentials;
 
 use MySheet\Traits\RootClassTrait;
+use MySheet\MySheet;
 
 /**
  * Description of RuleParam
@@ -30,9 +31,7 @@ abstract class RuleParam {
     /**
      * @return RuleParam|false
      */
-    public static function parse(&$string) {
-        
-    }
+    public static function parse(MySheet $rootInstance, &$string) { }
     
     public static function trimStringBy(&$string, $length) {
         $string = substr($string, $length);
@@ -42,12 +41,12 @@ abstract class RuleParam {
         
     }
     
-    public static function tryParse($paramClass, &$string) {
+    public static function tryParse($paramClass, &$string, MySheet $rootInstance) {
         $callable = $paramClass . '::' . 'parse';
         $string = ltrim($string);
 //        var_dump($callable);
         if (class_exists($paramClass) && is_callable($callable)) {
-            return $paramClass::parse($string);
+            return $paramClass::parse($rootInstance, $string);
         }
         
         return false;

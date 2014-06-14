@@ -64,7 +64,7 @@ class RuleValue {
         
         $this->getRoot()->getListManager()->iterateList('RuleParam', function($paramClass) use (&$value, &$result) {
 //            var_dump($paramClass, $value);
-            $res = RuleParam::tryParse($paramClass, $value);
+            $res = RuleParam::tryParse($paramClass, $value, $this->getRoot());
             if ($res instanceof RuleParam) {
 //                var_dump($value);
                 $result = $res;
@@ -76,8 +76,6 @@ class RuleValue {
     }
     
     public function getValue(VariableScope $vars = null, $as_array = false) {
-        $this->getRoot();
-        
         $result = array_map(function(RuleParam $item) use($vars) {
             
             if ($item instanceof \MySheet\Functionals\RuleParam\VariableParam) {
@@ -103,11 +101,11 @@ class RuleValue {
             
             while (is_string($value) && strlen($value) > 0) {
                 $res = $this->parseParam($value);
-                var_dump($res);
+//                var_dump($res);
                 
                 if (!$res) {
                     $value = ltrim($value);
-                    $res = OtherParam::parse($value);
+                    $res = OtherParam::parse($this->getRoot(),$value);
                 }
                 
                 $this->addParam($res);
