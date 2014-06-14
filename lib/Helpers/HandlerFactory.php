@@ -46,4 +46,12 @@ class HandlerFactory {
 //        var_dump($this->map);
         return $this;
     }
+    
+    public function on($class, $eventName, callable $callback) {
+        return $this->registerHandler($class, $eventName, $callback);
+    }
+    
+    public function fire($class, $eventName, $arguments = null, &$handled = null) {
+        $this->triggerEvent($class, $eventName, $arguments, $handled);
+    }
 }

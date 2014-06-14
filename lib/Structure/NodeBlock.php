@@ -13,7 +13,6 @@ abstract class NodeBlock extends Block {
     public function addChild($item) {
         if ($item instanceof NodeBlock || $item instanceof LeafBlock) {
             $this->children[] = $item;
-            $item->setRoot($this->getRoot());
             $item->setParent($this);
         } else {
             //throw

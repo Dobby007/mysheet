@@ -18,8 +18,7 @@ class RuleValue {
     
     private $params = array();
     
-    function __construct($root, $value) {
-        $this->setRoot($root);
+    function __construct($value) {
         $this->setValue($value);
     }
     
@@ -41,8 +40,6 @@ class RuleValue {
         
         
         if ($param instanceof RuleParam) {
-            $param->setRoot($this->getRoot());
-            
             if ($index === null) {
                 $this->params[] = $param;
             } else {
@@ -64,7 +61,7 @@ class RuleValue {
         
         $this->getRoot()->getListManager()->iterateList('RuleParam', function($paramClass) use (&$value, &$result) {
 //            var_dump($paramClass, $value);
-            $res = RuleParam::tryParse($paramClass, $value, $this->getRoot());
+            $res = RuleParam::tryParse($paramClass, $value);
             if ($res instanceof RuleParam) {
 //                var_dump($value);
                 $result = $res;
@@ -105,7 +102,7 @@ class RuleValue {
                 
                 if (!$res) {
                     $value = ltrim($value);
-                    $res = OtherParam::parse($this->getRoot(),$value);
+                    $res = OtherParam::parse($value);
                 }
                 
                 $this->addParam($res);

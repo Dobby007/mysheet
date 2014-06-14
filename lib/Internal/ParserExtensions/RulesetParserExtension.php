@@ -23,7 +23,6 @@ class RulesetParserExtension extends ParserExtension
         $context = $this->getContext();
         $firstLine = $curLine = $context->curline();
         $ruleset = new Ruleset(null);
-        $ruleset->setRoot($this->getRoot());
         
         do {
             if ($curLine[0] == $firstLine[0]) {

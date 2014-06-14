@@ -71,7 +71,7 @@ class Mixin extends LeafBlock {
     
     public function addDeclaration($declaration) {
         if (is_string($declaration)) {
-            $this->declarations[] = new Declaration($this->getRoot(), $declaration);
+            $this->declarations[] = new Declaration($declaration);
         }
     }
     

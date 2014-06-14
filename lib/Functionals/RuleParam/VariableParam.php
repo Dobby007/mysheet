@@ -10,7 +10,6 @@ namespace MySheet\Functionals\RuleParam;
 
 use MySheet\Essentials\RuleParam;
 use MySheet\Essentials\VariableScope;
-use MySheet\MySheet;
 
 /**
  * Description of VariableParam
@@ -20,8 +19,7 @@ use MySheet\MySheet;
 class VariableParam extends RuleParam {
     private $varName = '';
     
-    public function __construct(MySheet $rootInstance, $varName) {
-        $this->setRoot($rootInstance);
+    public function __construct($varName) {
         $this->setVarName($varName);
         $this->varName = $varName;
     }
@@ -47,10 +45,10 @@ class VariableParam extends RuleParam {
     }
 
     
-    public static function parse(MySheet $rootInstance, &$string) {
+    public static function parse(&$string) {
         if (preg_match('/^\$([\S]+)/i', $string, $matches)) {
             parent::trimStringBy($string, strlen($matches[0]));
-            return new self($rootInstance, $matches[1]);
+            return new self($matches[1]);
         }
         return false;
     }

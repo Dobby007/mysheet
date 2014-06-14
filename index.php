@@ -6,18 +6,20 @@ require_once 'lib/MySheet' . EXT;
 
 use MySheet\MySheet;
 
-$mysheet = new MySheet();
+$mysheet = MySheet::Instance();
 
 //@mixin border-radius
 //  
 
 $code = <<<TEXT
 
+           
 @mixin border-radius (left right )
     -webkit-border-radius \$left \$right
     -moz-border-radius 3px
     border-radius \$arguments \$left \$right \$left \$right
     
+
 h1 , h2, h3,h4
     color rgb(1,.3003px,   3 )
     background-color #000000
@@ -42,8 +44,7 @@ body
                 width 300px
                 border-radius 4px 5px 6px 7px 8px 9px
         
-        
-
+ 
         
 TEXT;
         

@@ -16,9 +16,7 @@ namespace MySheet\Plugins;
 abstract class PluginBase {
     use \MySheet\Traits\RootClassTrait;
     
-    public function __construct($rootInstance) {
-        $this->setRoot($rootInstance);
-    }
+    public function __construct() { }
 
     
     abstract public function init();

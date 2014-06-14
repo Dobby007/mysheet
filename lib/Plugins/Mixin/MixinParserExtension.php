@@ -50,7 +50,6 @@ class MixinParserExtension extends ParserExtension {
         
         
         $mixin = new Mixin($this->plugin, $mixin_decl[1], $mixin_locals[0]);
-        $mixin->setRoot($this->getRoot());
         
         while ($curLine = $context->nextline()) {
             if ($curLine[0] > $firstLine[0]) {

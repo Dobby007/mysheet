@@ -16,28 +16,16 @@ use MySheet\MySheet;
  * @author dobby007
  */
 trait RootClassTrait {
-    protected $root = null;
-    
-    /**
-     * @return this
-     */
-    public function setRoot(MySheet $root) {
-        $this->root = $root;
-        return $this;
-    }
     
     /**
      * @return MySheet Instance of MySheet class
      */
     public function getRoot() {
-        return $this->root;
+        return MySheet::Instance();
     }
     
     public function getSettings() {
         return $this->getRoot()->getSettings();
     }
     
-    public function isRootSet() {
-        return $this->root !== null;
-    }
 }

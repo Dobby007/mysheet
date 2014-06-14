@@ -50,8 +50,7 @@ class Ruleset extends NodeBlock {
 
     public function addDeclaration($declaration) {
         if (is_string($declaration)) {
-            $this->declarations[] = (new Declaration($this->getRoot(), $declaration))
-                ->setRoot($this->getRoot());
+            $this->declarations[] = (new Declaration($declaration));
         }
     }
     

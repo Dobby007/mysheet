@@ -29,8 +29,7 @@ class Parser implements IParser {
     private $doc = null;
     protected $extensions = array();
 
-    public function __construct($code, $rootInstance) {
-        $this->setRoot($rootInstance);
+    public function __construct($code) {
         $this->setCode($code);
     }
 
@@ -49,21 +48,19 @@ class Parser implements IParser {
         }
         
         if ($extension instanceof ParserExtension) {
-            $extension->setRoot($this->getRoot());
             $this->extensions[] = $extension;
         }
     }
 
     public function comeon() {
         $this->doc = new Document();
-        $this->doc->setRoot($this->getRoot());
         $this->curBlock = $this->doc;
 
         try {
             $this->divideIntoLines();
             $this->linebyline();
         } catch (ParseException $exc) {
-            echo 'Error happened: ' . $exc->getErrorCode() . ' in file ' . $exc->getFile() . ':' . $exc->getLine() . "\n" . implode($exc->getArguments(), ', ') . "\n";
+//            echo 'Error happened: ' . $exc->getErrorCode() . ' in file ' . $exc->getFile() . ':' . $exc->getLine() . "\n" . implode($exc->getArguments(), ', ') . "\n";
         }
 //        var_dump($this->lines);
         return $this->doc;

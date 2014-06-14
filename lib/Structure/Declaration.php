@@ -30,8 +30,7 @@ class Declaration {
     private $ruleValue;
     
     
-    public function __construct($root, $declaration) {
-        $this->setRoot($root);
+    public function __construct($declaration) {
         $this->setDeclaration($declaration);
     }
     
@@ -53,10 +52,9 @@ class Declaration {
 
     public function setRuleValue($ruleValue) {
         if (is_string($ruleValue))
-            $ruleValue = new RuleValue($this->getRoot(), $ruleValue);
+            $ruleValue = new RuleValue($ruleValue);
         
         if ($ruleValue instanceof RuleValue) {
-            $ruleValue->setRoot($this->getRoot());
             $this->ruleValue = $ruleValue;
         }
     }

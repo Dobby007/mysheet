@@ -41,22 +41,31 @@ class MySheet
     protected $plugins = array();
 
 
-    public function __construct() {
+    private function __construct() {
         $this->autoload = new Autoload();
         
         $this->autoload->registerAutoload();
         $this->setSettings(new Settings());
         $this->autoload->restoreAutoload();
         
-        $this->init();
+        
+    }
+    
+    public static function Instance() {
+        static $instance;
+//        var_dump(get_class($instance));
+        if ($instance === null) {
+            $instance = new self();
+            $instance->init();
+        }
+        return $instance;
     }
     
     public function init() {
         $this->autoload->registerAutoload();
-        $this->parser = new $this->parser(null, $this);
+        $this->parser = new $this->parser(null);
         $this->hf = new HandlerFactory();
         $this->vs = new VariableScope();
-        $this->vs->setRoot($this);
         $this->getHandlerFactory()->registerHandler('Block', 'cssRenderingEnded', function() {
             $this->getVars()->clean();
         });
@@ -102,7 +111,7 @@ class MySheet
             $pluginClass = '\MySheet\Plugins\\' . $plugin . '\Plugin' . $plugin;
             if (class_exists($pluginClass)) {
                 /* @var $pi \MySheet\Plugins\PluginBase */
-                $pi = new $pluginClass($this);
+                $pi = new $pluginClass();
                 $pi->init();
                 $this->plugins[$plugin] = $pi;
             }

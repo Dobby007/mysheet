@@ -140,7 +140,6 @@ class VariableScope implements \ArrayAccess {
     
     public function createScope(VariableScope $scope = null) {
         $scope = self::newScope($scope);
-        $scope->setRoot($this->getRoot());
         return $scope;
     }
 
