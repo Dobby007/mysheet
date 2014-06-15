@@ -2,9 +2,13 @@
 
 return [
     'paramPriority' => 'variable color metric',
-    'colors' => [
+    'color' => [
         'lib' => 'mrcolor',
-        'libpath' => '../../../php_libs/mrcolor',
-        'rendered_format' => 'hex'
+        'libPath' => '../../../php_libs/mrcolor',
+        'defaultType' => 'rgb',
+        'transform' => 'unknown'
+    ],
+    'plugins' => [
+        'mixin'
     ]
 ];

@@ -17,6 +17,8 @@ use MySheet\Helpers\StringHelper;
  */
 class ColorParam extends RuleParam {
     protected static $allowed_types = ['hex', 'rgb', 'rgba', 'hsb', 'hsba', 'hsl', 'hsla'];
+    protected static $css_supported_types = ['hex', 'rgb', 'rgba', 'hsl', 'hsla'];
+    
     protected $type;
     protected $color;
     
@@ -55,7 +57,17 @@ class ColorParam extends RuleParam {
     }
 
     public function toRealCss() {
-        return $this->getType() . implode(', ', $this->getColor());
+        if (
+            self::isCssSupportedType($this->getType()) && 
+            $this->getSetting('color.transform', 'unknown') === 'unknown'
+        ) {
+            return $this->getType() . implode(', ', $this->getColor());
+        } else {
+            $defaultType = $this->getSetting('color.defaultType', 'hex');
+            return $defaultType . implode(', ', $this->getColor());
+        }
+        
+        
     }
     
     public function __toString() {
@@ -64,6 +76,10 @@ class ColorParam extends RuleParam {
     
     protected static function isRightType($type) {
         return in_array($type, self::$allowed_types);
+    }
+    
+    protected static function isCssSupportedType($type) {
+        return in_array($type, self::$css_supported_types);
     }
     
     public static function parseColorString($string) {

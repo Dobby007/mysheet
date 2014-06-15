@@ -20,6 +20,7 @@ use MySheet\Essentials\VariableScope;
 class PluginMixin extends PluginBase {
     private $mixins = array();
     
+    
     public function init() {
         $this->getRoot()->getHandlerFactory()->registerHandler('Declaration', 'renderCss', [$this, 'mixinHandler']);
         $this->getRoot()->getParser()->addParserExtension(new MixinParserExtension($this));
@@ -46,7 +47,6 @@ class PluginMixin extends PluginBase {
     }
     
     public function mixinHandler(&$handled, Declaration $rule, VariableScope $userRuleScope = null) {
-        
         /* @var $mixin Mixin */
         $mixin = $this->getMixin($rule->getRuleName());
         if ($mixin) {
@@ -58,6 +58,5 @@ class PluginMixin extends PluginBase {
             return $mixin->render($vs);
         }
         
-        return 'handled!!!!';
     }
 }

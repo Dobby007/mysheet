@@ -11,7 +11,7 @@ require_once ROOTDIR . 'Essentials' . DS . 'Autoload' . EXT;
 use MySheet\Essentials\Autoload;
 use MySheet\Helpers\HandlerFactory;
 use MySheet\Tools\IParser;
-use MySheet\Tools\Settings;
+use MySheet\Tools\MSSettings;
 use MySheet\Essentials\FuncListManager;
 use MySheet\Essentials\RuleParam;
 use MySheet\Essentials\VariableScope;
@@ -45,7 +45,7 @@ class MySheet
         $this->autoload = new Autoload();
         
         $this->autoload->registerAutoload();
-        $this->setSettings(new Settings());
+        $this->setSettings(new MSSettings());
         $this->autoload->restoreAutoload();
         
         
@@ -85,7 +85,14 @@ class MySheet
     protected function initPlugins() {
         $this->plugins = [];
         
-        $this->registerPlugin('Mixin');
+        foreach ($this->getSettings()->plugins as $key => $value) {
+            if (is_string($value)) {
+                $this->registerPlugin($value);
+            } else if (is_array($value)) {
+                $this->registerPlugin($key, $value);
+            }
+            
+        }
     }
     
     protected function initExtensions() {
@@ -105,13 +112,16 @@ class MySheet
         return $result;
     }
     
-    public function registerPlugin($plugin) {
+    public function registerPlugin($plugin, array $settings = []) {
         if (is_string($plugin)) {
             $plugin = ucfirst($plugin);
             $pluginClass = '\MySheet\Plugins\\' . $plugin . '\Plugin' . $plugin;
             if (class_exists($pluginClass)) {
                 /* @var $pi \MySheet\Plugins\PluginBase */
                 $pi = new $pluginClass();
+                foreach ($settings as $name => $value) {
+                    $pi->$name = $value;
+                }
                 $pi->init();
                 $this->plugins[$plugin] = $pi;
             }
@@ -125,14 +135,15 @@ class MySheet
     
     
     /**
-     * @return Settings Instance of Settings class
+     * @return MSSettings Instance of MSSettings class
      */
     public function getSettings() {
         return $this->settings;
     }
 
-    public function setSettings(Settings $settings) {
+    public function setSettings(MSSettings $settings) {
         $this->settings = $settings;
+        
     }
 
         

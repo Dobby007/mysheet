@@ -6,40 +6,24 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Tools;
+namespace MySheet\Essentials;
 
 /**
  * Description of Settings
  *
  * @author dobby007
- * @property mixed $paramPriority The order in which parser would try to parse params in the rule
  */
-class Settings {
-    /*
-    private $plugins = 'mixin';
-    private $parserExtensions = 'ruleset';
-    private $paramPriority;
-    */
-    public function __construct(array $settings = []) {
-        $this->load($settings);
-    }
+abstract class Settings {
     
-    public function load(array $settings) {
-        $default = require(ROOTDIR . 'Config/default' . EXT);
-        $settings = array_merge($default, $settings);
-
-        foreach ($settings as $name => $value) {
-            $this->$name = $value;
-        }
-    }
+    
+    
     
     public function __get($name) {
         $method_name = 'get' . ucfirst($name);
         if (method_exists($this, $method_name)) {
             return $this->$method_name();
         } else {
-            return $this->$name;
-//            throw new Exception('Undefined property: $' . $name);
+            throw new Exception('Undefined property: $' . $name);
         }
     }
     
@@ -49,21 +33,12 @@ class Settings {
         if (method_exists($this, $method_name)) {
             return $this->$method_name($value);
         } else {
-            $this->name = $value;
-//            throw new Exception('Undefined property: $' . $name);
+            throw new Exception('Undefined property: $' . $name);
         }
     }
     
-    protected function setParamPriority($paramPriority) {
-        if (is_string($paramPriority))
-            $paramPriority = preg_split ('/\s*,?\s+/', $paramPriority);
-        
-        if (is_array($paramPriority))   
-            $this->paramPriority = $paramPriority;
-        
-    }
+    
 
-        
     /*
     public function __call($name, $arguments) {
         $method_prefix = substr($name, 0, 3);

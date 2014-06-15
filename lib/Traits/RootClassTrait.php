@@ -9,6 +9,7 @@
 namespace MySheet\Traits;
 
 use MySheet\MySheet;
+use MySheet\Tools\MSSettings;
 
 /**
  * Description of RootClassTrait
@@ -24,8 +25,18 @@ trait RootClassTrait {
         return MySheet::Instance();
     }
     
+    /**
+     * @return MSSettings
+     */
     public function getSettings() {
         return $this->getRoot()->getSettings();
+    }
+    
+    /**
+     * @return mixed
+     */
+    public function getSetting($name, $default = null) {
+        return $this->getRoot()->getSettings()->get($name, $default);
     }
     
 }

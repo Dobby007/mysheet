@@ -14,7 +14,8 @@ namespace MySheet\Plugins;
  * @author dobby007
  */
 abstract class PluginBase {
-    use \MySheet\Traits\RootClassTrait;
+    use \MySheet\Traits\RootClassTrait,
+        \MySheet\Traits\MagicPropsTrait;
     
     public function __construct() { }
 
