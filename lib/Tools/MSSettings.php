@@ -21,7 +21,9 @@ class MSSettings {
     
     public $color;
     public $plugins;
-    
+    public $cssRenderer;
+    public $parser;
+    public $cacher;
     private $_paramPriority;
     
     public function __construct(array $settings = []) {

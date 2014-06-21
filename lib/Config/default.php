@@ -10,5 +10,14 @@ return [
     ],
     'plugins' => [
         'mixin'
-    ]
+    ],
+    'cssRenderer' => [
+        'lfAfterSelector' => false,
+        'lfAfterRule' => true,
+        'prefixRule' => '    ',
+        'lfBeforeOCB' => true,
+        'lfBeforeCCB' => true,
+        'sepSelectors' => ', '
+    ],
+    'parser' => 'MySheet\Tools\Parser'
 ];

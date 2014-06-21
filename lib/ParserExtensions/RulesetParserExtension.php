@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Internal\ParserExtensions;
+namespace MySheet\ParserExtensions;
 
 use MySheet\Essentials\ParserExtension;
 use MySheet\Structure\Ruleset;

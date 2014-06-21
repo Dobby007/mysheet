@@ -18,7 +18,9 @@ use MySheet\Helpers\StringHelper;
 class ColorParam extends RuleParam {
     protected static $allowed_types = ['hex', 'rgb', 'rgba', 'hsb', 'hsba', 'hsl', 'hsla'];
     protected static $css_supported_types = ['hex', 'rgb', 'rgba', 'hsl', 'hsla'];
-    
+    protected static $html_colors = [
+        
+    ];
     protected $type;
     protected $color;
     
@@ -55,23 +57,39 @@ class ColorParam extends RuleParam {
     public function isCorrectColor($type, array $color) {
         return true;
     }
-
+    
     public function toRealCss() {
+        $type = null;
         if (
             self::isCssSupportedType($this->getType()) && 
             $this->getSetting('color.transform', 'unknown') === 'unknown'
         ) {
-            return $this->getType() . implode(', ', $this->getColor());
+            $type = $this->getType();
         } else {
-            $defaultType = $this->getSetting('color.defaultType', 'hex');
-            return $defaultType . implode(', ', $this->getColor());
+            $type = $this->getSetting('color.defaultType', 'hex');
         }
         
+        return self::colorToString($type, $this->getColor());
         
     }
     
     public function __toString() {
         return $this->toRealCss();
+    }
+    
+    public static function colorToString($type, array $color) {
+        switch ($type) {
+            case 'rgb':
+            case 'rgba':
+                $arr = [$color['r'], $color['g'], $color['b']];
+                if ($type === 'rgba') {
+                    $arr[] = $color['a'];
+                }
+                return $type . '(' . implode(', ', $arr) . ')';
+            case 'hex':
+                return '#' . $color[0];
+                
+        }
     }
     
     protected static function isRightType($type) {

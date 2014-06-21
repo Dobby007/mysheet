@@ -38,7 +38,7 @@ body
         color red
         .colored
         h1 as
-        .grayed         
+        .grayed
             color purple
             .colorsd
                 width 300px

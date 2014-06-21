@@ -8,9 +8,9 @@
 
 namespace MySheet\Traits;
 
-use MySheet\Helpers\HandlerCallResult;
+use MySheet\Essentials\HandlerCallResult;
 
-require_once ROOTDIR . 'Helpers' . DS . 'HandlerCallResult' . EXT;
+//require_once ROOTDIR . 'Helpers' . DS . 'HandlerCallResult' . EXT;
 
 /**
  * Description of HandlerClassTrait

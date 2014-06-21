@@ -65,6 +65,14 @@ abstract class ArrayHelper {
         return $return;
     }
     
-    
+    public static function processLines(array $lines, $prefix, $suffix, $separator, $ignoreLastLine = true) {
+        $count = count($lines);
+        for ($i = 0; $i < $count; $i++) {
+            $lines[$i] = $prefix . $lines[$i] . $suffix . 
+                ($i === $count - 1 && $ignoreLastLine ? '' : $separator);
+            
+        }
+        return $lines;
+    }
 
 }

@@ -9,7 +9,7 @@ define('MSSNS', 'MySheet');
 require_once ROOTDIR . 'Essentials' . DS . 'Autoload' . EXT;
 
 use MySheet\Essentials\Autoload;
-use MySheet\Helpers\HandlerFactory;
+use MySheet\Essentials\HandlerFactory;
 use MySheet\Tools\IParser;
 use MySheet\Tools\MSSettings;
 use MySheet\Essentials\FuncListManager;
@@ -27,8 +27,8 @@ class MySheet
     /**
      * @var IParser Reference to parser object
      */
-    public $parser = 'MySheet\Tools\Parser';
-    public $cacher = 'Cacher';
+    public $parser = null;
+    public $cacher = null;
     
     
     /** @var Autoload */
@@ -63,7 +63,8 @@ class MySheet
     
     public function init() {
         $this->autoload->registerAutoload();
-        $this->parser = new $this->parser(null);
+        $parser = $this->getSettings()->parser;
+        $this->parser = new $parser(null);
         $this->hf = new HandlerFactory();
         $this->vs = new VariableScope();
         $this->getHandlerFactory()->registerHandler('Block', 'cssRenderingEnded', function() {
@@ -96,7 +97,7 @@ class MySheet
     }
     
     protected function initExtensions() {
-        $this->parser->addParserExtension('\MySheet\Internal\ParserExtensions\RulesetParserExtension');
+        $this->parser->addParserExtension('\MySheet\ParserExtensions\RulesetParserExtension');
     }
     
     public function parseFile($file) {

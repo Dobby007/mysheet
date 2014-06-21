@@ -111,6 +111,7 @@ class Ruleset extends NodeBlock {
         }
         
         $compiled_declarations = [];
+        $prefixRule = $this->getSetting('cssRenderer.prefixRule', '    ');
         
         array_walk($declarations, function($decl) use (&$compiled_declarations) {
             $result = $decl->toRealCss();
@@ -119,16 +120,25 @@ class Ruleset extends NodeBlock {
             if ($result instanceof RuleGroup) {
                 foreach ($result->getLines(': ') as $line) {
 //                    var_dump($line);
-                    $compiled_declarations[] = '    ' . (string)$line;
+                    $compiled_declarations[] = (string)$line;
                 }
             } else {
-                $compiled_declarations[] = '    ' . (string)$result;
+                $compiled_declarations[] = (string)$result;
             }
         });
         
         //nothing to render if there are no declarations
         if (!empty($compiled_declarations)) {
-            ArrayHelper::concat($lines, implode(",\n", $selectors), '{', implode(";\n", $compiled_declarations), '}');
+            $sepSelectors = $this->getSetting('cssRenderer.sepSelectors', ',');
+            
+            $selectors = ArrayHelper::processLines($selectors, '', '', $sepSelectors);
+            
+            if ($this->getSetting('cssRenderer.lfAfterSelector', true) == false) {
+                $selectors = implode('', $selectors);
+            }
+            
+            $compiled_declarations = ArrayHelper::processLines($compiled_declarations, $prefixRule, '', ';');
+            ArrayHelper::concat($lines, $selectors, '{', $compiled_declarations, '}');
         }
             
         ArrayHelper::concat($lines, parent::compileRealCss());
