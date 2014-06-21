@@ -34,13 +34,13 @@ class MixinParserExtension extends ParserExtension {
         $context = $this->getContext();
         $firstLine = $curLine = $context->curline();
         
-        if (substr($firstLine[1], 0, 6) !== '@mixin')
+        if (substr($firstLine->getLine(), 0, 6) !== '@mixin')
             return false;
         
-        if ($firstLine[0] !== 0)
+        if ($firstLine->getLevel() !== 0)
             throw new ParseException(ErrorTable::E_BAD_INDENTATION);
         
-        if (!preg_match('/^@mixin\s+([-a-z][a-z\d_-]*)\s*\((.*)\)$/', $firstLine[1], $mixin_decl))
+        if (!preg_match('/^@mixin\s+([-a-z][a-z\d_-]*)\s*\((.*)\)$/', $firstLine->getLine(), $mixin_decl))
             throw new ParseException(ErrorTable::E_BAD_INDENTATION);
         
         preg_match_all('/(?:[a-z_][a-z0-9_]*)/i', $mixin_decl[2], $mixin_locals, PREG_PATTERN_ORDER);
@@ -52,8 +52,8 @@ class MixinParserExtension extends ParserExtension {
         $mixin = new Mixin($this->plugin, $mixin_decl[1], $mixin_locals[0]);
         
         while ($curLine = $context->nextline()) {
-            if ($curLine[0] > $firstLine[0]) {
-                $mixin->addDeclaration($curLine[1]);
+            if ($curLine->getLevel() > $firstLine->getLevel()) {
+                $mixin->addDeclarations($curLine->getLine());
             } else break;
         }
         $context->prevline();

@@ -8,6 +8,7 @@
 
 namespace MySheet\Traits;
 
+use MySheet\Essentials\SourceLine;
 
 /**
  * Description of HandlerClassTrait
@@ -15,17 +16,26 @@ namespace MySheet\Traits;
  * @author dobby007
  */
 trait ParserLinesTrait {
+    /**
+     * The array of lines
+     * @var SourceLine[]
+     */
     private $lines;
     private $curLine = false;
     
-    
+    /**
+     * @return SourceLine Move cursor to the previous line
+     */
     public function prevline() {
         if ($this->moveLineCursor(-1)) {
             return $this->curline();
         }
         return false;
     }
-
+    
+    /**
+     * @return SourceLine Move cursor to the next line
+     */
     public function nextline() {
         if ($this->moveLineCursor(+1)) {
             return $this->curline();
@@ -33,6 +43,9 @@ trait ParserLinesTrait {
         return false;
     }
 
+    /**
+     * @return SourceLine Get current line over cursor
+     */
     public function curline() {
         if ($this->curLine === false || count($this->lines) === 0)
             return false;
@@ -40,10 +53,16 @@ trait ParserLinesTrait {
         return $this->lines[$this->curLine];
     }
 
+    /**
+     * @return int Get current line number
+     */
     public function getLineNumber() {
         return $this->curLine;
     }
     
+    /**
+     * @return SourceLine Get special line without moving cursor to it
+     */
     public function getLine($line_number) {
         if ($line_number >= count($this->lines))
             return false;
@@ -51,10 +70,16 @@ trait ParserLinesTrait {
         return $this->lines[$line_number];
     }
 
+    /**
+     * @return null Set cursor to the special line number
+     */
     public function setLineCursor($nn) {
         $this->curLine = intval($nn);
     }
     
+    /**
+     * @return boolean Can cursor move through $lines_count or not
+     */
     public function canMoveOver($lines_count) {
         $future_ln = $this->getLineNumber() + $lines_count;
         
@@ -64,6 +89,9 @@ trait ParserLinesTrait {
         return false;
     }
     
+    /**
+     * @return int Move cursor through $lines_count lines
+     */
     public function moveLineCursor($lines_count) {
         $lines_count = intval($lines_count);
         
@@ -74,7 +102,12 @@ trait ParserLinesTrait {
         return false;
     }
     
+    /**
+     * Reset cursor and set its' position to the line with zero index
+     * @return null
+     */
     public function resetCursor() {
         $this->setLineCursor(0);
     }
+    
 }

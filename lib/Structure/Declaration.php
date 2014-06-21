@@ -60,7 +60,7 @@ class Declaration {
     }
     
     public function setDeclaration($declaration) {
-        $right_declaration = self::canBeDeclaration($declaration, $matches);
+        $right_declaration = is_string($declaration) && self::canBeDeclaration(trim($declaration), $matches);
         
         if ($right_declaration) {
             $this->setRuleName($matches[1]);

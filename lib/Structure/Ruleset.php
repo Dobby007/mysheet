@@ -54,6 +54,18 @@ class Ruleset extends NodeBlock {
         }
     }
     
+    public function addDeclarations($declarations) {
+        if (is_string($declarations)) {
+            $declarations = preg_split('/(?![\s;]+$);/', $declarations);
+        }
+        
+        if (is_array($declarations)) {
+            foreach ($declarations as $declaration) {
+                $this->addDeclaration($declaration);
+            }
+        }
+    }
+    
     public function getParentPath() {
         $parent = $this->getParent();
         do {
@@ -93,13 +105,13 @@ class Ruleset extends NodeBlock {
             //throw
         }
         
-        //if there are no rules return nothing
-        if (empty($declarations)) {
+        //if there are no rules and no children return nothing
+        if (empty($declarations) && empty($this->getChildren())) {
             return [];
         }
         
         $compiled_declarations = [];
-
+        
         array_walk($declarations, function($decl) use (&$compiled_declarations) {
             $result = $decl->toRealCss();
 //            var_dump(gettype($result), get_class($result));
@@ -114,8 +126,13 @@ class Ruleset extends NodeBlock {
             }
         });
         
+        //nothing to render if there are no declarations
+        if (!empty($compiled_declarations)) {
+            ArrayHelper::concat($lines, implode(",\n", $selectors), '{', implode(";\n", $compiled_declarations), '}');
+        }
+            
+        ArrayHelper::concat($lines, parent::compileRealCss());
         
-        ArrayHelper::concat($lines, implode(",\n", $selectors), '{', implode(";\n", $compiled_declarations), '}', parent::compileRealCss());
         
         return $lines;
     }

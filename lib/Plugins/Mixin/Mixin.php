@@ -75,6 +75,18 @@ class Mixin extends LeafBlock {
         }
     }
     
+    public function addDeclarations($declarations) {
+        if (is_string($declarations)) {
+            $declarations = preg_split('/(?![\s;]+$);/', $declarations);
+        }
+        
+        if (is_array($declarations)) {
+            foreach ($declarations as $declaration) {
+                $this->addDeclaration($declaration);
+            }
+        }
+    }
+    
     protected function compileRealCss(VariableScope $vars = null) {
         $this->plugin->registerMixin($this);
         return [];

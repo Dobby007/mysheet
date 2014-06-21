@@ -25,32 +25,41 @@ class RulesetParserExtension extends ParserExtension
         $ruleset = new Ruleset(null);
         
         do {
-            if ($curLine[0] == $firstLine[0]) {
-                $selectors = explode(',', $curLine[1]);
+            if ($curLine->getLevel() == $firstLine->getLevel()) {
+                $selectors = explode(',', $curLine->getLine());
                 $ruleset->addSelectors($selectors);
-            } else if ($curLine[0] == $firstLine[0] + 1) {
+            } else if ($curLine->getLevel() == $firstLine->getLevel() + 1) {
                 $nextline = $context->getLine($context->getLineNumber() + 1);
-                $declaration = $curLine[1];
-
+                $declaration = $curLine->getLine();
+                var_dump($curLine);
+                //if ruleset contains no declarations and just has children
+                
+                
                 if ($nextline) {
                     if (
-                        $firstLine[0] >= $nextline[0] ||
-                        !Declaration::canBeDeclaration($nextline[1])
+                        $nextline->getLevel() > $curLine->getLevel() ||
+                        !Declaration::canBeDeclaration($declaration)
                     ) {
-                        $ruleset->addDeclaration($declaration);
-                        return $ruleset;
-                    } else if ($nextline[0] > $curLine[0]) {
-                        return $ruleset;
+                        $context->prevline();
+                        break;
+                    } else if (
+                        $firstLine->getLevel() >= $nextline->getLevel() ||
+                        !Declaration::canBeDeclaration($nextline->getLine())
+                    ) {
+                        $ruleset->addDeclarations($declaration);
+                        break;
                     }
                 }
 
-                $ruleset->addDeclaration($declaration);
+                $ruleset->addDeclarations($declaration);
             } else {
                 return false;
             }
+            
         } while ($curLine = $context->nextline());
-
-        if ($ruleset->countDeclarations() > 0) {
+                
+        
+        if ($ruleset->countDeclarations() >= 0) {
             return $ruleset;
         }
 

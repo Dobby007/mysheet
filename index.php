@@ -33,7 +33,7 @@ body
     padding 0
     margin 0
         
-    .title
+    .title 
         font-size 24px
         color red
         .colored
@@ -43,11 +43,26 @@ body
             .colorsd
                 width 300px
                 border-radius 4px 5px 6px 7px 8px 9px
-        
+    
+    
+
  
         
 TEXT;
         
+$code2 = <<<TEXT
+html { color false; h1: true; hi: #333}
+body {   
+    rule: red 
+    .wrapper 
+        decl value
+        set h1
+            color high-definition
+    
+} 
+
+TEXT;
+
 
 $result = $mysheet->parseCode($code);
 
