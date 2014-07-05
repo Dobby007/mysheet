@@ -1,23 +1,30 @@
 <?php
+use MySheet as MSN;
+use MySheet\MySheet;
 
 return [
-    'paramPriority' => 'variable color metric',
+    'paramPriority' => 'commaSequence string variable color metric',
     'color' => [
-        'lib' => 'mrcolor',
-        'libPath' => '../../../php_libs/mrcolor',
-        'defaultType' => 'rgb',
-        'transform' => 'unknown'
+        'lib' => [
+            'class' => '\MySheet\Functionals\ColorLib\MrColorLib',
+            'libPath' => '../../php_libs/mrcolor'
+        ],
+        'defaultType' => 'hex',
+        'transform' => 'all'
     ],
     'plugins' => [
         'mixin'
     ],
     'cssRenderer' => [
-        'lfAfterSelector' => false,
-        'lfAfterRule' => true,
-        'prefixRule' => '    ',
-        'lfBeforeOCB' => true,
-        'lfBeforeCCB' => true,
-        'sepSelectors' => ', '
+//        'prefixRule' => '',
+//        'sepSelectors' => ', ',
+//        'sepRules' => '; ',
+//        'prefixCCB' => '',
+//        'suffixCCB' => ''
+    ],
+    'import' => [
+        'paths' => [MySheet::WORKDIR . DS . 'MssTemplates'],
+        'includeError' => 'exception'
     ],
     'parser' => 'MySheet\Tools\Parser'
 ];

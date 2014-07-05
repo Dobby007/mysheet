@@ -10,25 +10,49 @@ namespace MySheet\Functionals\RuleParam;
 
 use MySheet\Essentials\RuleParam;
 use MySheet\Helpers\StringHelper;
+use MySheet\Helpers\SettingsHelper;
+
+
 /**
- * Description of MetricParam
+ * Description of ColorParam
  *
  * @author dobby007
  */
 class ColorParam extends RuleParam {
-    protected static $allowed_types = ['hex', 'rgb', 'rgba', 'hsb', 'hsba', 'hsl', 'hsla'];
-    protected static $css_supported_types = ['hex', 'rgb', 'rgba', 'hsl', 'hsla'];
-    protected static $html_colors = [
-        
-    ];
+    
+    protected static $allowed_types = ['html', 'hex', 'rgb', 'rgba', 'hsl', 'hsla'];
+    protected static $css_supported_types = ['html', 'hex', 'rgbs', 'rgba', 'hsl', 'hsla'];
+    protected static $html_colors;
     protected $type;
     protected $color;
+    protected $_colorLib;
     
     public function __construct($type, array $color = []) {
+//        var_dump($this->getColorLib());
         $this->setType($type);
         $this->setColor($color);
     }
     
+    /**
+     * 
+     * @return \MySheet\Essentials\ColorLib
+     */
+    public function getColorLib() {
+        $libClass = $this->getSetting('color.lib.class', null);
+        if ($libClass && !($this->_colorLib instanceof $libClass)) {
+            if (class_exists($libClass)) {
+                $this->_colorLib = SettingsHelper::createObjectFromSettings($this->getSetting('color.lib'));
+            }
+        }
+        if (!$this->_colorLib) {
+            //throw
+        }
+        
+        return $this->_colorLib;
+        
+    }
+
+        
     public function getType() {
         return $this->type;
     }
@@ -48,7 +72,6 @@ class ColorParam extends RuleParam {
     public function setColor($color) {
         if ($this->isCorrectColor($this->getType(), $color)) {
             $this->color = $color;
-            
         } else {
             //throw
         }
@@ -60,16 +83,25 @@ class ColorParam extends RuleParam {
     
     public function toRealCss() {
         $type = null;
+        $newcolor = $this->getColor();
         if (
             self::isCssSupportedType($this->getType()) && 
             $this->getSetting('color.transform', 'unknown') === 'unknown'
         ) {
             $type = $this->getType();
         } else {
+            $cur_type = $this->getType();
+            if ($cur_type === 'html') {
+                $cur_type = 'hex';
+                $newcolor = [self::getHtmlColor($newcolor[0])];
+            }
             $type = $this->getSetting('color.defaultType', 'hex');
+//            var_dump($this->getType() . ':' . $cur_type . '->' . $type, $newcolor);
+            $newcolor = $this->getColorLib()->setColor($cur_type, $newcolor)->transformTo($type);
         }
         
-        return self::colorToString($type, $this->getColor());
+//        var_dump($type, $newcolor);
+        return self::colorToString($type, $newcolor);
         
     }
     
@@ -86,9 +118,14 @@ class ColorParam extends RuleParam {
                     $arr[] = $color['a'];
                 }
                 return $type . '(' . implode(', ', $arr) . ')';
+            case 'hsl':
+                return sprintf('hsl(%d, %d%%, %d%%)', $color['hue'], $color['sat'], $color['lt']);
+            case 'hsla':
+                return sprintf('hsla(%d, %d%%, %d%%, %.2f)', $color['hue'], $color['sat'], $color['lt'], $color['a']);
             case 'hex':
                 return '#' . $color[0];
-                
+            case 'html':
+                return $color[0];
         }
     }
     
@@ -104,16 +141,24 @@ class ColorParam extends RuleParam {
         $result = false;
         if ($string[0] === '#') {
             //hex represantation
-            $result = [
-                'type' => 'hex',
-                'color' => [substr($string, 1)]
-            ];
-            $clen = strlen($result['color'][0]);
-                
+            
+            $hexCode = substr($string, 1);
+            $clen = strlen($hexCode);
+            
+            if ($clen === 3) {
+                $hexCode = $hexCode[0] . $hexCode[0] .
+                           $hexCode[1] . $hexCode[1] .
+                           $hexCode[2] . $hexCode[2];
+            }
+            
             if ($clen !== 3 && $clen !== 6) {
                 return false;
             }
             
+            $result = [
+                'type' => 'hex',
+                'color' => [$hexCode]
+            ];
             
         } else {
             $function = StringHelper::parse_function($string);
@@ -155,19 +200,51 @@ class ColorParam extends RuleParam {
                         'a' => $arguments[3]
                     ];
                     break;
+                case 'hsl':
+                    $color = [
+                        'hue' => $arguments[0],
+                        'sat' => $arguments[1],
+                        'lt' => $arguments[2]
+                    ];
+                    break;
+                case 'hsla':
+                    $color = [
+                        'hue' => $arguments[0],
+                        'sat' => $arguments[1],
+                        'lt' => $arguments[2],
+                        'a' => $arguments[3]
+                    ];
+                    break;
             }
             
         }
-            
+        //var_dump($result);
         return $result;
     }
     
+    public static function getHtmlColor($name) {
+        static $html_colors = null;
+        if ($html_colors === null) {
+            $html_colors = require_once(ROOTDIR . 'Includes' . DS . 'HtmlColors' . EXT);
+        }
+        if (isset($html_colors[$name])) {
+            return $html_colors[$name];
+        }
+        return false;
+    }
+    
     public static function parse(&$string) {
-        if (preg_match('/^(#[[:xdigit:]]{3}|#[[:xdigit:]]{6}|(?:rgb|rgba|hsl|hsla|hsb)\(.+\))(?:$|\s)/i', $string, $matches)) {
-            $color = self::parseColorString($matches[1]);
-            var_dump($color);
+        if (preg_match('/^([a-z]+)/i', $string, $matches) && ($hcolor = self::getHtmlColor($matches[1]))) {
             parent::trimStringBy($string, strlen($matches[0]));
-            return new self($color['type'], $color['color']);
+            return new self('html', [$matches[1]]);
+        } else if (preg_match('/^(#[[:xdigit:]]{3}|#[[:xdigit:]]{6}|(?:rgb|rgba|hsl|hsla|hsb)\(.+\))(?:$|\s)/i', $string, $matches)) {
+            $color = self::parseColorString($matches[1]);
+//            var_dump($result);
+            if ($color) {
+                parent::trimStringBy($string, strlen($matches[0]));
+                return new self($color['type'], $color['color']);
+            }
+//            var_dump($color);
         }
         return false;
     }

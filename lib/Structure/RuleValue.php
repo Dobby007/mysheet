@@ -23,7 +23,7 @@ class RuleValue {
     }
     
     public function getParam($index) {
-        return isset($values[$index]) ? $values[$index] : false;
+        return isset($this->params[$index]) ? $this->params[$index] : false;
     }
     
     /**
@@ -31,6 +31,10 @@ class RuleValue {
      */
     public function getParams() {
         return $this->params;
+    }
+    
+    public function countParams() {
+        return count($this->params);
     }
     
     public function setParam($index, $param) {
@@ -88,12 +92,10 @@ class RuleValue {
     public function setValue($value) {
         if (is_string($value)) {
             $value = trim($value);
-//            $value = preg_replace('/\s+/', ' ', $value);
             
             //clean rule value from garbage
             preg_match_all('/([^\s]+)(?:[\s;]+$|\s|$)/iU', $value, $matches, PREG_PATTERN_ORDER);
             $value = implode(' ', $matches[1]);
-//            var_dump($value);
             
             
             while (is_string($value) && strlen($value) > 0) {

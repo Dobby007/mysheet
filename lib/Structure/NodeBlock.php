@@ -5,6 +5,7 @@ namespace MySheet\Structure;
 use MySheet\Structure\Block;
 use MySheet\Helpers\ArrayHelper;
 use MySheet\Essentials\VariableScope;
+use MySheet\Essentials\StringBuilder;
 
 abstract class NodeBlock extends Block {
 
@@ -39,11 +40,12 @@ abstract class NodeBlock extends Block {
      * @return array Array of compiled lines
      */
     protected function compileRealCss(VariableScope $vars = null) {
-        $lines = [];
+        $lines = new StringBuilder();
 //        var_dump(count($this->getChildrens()));
         foreach ($this->getChildren() as $child) {
-            ArrayHelper::concat($lines, $child->compileRealCss());
+            $lines->addLines($child->compileRealCss());
         }
+        
         return $lines;
     }
 

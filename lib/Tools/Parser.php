@@ -158,7 +158,7 @@ class Parser implements IParser {
             }
             
             if (!$handled) {
-                var_dump('not handled', $level, $line);
+//                var_dump('not handled', $level, $line);
                 $lines[] = new SourceLine(rtrim(substr($line, $spaces_count)), $level);
             }
         });

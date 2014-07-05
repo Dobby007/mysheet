@@ -6,6 +6,7 @@ use MySheet\Structure\Selector;
 use MySheet\Structure\Declaration;
 use MySheet\Structure\RuleGroup;
 use MySheet\Helpers\ArrayHelper;
+use MySheet\Essentials\StringBuilder;
 
 /**
  * Description of Ruleset
@@ -97,7 +98,7 @@ class Ruleset extends NodeBlock {
     
     
     protected function compileRealCss(VariableScope $vars = null) {
-        $lines = [];
+        $lines = new StringBuilder();
         $selectors = $this->getCssPath();
         $declarations = $this->getDeclarations();
         
@@ -111,7 +112,6 @@ class Ruleset extends NodeBlock {
         }
         
         $compiled_declarations = [];
-        $prefixRule = $this->getSetting('cssRenderer.prefixRule', '    ');
         
         array_walk($declarations, function($decl) use (&$compiled_declarations) {
             $result = $decl->toRealCss();
@@ -129,19 +129,36 @@ class Ruleset extends NodeBlock {
         
         //nothing to render if there are no declarations
         if (!empty($compiled_declarations)) {
-            $sepSelectors = $this->getSetting('cssRenderer.sepSelectors', ',');
+            $selectors = implode($this->getSetting('cssRenderer.sepSelectors', ', '), $selectors);
+            $lines->addLine($selectors);
             
-            $selectors = ArrayHelper::processLines($selectors, '', '', $sepSelectors);
-            
-            if ($this->getSetting('cssRenderer.lfAfterSelector', true) == false) {
-                $selectors = implode('', $selectors);
-            }
-            
-            $compiled_declarations = ArrayHelper::processLines($compiled_declarations, $prefixRule, '', ';');
-            ArrayHelper::concat($lines, $selectors, '{', $compiled_declarations, '}');
+            $compiled_declarations = ArrayHelper::implodeLines(
+                $compiled_declarations, 
+                $this->getSetting('cssRenderer.prefixRule', '    '), 
+                $this->getSetting('cssRenderer.suffixRule', ''), 
+                $this->getSetting('cssRenderer.sepRules', ";\n")
+            );
+
+            $lines->appendText(
+                    $this->getSetting('cssRenderer.prefixOCB', ' ') .
+                    '{' .
+                    $this->getSetting('cssRenderer.suffixOCB', "\n")
+                )
+                ->appendText(
+                    $this->getSetting('cssRenderer.prefixDeclBlock', "") .
+                    $compiled_declarations .
+                    $this->getSetting('cssRenderer.suffixDeclBlock', "")
+                )
+                ->appendText(
+                    $this->getSetting('cssRenderer.prefixCCB', "\n") .
+                    '}' .
+                    $this->getSetting('cssRenderer.suffixCCB', "\n")
+            );
+//            ArrayHelper::concat($lines, $selectors, '{', $compiled_declarations, '}');
         }
-            
-        ArrayHelper::concat($lines, parent::compileRealCss());
+           
+        $lines->addLines(parent::compileRealCss());
+//        ArrayHelper::concat($lines, parent::compileRealCss());
         
         
         return $lines;

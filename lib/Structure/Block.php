@@ -6,6 +6,7 @@ use MySheet\Helpers\ArrayHelper;
 use MySheet\Traits\RootClassTrait;
 use MySheet\Traits\HandlerCallTrait;
 use MySheet\Essentials\VariableScope;
+use MySheet\Essentials\StringBuilder;
 
 abstract class Block {
 
@@ -40,32 +41,36 @@ abstract class Block {
      * @return array Array of compiled lines
      */
     protected function compileRealCss(VariableScope $vars = null) {
-        return [];
+        return null;
     }
 
     public function toMss() {
         
     }
     
-    public function toRealCss($as_array = false) {
-        $this->getRoot()->getAutoload()->registerAutoload();
-        $this->cssRenderingStartedEvent($this);
+    public function toRealCss($as_array = false, $autoload = true) {
+        if ($autoload === true) {
+            $this->getRoot()->getAutoload()->registerAutoload();
+            $this->cssRenderingStartedEvent($this);
+        }
         
-        
+        /* @var $compiled StringBuilder */
         $compiled = $this->compileRealCss();
-        if (!is_array($compiled)) {
-            return false;
+        if (!($compiled instanceof StringBuilder)) {
+            return null;
         }
 
         $result = false;
         if ($as_array === false) {
-            $result = implode("\n", $compiled);
+            $result = $compiled->join();
         } else {
             $result = $compiled;
         }
 
-        $this->cssRenderingEndedEvent($this);
-        $this->getRoot()->getAutoload()->restoreAutoload();
+        if ($autoload === true) {
+            $this->cssRenderingEndedEvent($this);
+            $this->getRoot()->getAutoload()->restoreAutoload();
+        }
         return $result;
     }
 

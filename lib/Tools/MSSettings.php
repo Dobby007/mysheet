@@ -24,7 +24,10 @@ class MSSettings {
     public $cssRenderer;
     public $parser;
     public $cacher;
+    public $colorLibs;
+    public $import;
     private $_paramPriority;
+    
     
     public function __construct(array $settings = []) {
         $this->load($settings);

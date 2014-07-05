@@ -26,7 +26,7 @@ trait MagicPropsTrait {
     
     public function __set($name, $value) {
         $method_name = 'set' . ucfirst($name);
-        var_dump($method_name);
+//        var_dump($method_name);
         if (method_exists($this, $method_name)) {
             return $this->$method_name($value);
         } else {

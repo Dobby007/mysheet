@@ -2,6 +2,8 @@
 
 namespace MySheet;
 
+const DS = DIRECTORY_SEPARATOR;
+
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOTDIR', __DIR__ . DS);
 define('MSSNS', 'MySheet');
@@ -13,7 +15,6 @@ use MySheet\Essentials\HandlerFactory;
 use MySheet\Tools\IParser;
 use MySheet\Tools\MSSettings;
 use MySheet\Essentials\FuncListManager;
-use MySheet\Essentials\RuleParam;
 use MySheet\Essentials\VariableScope;
 
 /**
@@ -23,7 +24,7 @@ use MySheet\Essentials\VariableScope;
  */
 class MySheet 
 {
-    
+    const WORKDIR = __DIR__;
     /**
      * @var IParser Reference to parser object
      */
@@ -78,10 +79,25 @@ class MySheet
             $this->getListManager()->addFunctional('RuleParam', $class);
         }
         
+//        $colorLibNs = 'MySheet\\Functionals\\ColorLib\\';
+//        foreach ($this->getSettings()->colorLibs as $key => $value) {
+//            $instance = null;
+//            if (is_string($value)) {
+//                 $instance = $this->createObjectWithSettings($colorLibNs . $value . 'Lib');
+//            } else if (is_array($value)) {
+//                 $instance = $this->createObjectWithSettings($colorLibNs . $key . 'Lib', $value);
+//            }
+//            
+//            if ($instance instanceof Functionals\ColorLib) {
+//                $this->getListManager()->addFunctional('ColorLib', $instance);
+//            }
+//        }
+
         $this->initPlugins();
         $this->initExtensions();
         $this->autoload->restoreAutoload();
     }
+    
     
     protected function initPlugins() {
         $this->plugins = [];
@@ -97,20 +113,48 @@ class MySheet
     }
     
     protected function initExtensions() {
+        $this->parser->addParserExtension('\MySheet\ParserExtensions\ImportParserExtension');
+        $this->parser->addParserExtension('\MySheet\ParserExtensions\MediaParserExtension');
         $this->parser->addParserExtension('\MySheet\ParserExtensions\RulesetParserExtension');
     }
     
-    public function parseFile($file) {
-        return $this->parseCode($code);
+    public function parseFile($file, $autoload = true) {
+        if (is_file($file)) {
+            return $this->parseCode(file_get_contents($file), $autoload);
+        }
+        return null;
     }
 
-    public function parseCode($code) {
-        $this->autoload->registerAutoload();
+    public function parseCode($code, $autoload = true) {
+        if ($autoload) {
+            $this->autoload->registerAutoload();
+        }
+        
         $this->parser->setCode($code);
         $result = $this->parser->comeon();
         
-        $this->autoload->restoreAutoload();
+        if ($autoload) {
+            $this->autoload->restoreAutoload();
+        }
+        
         return $result;
+    }
+    
+    public function parseImportFile($file) {
+        $paths = $this->getSettings()->get('import.paths', []);
+        foreach ($paths as $path) {
+            if (!is_string($path)) {
+                continue;
+            }
+            
+            $fullpath = $path . DS . $file;
+            if (is_file($fullpath)) {
+                var_dump($fullpath);
+                return $this->parseFile($fullpath, false);
+            }
+        }
+        
+        return false;
     }
     
     public function registerPlugin($plugin, array $settings = []) {
@@ -133,6 +177,8 @@ class MySheet
     public function registerPlugins($plugin0, $_plugins = null) {
         
     }
+    
+    
     
     
     /**

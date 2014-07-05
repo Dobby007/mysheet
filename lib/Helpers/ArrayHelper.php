@@ -74,5 +74,13 @@ abstract class ArrayHelper {
         }
         return $lines;
     }
+    
+    public static function implodeLines(array $lines, $prefix, $suffix, $separator) {
+        $count = count($lines);
+        for ($i = 0; $i < $count; $i++) {
+            $lines[$i] = $prefix . $lines[$i] . $suffix;
+        }
+        return implode($separator, $lines);
+    }
 
 }

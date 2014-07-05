@@ -12,39 +12,44 @@ $mysheet = MySheet::Instance();
 //  
 
 $code = <<<TEXT
-
-           
+@import "somefile.mss" aural, screen, tv #090
+@import "main.mss"
+   
 @mixin border-radius (left right )
     -webkit-border-radius \$left \$right
     -moz-border-radius 3px
     border-radius \$arguments \$left \$right \$left \$right
     
+@media screen and width >= 1024px
 
-h1 , h2, h3,h4
-    color rgb(1,.3003px,   3 )
-    background-color #000000
-    font-size 10px
-    .sort 
-        color sdfsd
-        .underline
-            text-decoration underline ;; ;
-            border-bottom :    1px           solid     gray  ;
-body
-    padding 0
-    margin 0
-        
-    .title 
-        font-size 24px
-        color red
-        .colored
-        h1 as
-        .grayed
-            color purple
-            .colorsd
-                width 300px
-                border-radius 4px 5px 6px 7px 8px 9px
+    h1 , h2, h3,h4
+        color rgb(220,120, 30 )
+        border-color #f3f
+        border-bottom-color hsl(350, 80%, 80%)
+        background-color red
+        font-size 10px
+        .sort 
+            color sdfsd
+            .underline
+                text-decoration underline ;; ;
+                border-bottom :    1px           solid     gray  ;
+    body
+        padding 0
+        margin 0
+        gradient as
     
-    
+        .title 
+            font-size 24px
+            color red
+            .colored
+            h1 as
+            .grayed
+                color purple
+                .colorsd
+                    width 300px
+                    border-radius 4px 5px 6px 7px 8px 9px
+
+
 
  
         

@@ -56,9 +56,8 @@ class VariableScope implements \ArrayAccess {
             return $this->map[$name];
         }
         
-        if ($this->isRootSet()) {
-            return $this->getRoot()->getVars()->get($name);
-        }
+//        return $this->getRoot()->getVars()->get($name);
+
         
         return null;
     }

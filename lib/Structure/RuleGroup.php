@@ -17,7 +17,7 @@ class RuleGroup {
     private $rules = array();
 
     public function addRule($name, $value) {
-        $this->rules[$name] = $value;
+        $this->rules[] = [$name, $value];
         return $this;
     }
     
@@ -37,7 +37,7 @@ class RuleGroup {
     public function getLines($ruleSeparator = ': ') {
         $result = [];
         array_walk($this->rules, function($value, $key) use(&$result, $ruleSeparator) {
-            $result[] = $key . $ruleSeparator . $value;
+            $result[] = $value[0] . $ruleSeparator . $value[1];
         });
         return $result;
     }

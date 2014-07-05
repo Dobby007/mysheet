@@ -60,7 +60,14 @@ class SourceLine {
         }
         return $this;
     }
-
+    
+    public function length() {
+        return strlen($this->line);
+    }
+    
+    public function startsWith($text) {
+        return strncmp($this->getLine(), $text, strlen($text)) === 0;
+    }
 
     public function __toString() {
         return $this->getLevel() . ', ' . $this->getLine() . ' ' . $this->curlyBracket;

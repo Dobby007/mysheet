@@ -31,7 +31,7 @@ class RulesetParserExtension extends ParserExtension
             } else if ($curLine->getLevel() == $firstLine->getLevel() + 1) {
                 $nextline = $context->getLine($context->getLineNumber() + 1);
                 $declaration = $curLine->getLine();
-                var_dump($curLine);
+//                var_dump($curLine);
                 //if ruleset contains no declarations and just has children
                 
                 
