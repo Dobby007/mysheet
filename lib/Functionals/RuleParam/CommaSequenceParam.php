@@ -9,6 +9,11 @@
 namespace MySheet\Functionals\RuleParam;
 
 use MySheet\Essentials\RuleParam;
+use MySheet\Essentials\FuncListManager;
+use MySheet\Helpers\ArrayHelper;
+use MySheet\Helpers\StringHelper;
+use MySheet\Essentials\VariableScope;
+use MySheet\Traits\RuleParamListTrait;
 
 /**
  * Description of MetricParam
@@ -16,6 +21,8 @@ use MySheet\Essentials\RuleParam;
  * @author dobby007
  */
 class CommaSequenceParam extends RuleParam {
+    use RuleParamListTrait;
+    
     protected $list;
     
     public function __construct(array $list) {
@@ -27,15 +34,36 @@ class CommaSequenceParam extends RuleParam {
     }
 
     public function setList(array $list) {
+        foreach ($list as &$listItem) {
+            $listItem = $this->parseListItem($listItem);
+        }
         $this->list = $list;
     }
     
-    public function implodeList() {
-        return implode(', ', $this->list);
+    protected function parseListItem($item) {
+        $result = null;
+        $this->getRoot()->getListManager()->iterateList('RuleParam', function ($paramClass) use ($item, &$result) {
+            if ($paramClass == __CLASS__) {
+                return;
+            }
+            
+            $res = RuleParam::tryParse($paramClass, $item);
+            if ($res instanceof RuleParam) {
+                $result = $res;
+                FuncListManager::stopIteration();
+            }
+        });
+        
+        if (!$result) {
+            $item = ltrim($item);
+            $result = OtherParam::parse($item);
+        }
+        
+        return $result;
     }
     
-    public function toRealCss() {
-        return $this->implodeList();
+    public function toRealCss(VariableScope $vars = null) {
+        return ArrayHelper::implode_objects(', ', $this->list, 'toRealCss', $vars);
     }
     
     public function __toString() {
@@ -43,36 +71,18 @@ class CommaSequenceParam extends RuleParam {
     }
     
     protected static function splitCommaList(&$string) {
-        $i = 0;
-        $offset = 0;
-        $len = strlen($string);
-        $quoteMet = false;
-        $commaMet = false;
-        $commaList = [];
+        $stringCopy = $string;
+        echo "\n";
+        $commaList = StringHelper::parseSplittedString($stringCopy, ',', true);
         
-        while ($i < $len) {
-            if ($string[$i] === '(') {
-                return false;
-            } else if ( $string[$i] == '"' && ($i === 0 || ($i > 0 && $string[$i - 1] !== '\\')) ) {
-                $quoteMet = !$quoteMet;
-            } else if ($quoteMet === false && $string[$i] === ',') {
-                $commaList[] = trim(substr($string, $offset, $i - $offset));
-                $offset = ++$i;
-                $commaMet = true;
-            } else if ($quoteMet === false && $commaMet === false && (ctype_space($string[$i]) || $i === $len - 1)) {
-                $commaList[] = trim(substr($string, $offset, $i - $offset + 1));
-                $i++;
-                break;
-            } else {
-                $commaMet = false;
-            }
-            $i++;
-        }
+//        var_dump('Source String: ', $string, 'Comma List: ', $commaList);
         
         if (count($commaList) > 1) {
-            $string = substr($string, $i);
+            $string = $stringCopy;
             return $commaList;
         }
+        
+        
         
         return false;
     }

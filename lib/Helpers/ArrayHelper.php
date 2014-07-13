@@ -16,16 +16,18 @@ namespace MySheet\Helpers;
 abstract class ArrayHelper {
 
     public static function implode_objects($glue, array $source, $method_name = null, $_args = null) {
-        $result = [];
+        $proccessed = [];
 
         if (!empty($method_name) && is_string($method_name)) {
             $right_args = array_slice(func_get_args(), 3);
-            array_walk($source, function($item) use($method_name, $right_args, &$result) {
-                $result[] = call_user_method_array($method_name, $item, $right_args);
+            array_walk($source, function($item) use($method_name, $right_args, &$proccessed) {
+                $proccessed[] = call_user_method_array($method_name, $item, $right_args);
             });
+        } else {
+            $proccessed = $source;
         }
 
-        return implode($glue, $result);
+        return implode($glue, $proccessed);
     }
 
     public static function insert_pair(array &$input, $key, $val) {

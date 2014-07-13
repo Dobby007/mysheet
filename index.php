@@ -1,3 +1,6 @@
+<meta charset="utf-8">
+<div style="font-family: 'Batang', Arial , 'DejaVu Sans'">Съешь еще этих мягких французских булочек и выпей чаю</div>
+
 <pre>
 <?php
 

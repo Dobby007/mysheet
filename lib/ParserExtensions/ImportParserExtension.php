@@ -28,7 +28,6 @@ class ImportParserExtension extends ParserExtension
             return $importDir;
         }
         
-        
 
         return false;
     }

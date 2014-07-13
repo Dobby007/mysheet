@@ -5,5 +5,5 @@
 
 body
     padding 0 10%
-    font 10px Arial, "Times New Roman"
+    font 10px "Arail black", Times
     color #111

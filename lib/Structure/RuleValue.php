@@ -64,26 +64,32 @@ class RuleValue {
         $result = false;
         
         $this->getRoot()->getListManager()->iterateList('RuleParam', function($paramClass) use (&$value, &$result) {
-//            var_dump($paramClass, $value);
             $res = RuleParam::tryParse($paramClass, $value);
             if ($res instanceof RuleParam) {
-//                var_dump($value);
                 $result = $res;
                 FuncListManager::stopIteration();
             }
         });
+        
+        if (!$result) {
+            $value = ltrim($value);
+            $result = OtherParam::parse($value);
+        }
         
         return $result;
     }
     
     public function getValue(VariableScope $vars = null, $as_array = false) {
         $result = array_map(function(RuleParam $item) use($vars) {
-            
+            /*
             if ($item instanceof \MySheet\Functionals\RuleParam\VariableParam) {
                 return $item->toRealCss($vars);
             } else {
                 return $item->toRealCss();
             }
+             
+             */
+            return $item->toRealCss($vars);
         }, $this->params);
         
         return $as_array ? $result : implode(' ', $result);
@@ -99,21 +105,8 @@ class RuleValue {
             
             
             while (is_string($value) && strlen($value) > 0) {
-                $res = $this->parseParam($value);
-//                var_dump($res);
-                
-                if (!$res) {
-                    $value = ltrim($value);
-                    $res = OtherParam::parse($value);
-                }
-                
-                $this->addParam($res);
-                
+                $this->addParam($this->parseParam($value));
             }
-            
-//            foreach ($matches[1] as $param) {
-//                $this->addParam($param);
-//            }
         }
     }
     
