@@ -14,6 +14,7 @@ use MySheet\Helpers\ArrayHelper;
 use MySheet\Helpers\StringHelper;
 use MySheet\Essentials\VariableScope;
 use MySheet\Traits\RuleParamListTrait;
+use MySheet\Essentials\DelimitedString;
 
 /**
  * Description of MetricParam
@@ -23,21 +24,25 @@ use MySheet\Traits\RuleParamListTrait;
 class CommaSequenceParam extends RuleParam {
     use RuleParamListTrait;
     
-    protected $list;
+    protected $delimitedString;
     
     public function __construct(array $list) {
-        $this->setList($list);
+        $this->setItemList($list);
     }
 
-    public function getList() {
-        return $this->list;
+    /**
+     * 
+     * @return DelimitedString
+     */
+    public function getDelimitedString() {
+        return $this->delimitedString;
     }
 
-    public function setList(array $list) {
-        foreach ($list as &$listItem) {
-            $listItem = $this->parseListItem($listItem);
-        }
-        $this->list = $list;
+    public function setItemList($list) {
+        //call protected function from outside
+        $this->delimitedString = new DelimitedString($list, function ($item) {
+            return $this->parseListItem($item);
+        });
     }
     
     protected function parseListItem($item) {
@@ -63,7 +68,7 @@ class CommaSequenceParam extends RuleParam {
     }
     
     public function toRealCss(VariableScope $vars = null) {
-        return ArrayHelper::implode_objects(', ', $this->list, 'toRealCss', $vars);
+        return ArrayHelper::implode_objects(', ', $this->getDelimitedString()->getList(), 'toRealCss', $vars);
     }
     
     public function __toString() {
@@ -73,7 +78,7 @@ class CommaSequenceParam extends RuleParam {
     protected static function splitCommaList(&$string) {
         $stringCopy = $string;
         echo "\n";
-        $commaList = StringHelper::parseSplittedString($stringCopy, ',', true);
+        $commaList = StringHelper::parseSplittedString($stringCopy, ',');
         
 //        var_dump('Source String: ', $string, 'Comma List: ', $commaList);
         

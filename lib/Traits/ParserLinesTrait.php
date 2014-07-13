@@ -26,7 +26,7 @@ trait ParserLinesTrait {
     /**
      * @return SourceLine Move cursor to the previous line
      */
-    public function prevline() {
+    public function prevline($stop_at_curly_lines = false) {
         if ($this->moveLineCursor(-1)) {
             return $this->curline();
         }
@@ -36,7 +36,7 @@ trait ParserLinesTrait {
     /**
      * @return SourceLine Move cursor to the next line
      */
-    public function nextline() {
+    public function nextline($stop_at_curly_lines = false) {
         if ($this->moveLineCursor(+1)) {
             return $this->curline();
         }
@@ -47,8 +47,9 @@ trait ParserLinesTrait {
      * @return SourceLine Get current line over cursor
      */
     public function curline() {
-        if ($this->curLine === false || count($this->lines) === 0)
+        if ($this->curLine === false || count($this->lines) === 0) {
             return false;
+        }
 
         return $this->lines[$this->curLine];
     }
@@ -64,8 +65,9 @@ trait ParserLinesTrait {
      * @return SourceLine Get special line without moving cursor to it
      */
     public function getLine($line_number) {
-        if ($line_number >= count($this->lines))
+        if ($line_number >= count($this->lines)) {
             return false;
+        }
 
         return $this->lines[$line_number];
     }
@@ -74,7 +76,16 @@ trait ParserLinesTrait {
      * @return null Set cursor to the special line number
      */
     public function setLineCursor($nn) {
-        $this->curLine = intval($nn);
+        if ($this->canBeSetTo($nn)) {
+            $this->curLine = intval($nn);
+        }
+    }
+    
+    public function canBeSetTo($nn) {
+        if ($nn >= 0 && $nn < count($this->lines)) {
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -83,7 +94,7 @@ trait ParserLinesTrait {
     public function canMoveOver($lines_count) {
         $future_ln = $this->getLineNumber() + $lines_count;
         
-        if ($future_ln > 0 && $future_ln < count($this->lines)) {
+        if ($this->canBeSetTo($future_ln)) {
             return true;
         }
         return false;
