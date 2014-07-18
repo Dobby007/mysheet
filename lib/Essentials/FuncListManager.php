@@ -41,6 +41,10 @@ class FuncListManager {
         return isset($this->lists[$listname]);
     }
     
+    protected function setListFormatting($listname, array $formatting) {
+        
+    }
+    
     public function addFunctional($listname, $func, $priority = self::PRIORITY_NORMAL) {
         $this->createList($listname);
         $this->lists[$listname][] = [$priority, $func];
@@ -50,30 +54,18 @@ class FuncListManager {
             else
                 return $a > $b ? 1 : -1;
         });
-        
     }
     
     public function iterateList($listname, callable $callback) {
         if ($this->listExists($listname)) {
-            
             try {
-                $list = $this->lists[$listname];
-//                while($list->valid()){ 
-//                    call_user_func($callback, $list->current());
-//                    $list->next(); 
-//                }
                 foreach ($this->lists[$listname] as $functional) {
                     call_user_func($callback, $functional[1]);
-                    
                 }
-//                iterator_apply($this->lists[$listname], function(\Iterator $iterator) {
-//                    call_user_func($callback, $iterator->current());
-//                });
             } catch (StopException $exc) { }
             
             return true;
         }
-        
         return false;
     }
     

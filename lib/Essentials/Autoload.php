@@ -15,6 +15,9 @@ class Autoload {
             $class = substr($class, strlen(MSSNS) + 1);
 //            $file = strtolower($class);
             $file = str_replace(['\\', '/'], DS, $class);
+            if (!file_exists(ROOTDIR . $file . EXT)) {
+                debug_print_backtrace();
+            }
             require_once ROOTDIR . $file . EXT;
 //            print '[[' . $class . ']]';
         }

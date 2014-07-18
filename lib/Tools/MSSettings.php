@@ -26,8 +26,8 @@ class MSSettings {
     public $cacher;
     public $colorLibs;
     public $import;
-    private $_paramPriority;
-    
+    private $_ruleParams;
+    private $_parserExtensions;
     
     public function __construct(array $settings = []) {
         $this->load($settings);
@@ -64,18 +64,37 @@ class MSSettings {
         return $var;
     }
     
-    public function setParamPriority($paramPriority) {
-        if (is_string($paramPriority))
-            $paramPriority = preg_split ('/\s*,?\s+/', $paramPriority);
+    protected function convertPrioritySettingToArray($prioritySetting) {
+        if (is_string($prioritySetting)) {
+            $prioritySetting = preg_split ('/\s*,?\s+/', $prioritySetting);
+        }
+        return $prioritySetting;
         
-        if (is_array($paramPriority))   
-            $this->_paramPriority = $paramPriority;
+    }
+
+    public function setRuleParams($paramPriority) {
+        $paramPriority = $this->convertPrioritySettingToArray($paramPriority);
+        if (is_array($paramPriority)) {
+            $this->_ruleParams = $paramPriority;
+        }
+        return $this;
     }
     
-    public function getParamPriority() {
-        return $this->_paramPriority;
+    public function getRuleParams() {
+        return $this->_ruleParams;
     }
     
+    public function getParserExtensions() {
+        return $this->_parserExtensions;
+    }
+
+    public function setParserExtensions($parserExtensions) {
+        $parserExtensions = $this->convertPrioritySettingToArray($parserExtensions);
+        if (is_array($parserExtensions)) {
+            $this->_parserExtensions = $parserExtensions;
+        }
+        return $this;
+    }
 
 
     

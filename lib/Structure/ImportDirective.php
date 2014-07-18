@@ -4,6 +4,7 @@ namespace MySheet\Structure;
 
 use MySheet\Structure\RuleValue;
 use MySheet\Functionals\RuleParam\StringParam;
+use MySheet\Essentials\VariableScope;
 
 /**
  * Description of Ruleset

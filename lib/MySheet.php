@@ -74,7 +74,7 @@ class MySheet
         $this->flm = new FuncListManager();
         
         $ruleParamNs = 'MySheet\\Functionals\\RuleParam\\';
-        foreach ($this->getSettings()->paramPriority as $paramClass) {
+        foreach ($this->getSettings()->ruleParams as $paramClass) {
             $class = $ruleParamNs . ucfirst($paramClass) . 'Param';
             $this->getListManager()->addFunctional('RuleParam', $class);
         }
@@ -113,9 +113,12 @@ class MySheet
     }
     
     protected function initExtensions() {
-        $this->parser->addParserExtension('\MySheet\ParserExtensions\ImportParserExtension');
-        $this->parser->addParserExtension('\MySheet\ParserExtensions\MediaParserExtension');
-        $this->parser->addParserExtension('\MySheet\ParserExtensions\RulesetParserExtension');
+        $peNs = '\MySheet\ParserExtensions\\';
+        foreach ($this->getSettings()->parserExtensions as $peClass) {
+            $class = $peNs . ucfirst($peClass) . 'ParserExtension';
+            $this->parser->addParserExtension($class);
+        }
+        
     }
     
     public function parseFile($file, $autoload = true) {

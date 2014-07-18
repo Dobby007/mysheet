@@ -56,7 +56,9 @@ class VariableScope implements \ArrayAccess {
             return $this->map[$name];
         }
         
-//        return $this->getRoot()->getVars()->get($name);
+        if ($this !== $this->getRoot()->getVars()) {
+            return $this->getRoot()->getVars()->get($name);
+        }
 
         
         return null;

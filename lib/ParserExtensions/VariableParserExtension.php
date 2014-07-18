@@ -9,8 +9,7 @@
 namespace MySheet\ParserExtensions;
 
 use MySheet\Essentials\ParserExtension;
-use MySheet\Structure\Ruleset;
-use MySheet\Structure\Declaration;
+use MySheet\Structure\VarDefinition;
 /**
  * Description of RulesetParserExtension
  *
@@ -23,8 +22,12 @@ class VariableParserExtension extends ParserExtension
         $context = $this->getContext();
         $curLine = $context->curline();
         if ($curLine->startsWith('$')) {
-            $varname = substr($curLine->getLine(), 1);
-            $this->getRoot()->getVars()->set($varname, $value);
+            if (!preg_match('/([a-z_][a-z_0-9]*)\s*=\s*(.+)/i', substr($curLine->getLine(), 1), $matches)) {
+                //throw
+                return false;
+            }
+            var_dump('parse var', $matches);
+            return new VarDefinition(null, $matches[1], $matches[2]);
         }
 
 

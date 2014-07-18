@@ -3,7 +3,8 @@ use MySheet as MSN;
 use MySheet\MySheet;
 
 return [
-    'paramPriority' => 'commaSequence string variable color metric',
+    'ruleParams' => 'commaSequence string variable color metric',
+    'parserExtensions' => 'import media variable ruleset',
     'color' => [
         'lib' => [
             'class' => '\MySheet\Functionals\ColorLib\MrColorLib',
@@ -13,7 +14,7 @@ return [
         'transform' => 'all'
     ],
     'plugins' => [
-        'mixin'
+        'mixin', 'selectorExtensions'
     ],
     'cssRenderer' => [
 //        'prefixRule' => '',

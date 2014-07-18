@@ -24,6 +24,16 @@ class PathGroup {
     public function getPaths() {
         return $this->paths;
     }
+    
+    public function setPaths(array $paths) {
+        $this->paths = $paths;
+    }
+    
+    public function alterPath($index, $path) {
+        if (isset($this->paths[$index])) {
+            $this->paths[$index] = $path;
+        }
+    }
 
     public function join($separator = ', ') {
         return implode($separator, $this->paths);

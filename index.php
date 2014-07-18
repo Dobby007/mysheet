@@ -36,12 +36,13 @@ $code = <<<TEXT
             .underline
                 text-decoration underline ;; ;
                 border-bottom :    1px           solid     gray  ;
+    
     body
         padding 0
         margin 0
         gradient as
-    
-        .title 
+        \$varname = mememe
+        html.ie6 & .title
             font-size 24px
             color red
             .colored
