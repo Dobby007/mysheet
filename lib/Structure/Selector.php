@@ -28,19 +28,27 @@ class Selector {
     }
     
     /**
-     * 
+     * Return parent ruleset which selector belongs to
      * @return Ruleset
      */
     public function getRuleset() {
         return $this->ruleset;
     }
     
+    /**
+     * Returns input selector as a group of css selectors
+     * @return PathGroup
+     */
     public function getPathGroup() {
         $pg = new PathGroup();
         $pg->addPath($this->path);
         return $pg;
     }
     
+    /**
+     * Returns parsed input selector as a group of css selectors
+     * @return PathGroup
+     */
     public function getCssPathGroup() {
         $pg = clone $this->cssPathGroup;
         $this->cssSelectorRenderingEvent($this, $pg);
@@ -58,7 +66,7 @@ class Selector {
         $right_selector = self::canBeSelector($path);
         
         if ($right_selector) {
-            $path = preg_replace(['/\s+/', '/\s+:\s*(\S+)/'], [' ', ':$1'], $path);
+            $path = preg_replace(['/\s+/'/*, '/\s+:\s*(\S+)/'*/], [' '/*, ':$1'*/], $path);
             $this->path = $path;
         } else {
             throw new ParseException(ErrorTable::E_BAD_SELECTOR, [$path]);
@@ -78,7 +86,7 @@ class Selector {
     }
 
     /**
-     * Sets if selector is full or not. If selector is full it does not need to be prefixed with parent selector
+     * Sets if selector is full or not. If selector is full it does not need to be preceeded by selector of the parent ruleset
      * @param bool $fullSelector
      */
     public function setFullSelector($fullSelector) {
@@ -96,12 +104,14 @@ class Selector {
         
         $combined = [];
         foreach ($parent_selectors as $psel) {
-            $combined[] = (empty($psel) ? '' : $psel . ' ') . $selector->getCssPathGroup(); 
+            foreach ($selector->getCssPathGroup()->getPaths() as $path) {
+                $combined[] = (empty($psel) ? '' : $psel . ' ') . $path;
+            }
         }
         return $combined;
     }
     
     public static function canBeSelector($string, &$matches = null) {
-        return !!preg_match('/^[a-z0-9\[\].\s!:\'"=^$#()*&]+$/i', $string, $matches);
+        return !!preg_match('/^[a-z0-9\[\].,\s!:\'"=^$#()*&]+$/i', $string, $matches);
     }
 }

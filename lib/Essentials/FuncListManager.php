@@ -8,6 +8,7 @@
 
 namespace MySheet\Essentials;
 
+use MySheet\Essentials\FuncList;
 use MySheet\Error\StopException;
 
 /**
@@ -24,25 +25,41 @@ class FuncListManager {
     
     /**
      *
-     * @var \SplPriorityQueue[]
+     * @var FuncList[]
      */
     protected $lists = [];
     
+    /**
+     * 
+     * @param string $name
+     * @return boolean
+     */
     protected function createList($name) {
         if (!$this->listExists($name)) {
-            $this->lists[$name] = [];
+            $this->lists[$name] = new FuncList();
             return true;
         }
         return false;
         
     }
     
+    /**
+     * 
+     * @param string $listname
+     * @return bool
+     */
     public function listExists($listname) {
         return isset($this->lists[$listname]);
     }
     
-    protected function setListFormatting($listname, array $formatting) {
-        
+    /**
+     * 
+     * @param string $listname
+     * @return FuncList
+     */
+    public function getList($listname) {
+        $this->createList($listname);
+        return $this->lists[$listname];
     }
     
     public function addFunctional($listname, $func, $priority = self::PRIORITY_NORMAL) {
@@ -73,4 +90,3 @@ class FuncListManager {
         throw new StopException();
     }
 }
-

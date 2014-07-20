@@ -56,7 +56,7 @@ trait RuleParamListTrait {
     public function parseParam(&$value) {
         $result = false;
         
-        $this->getRoot()->getListManager()->iterateList('RuleParam', function($paramClass) use (&$value, &$result) {
+        $this->getRoot()->getListManager()->getList('RuleParam')->iterate(function($paramClass) use (&$value, &$result) {
             $res = RuleParam::tryParse($paramClass, $value);
             if ($res instanceof RuleParam) {
                 $result = $res;
@@ -65,8 +65,7 @@ trait RuleParamListTrait {
         });
         
         if (!$result) {
-            $value = ltrim($value);
-            $result = OtherParam::parse($value);
+            //throw
         }
         
         return $result;

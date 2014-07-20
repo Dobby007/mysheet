@@ -11,6 +11,7 @@ namespace MySheet\ParserExtensions;
 use MySheet\Essentials\ParserExtension;
 use MySheet\Structure\Ruleset;
 use MySheet\Structure\Declaration;
+use MySheet\Helpers\StringHelper;
 /**
  * Description of RulesetParserExtension
  *
@@ -26,15 +27,12 @@ class RulesetParserExtension extends ParserExtension
         
         do {
             if ($curLine->getLevel() == $firstLine->getLevel()) {
-                $selectors = explode(',', $curLine->getLine());
+                $selectors = StringHelper::parseSplittedString($curLine->getLine(), ',', false);
                 $ruleset->addSelectors($selectors);
             } else if ($curLine->getLevel() == $firstLine->getLevel() + 1) {
                 $nextline = $context->getLine($context->getLineNumber() + 1);
                 $declaration = $curLine->getLine();
-//                var_dump($curLine);
                 //if ruleset contains no declarations and just has children
-                
-                
                 if ($nextline) {
                     if (
                         $nextline->getLevel() > $curLine->getLevel() ||

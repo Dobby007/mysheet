@@ -131,7 +131,7 @@ abstract class StringHelper {
         return false;
     }
     
-    public static function parseSplittedString(&$string, $delimiter) {
+    public static function parseSplittedString(&$string, $delimiter, $stopAtSpace = true) {
         $len = strlen($string);
         $offset = 0;
         
@@ -155,7 +155,7 @@ abstract class StringHelper {
                     continue;
                 }
                 
-            } else if ($char === $delimiter || ctype_space($char)) {
+            } else if ( $char === $delimiter || ($stopAtSpace === true && ctype_space($char)) ) {
                 $splittedList[] = substr($string, $offset, $i - $offset);
 //                var_dump('old i: ' . $i);
                 $i += self::countLeftSpaces(substr($string, $i));
@@ -192,8 +192,25 @@ abstract class StringHelper {
         
         return $count;
     }
-//    public static function skipWhiteSpaceAnd($charsList, &$spacesSkipped, ) {
-//        
-//    }
+
+    public static function replaceSubstring($substring, array $replacements, $string) {
+        $result = [];
+        foreach ($replacements as $replacement) {
+            $result[] = str_replace($substring, $replacement, $string);
+        }
+        return $result;
+    }
+    
+    public static function getClassName($classname) {
+        return substr($classname, strrpos($classname, '\\') + 1);
+    }
+    
+    public static function rtrimBySubstring($string, $substr) {
+        $substrLen = strlen($substr);
+        while (substr($string, -$substrLen) === $substr) {
+            $string = substr($string, 0, -$substrLen);
+        }
+        return $string;
+    }
 
 }

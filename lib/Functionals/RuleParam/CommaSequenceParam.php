@@ -47,7 +47,7 @@ class CommaSequenceParam extends RuleParam {
     
     protected function parseListItem($item) {
         $result = null;
-        $this->getRoot()->getListManager()->iterateList('RuleParam', function ($paramClass) use ($item, &$result) {
+        $this->getRoot()->getListManager()->getList('RuleParam')->iterate(function ($paramClass) use ($item, &$result) {
             if ($paramClass == __CLASS__) {
                 return;
             }
@@ -60,8 +60,7 @@ class CommaSequenceParam extends RuleParam {
         });
         
         if (!$result) {
-            $item = ltrim($item);
-            $result = OtherParam::parse($item);
+            //throw
         }
         
         return $result;

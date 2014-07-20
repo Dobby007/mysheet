@@ -21,7 +21,7 @@ use MySheet\Structure\Selector;
  * @author dobby007
  */
 class PluginSelectorExtensions extends PluginBase {
-    private $handlers = array('parent'/*, 'any'*/);
+    private $handlers = array('parent', 'any');
     
     
     public function init() {
@@ -34,54 +34,67 @@ class PluginSelectorExtensions extends PluginBase {
     }
     
     public function parseParentHandler(Selector $selector, PathGroup $pathGroup) {
-        var_dump('parse parent');
         $newPaths = [];
         $parentPaths = $selector->getRuleset()->getParentPaths();
+//        var_dump('parent paths:', $parentPaths);
+        
+        if (empty($parentPaths)) {
+            $parentPaths = [''];
+        }
+        
         foreach ($pathGroup->getPaths() as $path) {
             foreach ($parentPaths as $parentPath) {
-                var_dump('PARENT PATH:' . $parentPath);
-                if (empty($parentPath)) {
-                    continue;
-                }
-                $path = str_replace('&', (string)$parentPath, $path, $count);
+                $newPath = str_replace('&', (string)$parentPath, $path, $count);
+//                var_dump('PARENT PATH:' . $parentPath . ', path=' . $newPath);
                 if ($count > 0) {
                     $selector->setFullSelector(true);
+                    $newPaths[] = $newPath;
                 }
             }
-            
-            $newPaths[] = $path;
+            if (empty($newPaths)) {
+                $newPaths[] = $path;
+            }
         }
         $pathGroup->setPaths($newPaths);
     }
     
     public function parseAnyHandler(Selector $selector, PathGroup $pathGroup) {
-        var_dump('parse any');
+//        var_dump('parse any', $pathGroup);
         
-        function findAnyMatches($path, $offset, &$position, &$patternLength) {
-            $position = strpos($path, ':any', $offset);
-            if ($position >= 0) {
-                $enclosedWithBrackets = StringHelper::parseEnclosedString($string);
+        $findAnyMatches = function ($path, &$position, &$pattern) {
+            $position = strpos($path, ':any');
+            if ($position !== false) {
+                $part = substr($path, $position + 4);
+                $enclosedWithBrackets = StringHelper::parseEnclosedString($part);
                 if ($enclosedWithBrackets) {
-                    $patternLength = $enclosedWithBrackets + 6;
+                    $pattern = substr($path, $position, strlen($enclosedWithBrackets) + 6);
                     $subSelectors = StringHelper::parseSplittedString(substr($enclosedWithBrackets, 1, -1), ',');
                     return $subSelectors;
                 }
             }
             return false;
-        }
+        };
         
         $newPaths = [];
         $parentPaths = $selector->getRuleset()->getParentPaths();
         
         $queue = new \SplQueue();
         foreach ($pathGroup->getPaths() as $path) {
-            $offset = 0;
-            while ($subSelectors = findAnyMatches($path, $offset, $pos, $wholeLength)) {
-                $offset = $pos + $wholeLength;
-                
-            }
-            
-            $newPaths[] = $path;
+            $queue->enqueue($path);
+            do {
+                $path = $queue->dequeue();
+                $subSelectors = $findAnyMatches($path, $pos, $pattern);
+                $replaces = [];
+                if ($subSelectors === false) {
+                    $newPaths[] = $path;
+                } else {
+                    $replaces = StringHelper::replaceSubstring($pattern, $subSelectors, $path);
+                    foreach ($replaces as $replace) {
+                        $queue->enqueue($replace);
+                    }
+                }
+//                var_dump('REPLACES of ' . $pattern . ':', $replaces);
+            } while (!$queue->isEmpty());
         }
         $pathGroup->setPaths($newPaths);
     }

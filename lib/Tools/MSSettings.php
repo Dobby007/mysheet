@@ -15,6 +15,8 @@ use MySheet\Traits\MagicPropsTrait;
  * Description of MSSettings
  *
  * @author dobby007
+ * @property string[] ruleParams
+ * @property string[] parserExtensions
  */
 class MSSettings {
     use MagicPropsTrait;
@@ -34,7 +36,7 @@ class MSSettings {
     }
     
     public function load(array $settings) {
-        $default = require(ROOTDIR . 'Config/default' . EXT);
+        $default = require(ROOTDIR . 'Config/DefaultSettings' . EXT);
         $settings = array_merge($default, $settings);
 
         foreach ($settings as $name => $value) {

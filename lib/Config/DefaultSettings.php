@@ -3,7 +3,7 @@ use MySheet as MSN;
 use MySheet\MySheet;
 
 return [
-    'ruleParams' => 'commaSequence string variable color metric',
+    'ruleParams' => 'commaSequence string variable color metric other',
     'parserExtensions' => 'import media variable ruleset',
     'color' => [
         'lib' => [
