@@ -13,7 +13,7 @@ use MySheet\Helpers\ArrayHelper;
 /**
  * Description of StringBuilder
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class StringBuilder {
     private $lines = array();

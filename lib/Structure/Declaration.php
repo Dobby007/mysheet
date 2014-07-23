@@ -14,7 +14,7 @@ require_once 'RuleGroup' . EXT;
 /**
  * Description of Selector
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class Declaration {
     use RootClassTrait, HandlerCallTrait;

@@ -9,9 +9,9 @@
 namespace MySheet\Helpers;
 
 /**
- * Description of ArrayHelper
+ * Class that helps to work with strings and provides basic operations to work with them in MySheet
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 abstract class StringHelper {
 

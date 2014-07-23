@@ -11,7 +11,7 @@ namespace MySheet\Structure;
 /**
  * Description of PathGroup
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class RuleGroup {
     private $rules = array();

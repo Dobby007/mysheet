@@ -13,7 +13,7 @@ use MySheet\Plugins\PluginBase;
 /**
  * Description of PluginClassTrait
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 trait PluginClassTrait {
     /**

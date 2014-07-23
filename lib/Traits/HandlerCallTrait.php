@@ -15,7 +15,7 @@ use MySheet\Essentials\HandlerCallResult;
 /**
  * Description of HandlerClassTrait
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 trait HandlerCallTrait {
     private $_handlerMap = null;

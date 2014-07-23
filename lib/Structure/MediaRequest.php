@@ -12,7 +12,7 @@ use MySheet\Essentials\VariableScope;
 /**
  * Description of Ruleset
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class MediaRequest extends NodeBlock {
     protected $request = null;

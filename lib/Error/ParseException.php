@@ -6,7 +6,7 @@ namespace MySheet\Error;
 /**
  * Description of ParseException
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class ParseException extends \Exception {
     private $error_code;

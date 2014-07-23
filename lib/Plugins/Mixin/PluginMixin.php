@@ -15,7 +15,7 @@ use MySheet\Essentials\VariableScope;
 /**
  * Description of Mixin
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class PluginMixin extends PluginBase {
     private $mixins = array();

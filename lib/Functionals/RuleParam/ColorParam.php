@@ -14,9 +14,9 @@ use MySheet\Helpers\SettingsHelper;
 
 
 /**
- * Description of ColorParam
+ * Class that represents a color in both MSS and CSS. It is a rule parameter (RuleParam).
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class ColorParam extends RuleParam {
     
@@ -248,12 +248,11 @@ class ColorParam extends RuleParam {
             return new self('html', [$matches[1]]);
         } else if (preg_match('/^(#[[:xdigit:]]{3}|#[[:xdigit:]]{6}|(?:rgb|rgba|hsl|hsla|hsb)\(.+\))(?:$|\s)/i', $string, $matches)) {
             $color = self::parseColorString($matches[1]);
-//            var_dump($result);
             if ($color) {
                 parent::trimStringBy($string, strlen($matches[0]));
                 return new self($color['type'], $color['color']);
             }
-//            var_dump($color);
+
         }
         return false;
     }

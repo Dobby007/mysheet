@@ -10,9 +10,9 @@ use MySheet\Essentials\StringBuilder;
 use MySheet\Essentials\VariableScope;
 
 /**
- * Description of Ruleset
+ * Class that represents CSS rule set that consists of selectors (Selector) and declarations (Declaration)
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class Ruleset extends NodeBlock {
 

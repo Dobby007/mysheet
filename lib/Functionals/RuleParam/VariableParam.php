@@ -12,9 +12,10 @@ use MySheet\Essentials\RuleParam;
 use MySheet\Essentials\VariableScope;
 
 /**
- * Description of VariableParam
+ * Class that represents variable in rule value (RuleValue). It is rule parameter (RuleParam).
+ * It is used to reference some expression outside current rule set.
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class VariableParam extends RuleParam {
     private $varName = '';

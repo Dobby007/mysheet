@@ -17,7 +17,7 @@ use MySheet\Traits\ParserCursorStateTrait;
 /**
  * Description of Parser
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class Parser implements IParser {
 

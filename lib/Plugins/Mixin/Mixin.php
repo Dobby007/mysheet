@@ -19,7 +19,7 @@ use MySheet\Structure\RuleGroup;
 /**
  * Description of Mixin
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class Mixin extends LeafBlock {
     use RootClassTrait, PluginClassTrait;

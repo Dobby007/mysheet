@@ -13,7 +13,7 @@ use MySheet\Helpers\StringHelper;
 /**
  * Description of SeparatedString
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class DelimitedString {
     protected $list = array();

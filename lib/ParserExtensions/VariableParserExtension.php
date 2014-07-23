@@ -13,7 +13,7 @@ use MySheet\Structure\VarDefinition;
 /**
  * Description of RulesetParserExtension
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class VariableParserExtension extends ParserExtension
 {

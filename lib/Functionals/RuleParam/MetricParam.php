@@ -9,12 +9,11 @@
 namespace MySheet\Functionals\RuleParam;
 
 use MySheet\Essentials\RuleParam;
-use MySheet\MySheet;
 
 /**
- * Description of MetricParam
+ * Class that represents a metric (with its' type) in both MSS and CSS. It is a rule parameter (RuleParam).
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class MetricParam extends RuleParam {
     const DEFAULT_UNIT = '%';

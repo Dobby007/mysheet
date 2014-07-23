@@ -12,7 +12,7 @@ namespace MySheet\Traits;
 /**
  * Description of RuleParamListTrait
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 trait RuleParamListTrait {
     public function getParam($index) {

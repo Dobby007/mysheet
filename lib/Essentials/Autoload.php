@@ -5,7 +5,7 @@ namespace MySheet\Essentials;
 /**
  * Description of Autoload
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class Autoload {
     

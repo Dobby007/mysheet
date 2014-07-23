@@ -9,9 +9,10 @@
 namespace MySheet\Structure;
 
 /**
- * Description of PathGroup
+ * Class that allows rendering of MSS selectors to CSS ones.
+ * It is used to present single MSS selector as a multiple CSS selectors (I called it "path" in this class)
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class PathGroup {
     private $paths = array();

@@ -15,7 +15,7 @@ use MySheet\Traits\RootClassTrait;
 /**
  * Description of ParserExtension
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 abstract class ParserExtension 
 {

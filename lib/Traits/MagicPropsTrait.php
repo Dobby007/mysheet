@@ -11,7 +11,7 @@ namespace MySheet\Traits;
 /**
  * Description of RootClassTrait
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 trait MagicPropsTrait {
     

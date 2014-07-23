@@ -11,7 +11,7 @@ namespace MySheet\Plugins;
 /**
  * Description of PluginBase
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 abstract class PluginBase {
     use \MySheet\Traits\RootClassTrait,

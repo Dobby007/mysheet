@@ -14,7 +14,7 @@ use MySheet\Structure\ImportDirective;
 /**
  * Description of RulesetParserExtension
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class ImportParserExtension extends ParserExtension
 {

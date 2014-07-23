@@ -9,7 +9,7 @@ use MySheet\Essentials\VariableScope;
 /**
  * Description of Ruleset
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class ImportDirective extends LeafBlock {
     protected $importValue = null;

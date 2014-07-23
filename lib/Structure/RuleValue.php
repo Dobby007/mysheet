@@ -4,14 +4,13 @@ namespace MySheet\Structure;
 
 use MySheet\Essentials\VariableScope;
 use MySheet\Essentials\RuleParam;
-use MySheet\Functionals\RuleParam\OtherParam;
 use MySheet\Essentials\FuncListManager;
 use MySheet\Traits\RootClassTrait;
 
 /**
- * Description of RuleValue
+ * Class that represents rule value with its' rule parameters (RuleParam)
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class RuleValue {
     use RootClassTrait;
@@ -80,14 +79,6 @@ class RuleValue {
     
     public function getValue(VariableScope $vars = null, $as_array = false) {
         $result = array_map(function(RuleParam $item) use($vars) {
-            /*
-            if ($item instanceof \MySheet\Functionals\RuleParam\VariableParam) {
-                return $item->toRealCss($vars);
-            } else {
-                return $item->toRealCss();
-            }
-             
-             */
             return $item->toRealCss($vars);
         }, $this->params);
         

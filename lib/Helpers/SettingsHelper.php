@@ -11,7 +11,7 @@ namespace MySheet\Helpers;
 /**
  * Description of SettingsHelper
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class SettingsHelper {
     

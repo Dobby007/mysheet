@@ -11,7 +11,7 @@ namespace MySheet\Essentials;
 /**
  * Description of SourceLine
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class SourceLine {
     private $line;

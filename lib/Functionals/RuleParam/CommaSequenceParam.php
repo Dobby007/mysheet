@@ -9,7 +9,6 @@
 namespace MySheet\Functionals\RuleParam;
 
 use MySheet\Essentials\RuleParam;
-use MySheet\Essentials\FuncListManager;
 use MySheet\Helpers\ArrayHelper;
 use MySheet\Helpers\StringHelper;
 use MySheet\Essentials\VariableScope;
@@ -17,9 +16,10 @@ use MySheet\Traits\RuleParamListTrait;
 use MySheet\Essentials\DelimitedString;
 
 /**
- * Description of MetricParam
+ * Class that represents a sequence of rule parameters delimited by commas.
+ * Class is also a rule parameter (RuleParam) and can be used in RuleValue instance as a rule parameter.
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class CommaSequenceParam extends RuleParam {
     use RuleParamListTrait;

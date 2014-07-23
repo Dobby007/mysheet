@@ -11,9 +11,11 @@ namespace MySheet\Functionals\RuleParam;
 use MySheet\Essentials\RuleParam;
 
 /**
- * Description of MetricParam
+ * Class that represents all other rule parameters (RuleParam) that do not match requirements of any other rule parameter (RuleParam).
+ * It is used to represent some text that is not StringParam. The difference between StringParam and this class is 
+ * that string is always enclosed with quotes (both single or double quotes) and the text inside this class is not.
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class OtherParam extends RuleParam {
     protected $text;

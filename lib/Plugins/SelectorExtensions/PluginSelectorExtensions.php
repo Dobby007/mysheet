@@ -18,7 +18,7 @@ use MySheet\Structure\Selector;
 /**
  * Description of Mixin
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class PluginSelectorExtensions extends PluginBase {
     private $handlers = array('parent', 'any');

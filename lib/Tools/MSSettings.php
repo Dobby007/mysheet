@@ -14,7 +14,7 @@ use MySheet\Traits\MagicPropsTrait;
 /**
  * Description of MSSettings
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  * @property string[] ruleParams
  * @property string[] parserExtensions
  */

@@ -13,7 +13,7 @@ use MySheet\Essentials\SourceLine;
 /**
  * Description of HandlerClassTrait
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 trait ParserLinesTrait {
     /**

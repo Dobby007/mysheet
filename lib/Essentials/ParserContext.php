@@ -15,7 +15,7 @@ use MySheet\Traits\ParserCursorStateTrait;
 /**
  * Description of ParserContext
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class ParserContext {
     use ParserLinesTrait, ParserCursorStateTrait;

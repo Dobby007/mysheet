@@ -14,7 +14,7 @@ use MySheet\MySheet;
 /**
  * Description of RuleParam
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 abstract class RuleParam {
     use RootClassTrait;

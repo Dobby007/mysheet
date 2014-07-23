@@ -6,7 +6,7 @@ use MySheet\Essentials\ParserExtension;
 
 /**
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 interface IParser {
     public function comeon();

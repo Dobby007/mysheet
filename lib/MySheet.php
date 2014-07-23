@@ -21,7 +21,7 @@ use MySheet\Helpers\StringHelper;
 /**
  * Description of MySheet
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class MySheet {
 

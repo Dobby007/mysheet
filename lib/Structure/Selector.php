@@ -11,9 +11,9 @@ use MySheet\Traits\HandlerCallTrait;
 
 
 /**
- * Description of Selector
+ * Class that represents a single MSS selector that can be rendered to CSS one(s)
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class Selector {
     use RootClassTrait, HandlerCallTrait;

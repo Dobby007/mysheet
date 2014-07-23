@@ -14,7 +14,7 @@ use MySheet\Error\StopException;
 /**
  * Description of FuncListManager
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class FuncListManager {
     const PRIORITY_LOWEST = 0,

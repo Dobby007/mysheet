@@ -5,7 +5,7 @@ namespace MySheet\Error;
 /**
  * Description of Error
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class ErrorTable {
     const E_UNRECOGNIZED_SEQUENCE = 101;

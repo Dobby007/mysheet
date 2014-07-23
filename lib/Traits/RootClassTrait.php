@@ -14,7 +14,7 @@ use MySheet\Tools\MSSettings;
 /**
  * Description of RootClassTrait
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 trait RootClassTrait {
     

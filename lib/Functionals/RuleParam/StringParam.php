@@ -11,9 +11,10 @@ namespace MySheet\Functionals\RuleParam;
 use MySheet\Essentials\RuleParam;
 
 /**
- * Description of MetricParam
+ * Class that represents a string in rule value (RuleValue). It is a rule parameter (RuleParam).
+ * String is always enclosed in qoutes.
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class StringParam extends RuleParam {
     protected $text;

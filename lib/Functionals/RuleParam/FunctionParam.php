@@ -14,9 +14,10 @@ use MySheet\Helpers\ArrayHelper;
 use MySheet\Essentials\VariableScope;
 
 /**
- * Internal class that allows using functions in rule values
+ * Internal class that allows using functions in rule values. It is a rule parameter (RuleParam).
+ * It represents a function in both MSS and CSS.
  *
- * @author dobby007 (Gilevich Alexander)
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class FunctionParam extends RuleParam {
     protected $name;

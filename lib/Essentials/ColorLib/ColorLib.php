@@ -13,7 +13,7 @@ use MySheet\Traits\MagicPropsTrait;
 /**
  * Description of ColorLib
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 abstract class ColorLib {
     use MagicPropsTrait;

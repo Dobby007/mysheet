@@ -12,7 +12,7 @@ use SyHolloway\MrColor\Color;
 /**
  * Description of MrColorLib
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class MrColorLib extends ColorLib {
     /**
