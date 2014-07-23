@@ -59,18 +59,17 @@ class PluginSelectorExtensions extends PluginBase {
     }
     
     public function parseAnyHandler(Selector $selector, PathGroup $pathGroup) {
-//        var_dump('parse any', $pathGroup);
-        
         $findAnyMatches = function ($path, &$position, &$pattern) {
             $position = strpos($path, ':any');
             if ($position !== false) {
-                $part = substr($path, $position + 4);
-                $enclosedWithBrackets = StringHelper::parseEnclosedString($part);
-                if ($enclosedWithBrackets) {
-                    $pattern = substr($path, $position, strlen($enclosedWithBrackets) + 6);
-                    $subSelectors = StringHelper::parseSplittedString(substr($enclosedWithBrackets, 1, -1), ',');
-                    return $subSelectors;
+                $startPart = substr($path, $position);
+                $partCopy = $startPart;
+                $function = StringHelper::parseFunction($startPart);
+                if ($function !== false) {
+                    $pattern = substr($path, $position, strlen($partCopy) - strlen($startPart));
+                    return $function['arguments'];
                 }
+                
             }
             return false;
         };
@@ -93,7 +92,6 @@ class PluginSelectorExtensions extends PluginBase {
                         $queue->enqueue($replace);
                     }
                 }
-//                var_dump('REPLACES of ' . $pattern . ':', $replaces);
             } while (!$queue->isEmpty());
         }
         $pathGroup->setPaths($newPaths);

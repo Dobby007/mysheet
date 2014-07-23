@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Essentials;
+namespace MySheet\Essentials\ColorLib;
 
 use MySheet\Traits\MagicPropsTrait;
 

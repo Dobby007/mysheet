@@ -37,7 +37,7 @@ $code = <<<TEXT
                 text-decoration underline ;; ;
                 border-bottom :    1px           solid     gray  ;
     
-    body
+    body:any(:hover, :active)
         padding 0
         margin 0
         gradient as

@@ -1,6 +1,6 @@
 @mixin gradient(start, end)
     color #000
-    background linear-gradient 12 33 $start
+    background linear-gradient(12, 33, $start)
     background -ms-linear-gradient $start 0 $end $varname
 
 body

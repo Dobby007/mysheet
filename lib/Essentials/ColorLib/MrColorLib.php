@@ -6,9 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Functionals\ColorLib;
-
-use MySheet\Essentials\ColorLib;
+namespace MySheet\Essentials\ColorLib;
 use SyHolloway\MrColor\Color;
 
 /**

@@ -27,7 +27,8 @@ class RulesetParserExtension extends ParserExtension
         
         do {
             if ($curLine->getLevel() == $firstLine->getLevel()) {
-                $selectors = StringHelper::parseSplittedString($curLine->getLine(), ',', false);
+                $curLine = $curLine->getLine();
+                $selectors = StringHelper::parseSplittedString($curLine, ',', false);
                 $ruleset->addSelectors($selectors);
             } else if ($curLine->getLevel() == $firstLine->getLevel() + 1) {
                 $nextline = $context->getLine($context->getLineNumber() + 1);

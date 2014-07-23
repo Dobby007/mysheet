@@ -28,7 +28,6 @@ class ColorParam extends RuleParam {
     protected $_colorLib;
     
     public function __construct($type, array $color = []) {
-//        var_dump($this->getColorLib());
         $this->setType($type);
         $this->setColor($color);
     }
@@ -96,17 +95,15 @@ class ColorParam extends RuleParam {
                 $newcolor = [self::getHtmlColor($newcolor[0])];
             }
             $type = $this->getSetting('color.defaultType', 'hex');
-//            var_dump($this->getType() . ':' . $cur_type . '->' . $type, $newcolor);
             $newcolor = $this->getColorLib()->setColor($cur_type, $newcolor)->transformTo($type);
         }
         
-//        var_dump($type, $newcolor);
         return self::colorToString($type, $newcolor);
-        
     }
     
     public function __toString() {
         return $this->toRealCss();
+        new FunctionParam();
     }
     
     public static function colorToString($type, array $color) {
@@ -137,88 +134,100 @@ class ColorParam extends RuleParam {
         return in_array($type, self::$css_supported_types);
     }
     
+    protected static function parseHexColorString($string) {
+        $hexCode = substr($string, 1);
+        $clen = strlen($hexCode);
+        if ($clen === 3) {
+            $hexCode = $hexCode[0] . $hexCode[0] .
+                       $hexCode[1] . $hexCode[1] .
+                       $hexCode[2] . $hexCode[2];
+        }
+
+        if ($clen !== 3 && $clen !== 6) {
+            return false;
+        }
+
+        return [
+            'type' => 'hex',
+            'color' => [$hexCode]
+        ];
+        
+    }
+    
+    protected static function parseFunctionColorString($string) {
+        $function = StringHelper::parseFunction($string);
+        
+        if (!$function) {
+            return false;
+        }
+
+        $arguments = &$function['arguments'];
+
+        foreach ($arguments as &$arg) {
+            $metric = StringHelper::parseMetric($arg);
+            if ($metric === false) {
+                return false;
+            }
+            $arg = $metric['metric'];
+        }
+
+        //tricky thing to check number of arguments
+        if (strlen($function['name']) !== count($arguments)) {
+            return false;
+        }
+
+        $result = [
+            'type' => $function['name'],
+            'color' => []
+        ];
+
+        $color = &$result['color'];
+        switch ($function['name']) {
+            case 'rgb':
+                $color = [
+                    'r' => $arguments[0],
+                    'g' => $arguments[1],
+                    'b' => $arguments[2]
+                ];
+                break;
+            case 'rgba':
+                $color = [
+                    'r' => $arguments[0],
+                    'g' => $arguments[1],
+                    'b' => $arguments[2],
+                    'a' => $arguments[3]
+                ];
+                break;
+            case 'hsl':
+                $color = [
+                    'hue' => $arguments[0],
+                    'sat' => $arguments[1],
+                    'lt' => $arguments[2]
+                ];
+                break;
+            case 'hsla':
+                $color = [
+                    'hue' => $arguments[0],
+                    'sat' => $arguments[1],
+                    'lt' => $arguments[2],
+                    'a' => $arguments[3]
+                ];
+                break;
+        }
+
+        return $result;
+        
+    }
+    
     public static function parseColorString($string) {
         $result = false;
         if ($string[0] === '#') {
             //hex represantation
-            
-            $hexCode = substr($string, 1);
-            $clen = strlen($hexCode);
-            
-            if ($clen === 3) {
-                $hexCode = $hexCode[0] . $hexCode[0] .
-                           $hexCode[1] . $hexCode[1] .
-                           $hexCode[2] . $hexCode[2];
-            }
-            
-            if ($clen !== 3 && $clen !== 6) {
-                return false;
-            }
-            
-            $result = [
-                'type' => 'hex',
-                'color' => [$hexCode]
-            ];
-            
+            $result = self::parseHexColorString($string);
         } else {
-            $function = StringHelper::parse_function($string);
-            $arguments = &$function['arguments'];
-            
-            foreach ($arguments as &$arg) {
-                $metric = StringHelper::parseMetric($arg);
-                if ($metric === false) {
-                    return false;
-                }
-                $arg = $metric['metric'];
-            }
-//            var_dump($function);
-            
-            //tricky thing to check number of arguments
-            if (strlen($function['name']) !== count($arguments)) {
-                return false;
-            }
-            
-            $result = [
-                'type' => $function['name'],
-                'color' => []
-            ];
-            
-            $color = &$result['color'];
-            switch ($function['name']) {
-                case 'rgb':
-                    $color = [
-                        'r' => $arguments[0],
-                        'g' => $arguments[1],
-                        'b' => $arguments[2]
-                    ];
-                    break;
-                case 'rgba':
-                    $color = [
-                        'r' => $arguments[0],
-                        'g' => $arguments[1],
-                        'b' => $arguments[2],
-                        'a' => $arguments[3]
-                    ];
-                    break;
-                case 'hsl':
-                    $color = [
-                        'hue' => $arguments[0],
-                        'sat' => $arguments[1],
-                        'lt' => $arguments[2]
-                    ];
-                    break;
-                case 'hsla':
-                    $color = [
-                        'hue' => $arguments[0],
-                        'sat' => $arguments[1],
-                        'lt' => $arguments[2],
-                        'a' => $arguments[3]
-                    ];
-                    break;
-            }
-            
+            //representation in rgb, hsb, etc.
+            $result = self::parseFunctionColorString($string);
         }
-        //var_dump($result);
         return $result;
     }
     

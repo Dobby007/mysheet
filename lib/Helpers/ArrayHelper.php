@@ -21,7 +21,7 @@ abstract class ArrayHelper {
         if (!empty($method_name) && is_string($method_name)) {
             $right_args = array_slice(func_get_args(), 3);
             array_walk($source, function($item) use($method_name, $right_args, &$proccessed) {
-                $proccessed[] = call_user_method_array($method_name, $item, $right_args);
+                $proccessed[] = call_user_func_array(array($item, $method_name), $right_args);
             });
         } else {
             $proccessed = $source;

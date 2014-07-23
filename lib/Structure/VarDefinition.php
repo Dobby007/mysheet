@@ -7,6 +7,7 @@ use MySheet\Structure\Declaration;
 use MySheet\Structure\RuleGroup;
 use MySheet\Helpers\ArrayHelper;
 use MySheet\Essentials\StringBuilder;
+use MySheet\Essentials\VariableScope;
 
 /**
  * Description of Ruleset

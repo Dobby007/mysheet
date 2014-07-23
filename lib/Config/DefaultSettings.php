@@ -3,11 +3,11 @@ use MySheet as MSN;
 use MySheet\MySheet;
 
 return [
-    'ruleParams' => 'commaSequence string variable color metric other',
+    'ruleParams' => 'commaSequence string variable color function metric other',
     'parserExtensions' => 'import media variable ruleset',
     'color' => [
         'lib' => [
-            'class' => '\MySheet\Functionals\ColorLib\MrColorLib',
+            'class' => '\MySheet\Essentials\ColorLib\MrColorLib',
             'libPath' => '../../php_libs/mrcolor'
         ],
         'defaultType' => 'hex',

@@ -15,24 +15,45 @@ namespace MySheet\Helpers;
  */
 abstract class StringHelper {
 
-    public static function parse_function($input) {
-        $info = [];
-        $input = trim($input);
+    public static function parseFunction(&$input) {
+        $funcName = '';
+        $arguments = false;
         
-        if (substr($input, -1) !== ')') {
+        $text = ltrim($input);
+        $textLen = strlen($text);
+        $i = 0;
+        $space_found = false;
+        
+        while ($i < $textLen) {
+            if ($text[$i] === '(') {
+                break;
+            } else if (!$space_found && !ctype_space($text[$i])) {
+                $funcName .= $text[$i];
+            } else if (ctype_space($text[$i])) {
+                $space_found = true;
+            } else if ($space_found) {
+                break;
+            }
+            $i++;
+        }
+        $args_offset = $i;
+        if (substr($text, $args_offset, 1) !== '(') {
             return false;
         }
         
-        $tmp = strstr($input, '(');
-        $arguments =  substr($tmp, 1, -1);
-        $info['name'] = strstr($input, '(', true);
-        
-        if (preg_match_all('/\s*(\'.*\'|[^,\s]+)\s*(?:,\s*|$)/', $arguments, $matches, PREG_PATTERN_ORDER)) {
-            $info['arguments'] = $matches[1];
-            return $info;
+        $enclosedWithBrackets = StringHelper::parseEnclosedString(substr($text, $args_offset));
+        if ($enclosedWithBrackets) {
+            $argString = substr($enclosedWithBrackets, 1, -1);
+            $arguments = StringHelper::parseSplittedString($argString, ',');
         }
         
-            
+        if (!empty($arguments) && !empty($funcName)) {
+            $input = substr($input, $args_offset + strlen($enclosedWithBrackets));
+            return [
+                'name' => $funcName,
+                'arguments' => $arguments
+            ];
+        }
         return false;
     }
     
@@ -72,27 +93,6 @@ abstract class StringHelper {
         return ['metric' => floatval($metric), 'unit' => $unit];
     }
     
-    public static function getEnclosedCharMap() {
-        static $charMap = [
-            '"' => ['closeAt' => '"', 'wait' => true],
-            '(' => ['closeAt' => ')', 'wait' => false],
-            '[' => ['closeAt' => ']', 'wait' => false],
-            '{' => ['closeAt' => '}', 'wait' => false],
-            "'" => ['closeAt' => "'", 'wait' => true]
-        ];
-        return $charMap;
-    }
-
-    public static function getEnclosedChar($char) {
-        $charMap = self::getEnclosedCharMap();
-        
-        if (isset($charMap[$char])) {
-            return $charMap[$char];
-        }
-        
-        return false;
-    }
-    
     public static function parseEnclosedString($string) {
         $charMap = self::getEnclosedCharMap();
         
@@ -123,7 +123,6 @@ abstract class StringHelper {
             }
         }
         
-//        var_dump('parsing done: ' . substr($string, 0, $i) . '.');  
         if ($charQueue->isEmpty()) {
             return substr($string, 0, $i);
         }
@@ -139,32 +138,25 @@ abstract class StringHelper {
         $delimiterMet = false;
         $i = 0;
         
-//        function addFromOffset($charsCount) {
-//            $splittedList[] = 
-//        }
-        
         while ($i < $len) {
             $char = $string[$i];
             if (self::getEnclosedChar($char)) {
                 $enclosedPart = self::parseEnclosedString(substr($string, $i));
-                    
-//                var_dump('enclosed with ' . $char . ' at ' . $i . ', ' . $string, $enclosedPart, 'new start string = ' . substr($string, $i + strlen($enclosedPart)));
+
                 if ($enclosedPart) {
                     $i += strlen($enclosedPart);
-//                    var_dump('enclosed part = ' . $enclosedPart);
                     continue;
                 }
                 
             } else if ( $char === $delimiter || ($stopAtSpace === true && ctype_space($char)) ) {
                 $splittedList[] = substr($string, $offset, $i - $offset);
-//                var_dump('old i: ' . $i);
+                
                 $i += self::countLeftSpaces(substr($string, $i));
-                if ($string[$i] !== $delimiter) {
+                if ($i >= $len || $string[$i] !== $delimiter) {
                     break;
                 }
                 $i++;
                 $i += self::countLeftSpaces(substr($string, $i));
-//                var_dump('new i: ' . $i . '-' . substr($string, $i));
                 $offset = $i;
                 continue;
             } else {
@@ -178,7 +170,28 @@ abstract class StringHelper {
         
         $string = substr($string, $i);
         
-        return $splittedList;
+        return array_map('trim', $splittedList);
+    }
+    
+    public static function getEnclosedCharMap() {
+        static $charMap = [
+            '"' => ['closeAt' => '"', 'wait' => true],
+            '(' => ['closeAt' => ')', 'wait' => false],
+            '[' => ['closeAt' => ']', 'wait' => false],
+            '{' => ['closeAt' => '}', 'wait' => false],
+            "'" => ['closeAt' => "'", 'wait' => true]
+        ];
+        return $charMap;
+    }
+
+    public static function getEnclosedChar($char) {
+        $charMap = self::getEnclosedCharMap();
+        
+        if (isset($charMap[$char])) {
+            return $charMap[$char];
+        }
+        
+        return false;
     }
     
     public static function countLeftSpaces($string) {

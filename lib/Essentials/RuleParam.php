@@ -28,6 +28,27 @@ abstract class RuleParam {
      */
     abstract public function toRealCss();
 
+    protected function parseNestedParam($string) {
+        $result = null;
+        $this->getRoot()->getListManager()->getList('RuleParam')->iterate(function ($paramClass) use ($string, &$result) {
+            if ($paramClass == get_class($this)) {
+                return;
+            }
+            
+            $res = RuleParam::tryParse($paramClass, $string);
+            if ($res instanceof RuleParam) {
+                $result = $res;
+                FuncListManager::stopIteration();
+            }
+        });
+        
+        if (!$result) {
+            //throw
+        }
+        
+        return $result;
+    }
+    
     /**
      * @return RuleParam|false
      */

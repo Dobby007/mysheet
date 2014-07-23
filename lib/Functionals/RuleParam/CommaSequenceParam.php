@@ -41,29 +41,8 @@ class CommaSequenceParam extends RuleParam {
     public function setItemList($list) {
         //call protected function from outside
         $this->delimitedString = new DelimitedString($list, function ($item) {
-            return $this->parseListItem($item);
+            return $this->parseNestedParam($item);
         });
-    }
-    
-    protected function parseListItem($item) {
-        $result = null;
-        $this->getRoot()->getListManager()->getList('RuleParam')->iterate(function ($paramClass) use ($item, &$result) {
-            if ($paramClass == __CLASS__) {
-                return;
-            }
-            
-            $res = RuleParam::tryParse($paramClass, $item);
-            if ($res instanceof RuleParam) {
-                $result = $res;
-                FuncListManager::stopIteration();
-            }
-        });
-        
-        if (!$result) {
-            //throw
-        }
-        
-        return $result;
     }
     
     public function toRealCss(VariableScope $vars = null) {
