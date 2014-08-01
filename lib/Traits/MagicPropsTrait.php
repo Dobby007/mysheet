@@ -34,4 +34,5 @@ trait MagicPropsTrait {
         }
     }
     
+//    protected abstract function canNotFindProperty($name);
 }

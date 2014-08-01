@@ -8,8 +8,8 @@
 
 namespace MySheet\Tools;
 
+use MySheet as MS;
 use MySheet\Traits\MagicPropsTrait;
-
 
 /**
  * Description of MSSettings
@@ -28,6 +28,7 @@ class MSSettings {
     public $cacher;
     public $colorLibs;
     public $import;
+    public $language;
     private $_ruleParams;
     private $_parserExtensions;
     
@@ -36,7 +37,7 @@ class MSSettings {
     }
     
     public function load(array $settings) {
-        $default = require(ROOTDIR . 'Config/DefaultSettings' . EXT);
+        $default = require(ROOTDIR . 'Config/DefaultSettings' . MS\EXT);
         $settings = array_merge($default, $settings);
 
         foreach ($settings as $name => $value) {

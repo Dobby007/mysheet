@@ -9,7 +9,6 @@ use MySheet\Error\ParseException;
 use MySheet\Error\ErrorTable;
 use MySheet\Essentials\VariableScope;
 
-require_once 'RuleGroup' . EXT;
 
 /**
  * Description of Selector
@@ -66,7 +65,7 @@ class Declaration {
             $this->setRuleName($matches[1]);
             $this->setRuleValue($matches[2]);
         } else {
-            throw new ParseException(ErrorTable::E_BAD_SELECTOR, [$declaration]);
+            throw new ParseException(null, 'BAD_DECLARATION', [$declaration]);
         }
     }
     

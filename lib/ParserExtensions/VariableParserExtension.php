@@ -26,7 +26,7 @@ class VariableParserExtension extends ParserExtension
                 //throw
                 return false;
             }
-            var_dump('parse var', $matches);
+//            var_dump('parse var', $matches);
             return new VarDefinition(null, $matches[1], $matches[2]);
         }
 

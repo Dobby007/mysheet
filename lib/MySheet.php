@@ -3,6 +3,7 @@
 namespace MySheet;
 
 const DS = DIRECTORY_SEPARATOR;
+const EXT = '.php';
 
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOTDIR', __DIR__ . DS);
@@ -17,6 +18,7 @@ use MySheet\Tools\MSSettings;
 use MySheet\Essentials\FuncListManager;
 use MySheet\Essentials\VariableScope;
 use MySheet\Helpers\StringHelper;
+use MySheet\Tools\I18N;
 
 /**
  * Description of MySheet
@@ -60,7 +62,7 @@ class MySheet {
 
     public function init() {
         $this->autoload->registerAutoload();
-
+        I18N::setLanguage($this->getSettings()->language);
         $parser = $this->getSettings()->parser;
         $this->parser = new $parser(null);
         $this->hf = new HandlerFactory();

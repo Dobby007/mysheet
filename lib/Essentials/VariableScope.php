@@ -19,13 +19,22 @@ use MySheet\Helpers\ArrayHelper;
 class VariableScope implements \ArrayAccess {
     use RootClassTrait;
     
+    private $parentScope;
     private $map = array();
     private $numericVars = false;
     
-    public function __construct() {
-        
+    public function __construct(VariableScope $parentScope = null) {
+        $this->setParentScope($parentScope);
     }
 
+    public function getParentScope() {
+        return $this->parentScope;
+    }
+
+    public function setParentScope($parentScope) {
+        $this->parentScope = $parentScope;
+        return $this;
+    }
     
     public function setMap(array $map) {
         foreach ($map as $key => $value) {
@@ -52,17 +61,23 @@ class VariableScope implements \ArrayAccess {
     }
     
     public function get($name) {
+        if ($this->getParentScope() === null) {
+            $this->setParentScope($this->getRoot()->getVars());
+        }
+        
         if (isset($this->map[$name])) {
             return $this->map[$name];
         }
         
-        if ($this !== $this->getRoot()->getVars()) {
-            return $this->getRoot()->getVars()->get($name);
+        if ($this !== $this->getParentScope()) {
+            return $this->getParentScope()->get($name);
         }
 
         
         return null;
     }
+    
+    
     
     public function enableNumericVars($bool) {
         $this->numericVars = !!$bool;

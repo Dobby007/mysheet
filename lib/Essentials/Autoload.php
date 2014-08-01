@@ -2,6 +2,8 @@
 
 namespace MySheet\Essentials;
 
+use MySheet as MS;
+
 /**
  * Description of Autoload
  *
@@ -15,10 +17,10 @@ class Autoload {
             $class = substr($class, strlen(MSSNS) + 1);
 //            $file = strtolower($class);
             $file = str_replace(['\\', '/'], DS, $class);
-            if (!file_exists(ROOTDIR . $file . EXT)) {
+            if (!file_exists(ROOTDIR . $file . MS\EXT)) {
                 debug_print_backtrace();
             }
-            require_once ROOTDIR . $file . EXT;
+            require_once ROOTDIR . $file . MS\EXT;
 //            print '[[' . $class . ']]';
         }
     }

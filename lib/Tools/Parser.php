@@ -61,7 +61,7 @@ class Parser implements IParser {
             $this->divideIntoLines();
             $this->linebyline();
         } catch (ParseException $exc) {
-            echo 'Error happened: ' . $exc->getErrorCode() . ' in file ' . $exc->getFile() . ':' . $exc->getLine() . "\n" . implode($exc->getArguments(), ', ') . "\n";
+            echo 'Error happened: ' . (string)$exc . "\n";
         }
 //        var_dump($this->lines);
         return $this->doc;

@@ -7,6 +7,8 @@
  */
 
 namespace MySheet\Essentials\ColorLib;
+
+use MySheet as MSN;
 use SyHolloway\MrColor\Color;
 
 /**
@@ -111,7 +113,7 @@ class MrColorLib extends ColorLib {
     }
     
     public function setLibPath($path) {
-        require_once ROOTDIR . $path . DS . 'manual-init' . EXT;
+        require_once ROOTDIR . $path . DS . 'manual-init' . MSN\EXT;
     }
     
     

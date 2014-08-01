@@ -8,6 +8,7 @@
 
 namespace MySheet\Functionals\RuleParam;
 
+use MySheet as MSN;
 use MySheet\Essentials\RuleParam;
 use MySheet\Helpers\StringHelper;
 use MySheet\Helpers\SettingsHelper;
@@ -234,7 +235,7 @@ class ColorParam extends RuleParam {
     public static function getHtmlColor($name) {
         static $html_colors = null;
         if ($html_colors === null) {
-            $html_colors = require_once(ROOTDIR . 'Includes' . DS . 'HtmlColors' . EXT);
+            $html_colors = require_once(ROOTDIR . 'Includes' . DS . 'HtmlColors' . MSN\EXT);
         }
         if (isset($html_colors[$name])) {
             return $html_colors[$name];

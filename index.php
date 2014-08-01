@@ -4,8 +4,8 @@
 <pre>
 <?php
 
-define('EXT', '.php');
-require_once 'lib/MySheet' . EXT;
+//define('EXT', '.php');
+require_once 'lib/MySheet.php';
 
 use MySheet\MySheet;
 
@@ -33,30 +33,6 @@ $code = <<<TEXT
         font-size 10px
         .sort 
             color sdfsd
-            .underline
-                text-decoration underline ;; ;
-                border-bottom :    1px           solid     gray  ;
-    
-    body:any(:hover, :active)
-        padding 0
-        margin 0
-        gradient as
-        \$varname = mememe
-        html.ie6 & .title
-            font-size 24px
-            color red
-            .colored
-            h1 as
-            .grayed
-                color purple
-                .colorsd
-                    width 300px
-                    border-radius 4px 5px 6px 7px 8px 9px
-
-
-
- 
-        
 TEXT;
         
 $code2 = <<<TEXT

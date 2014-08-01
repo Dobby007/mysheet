@@ -3,31 +3,25 @@
 
 namespace MySheet\Error;
 
+use MySheet\Tools\I18N;
+
 /**
  * Description of ParseException
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class ParseException extends \Exception {
-    private $error_code;
+class ParseException extends MySheetException {
     
-    private $arguments;
-    
-    public function __construct($error_code, array $arguments = []) {
-        parent::__construct();
-        $this->arguments = $arguments;
-        $this->error_code = $error_code;
+    public function __construct($category, $error_code, array $arguments = []) {
+        parent::__construct(empty($category) ? 'Parsing' : $category, $error_code, $arguments);
     }
     
-    public function getErrorCode() {
-        return $this->error_code;
+    protected function updateArguments($arguments) {
+        return $arguments;
     }
-
-    public function getArguments() {
-        return $this->arguments;
+    
+    public function getReason() {
+        return I18N::translate($this->getCategory(), $this->getErrorCode(), $this->getArguments());
     }
-
-
-
-
+    
 }

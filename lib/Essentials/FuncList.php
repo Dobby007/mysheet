@@ -40,7 +40,7 @@ class FuncList {
                 }
             }
         }
-        var_dump($this->available_items, $this->enabled_items);
+//        var_dump($this->available_items, $this->enabled_items);
     }
     
     public function sortWith(callable $callback = null) {

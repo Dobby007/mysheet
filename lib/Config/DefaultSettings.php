@@ -27,5 +27,6 @@ return [
         'paths' => [MySheet::WORKDIR . DS . 'MssTemplates'],
         'includeError' => 'exception'
     ],
-    'parser' => 'MySheet\Tools\Parser'
+    'parser' => 'MySheet\Tools\Parser',
+    'language' => 'ru_ru'
 ];
