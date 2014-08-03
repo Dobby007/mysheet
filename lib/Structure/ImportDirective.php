@@ -42,7 +42,7 @@ class ImportDirective extends LeafBlock {
                 $url = str_replace('..', '', $url->getText());
                 $resultDoc = $this->getRoot()->parseImportFile($url);
                 if ($resultDoc instanceof Block) {
-                    var_dump('Result Document:', $resultDoc);
+//                    var_dump('Result Document:', $resultDoc);
                     return $resultDoc->toRealCss(false, false);
                 }
                 

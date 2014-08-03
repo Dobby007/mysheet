@@ -96,7 +96,7 @@ TEXT;
 
 $result = $mysheet->parseCode($code);
 
-//var_dump($result);
+var_dump($result);
 
 echo "\n\n:::COMPILED:::\n\n" . $result->toRealCss();
 

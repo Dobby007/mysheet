@@ -36,7 +36,7 @@ class Selector {
     }
     
     /**
-     * Returns input selector as a group of css selectors
+     * Returns input selector as a group of mss selectors
      * @return PathGroup
      */
     public function getPathGroup() {

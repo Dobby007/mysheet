@@ -47,7 +47,7 @@ abstract class StringHelper
         $args_offset = strlen($funcName);
         $enclosedWithBrackets = StringHelper::parseEnclosedString($text);
         if ($enclosedWithBrackets) {
-            $argString = substr($enclosedWithBrackets, 1, -1);
+            $argString = ltrim(substr($enclosedWithBrackets, 1, -1));
             $arguments = StringHelper::parseSplittedString($argString, ',', !$spaceInArgs);
         }
         if (!empty($arguments) && !empty($funcName)) {
@@ -134,14 +134,17 @@ abstract class StringHelper
     }
     
     public static function parseSplittedString(&$string, $delimiter, $stopAtSpace = true) {
+        $splittedList = [];
         $len = strlen($string);
         $offset = 0;
-        
-        $splittedList = [];
-        $delimiterMet = false;
         $i = 0;
         
-        while ($i < $len) {
+        while (true) {
+            if ($i >= $len - 1) {
+                $splittedList[] = substr($string, $offset, ++$i - $offset);
+                break;
+            }
+            
             $char = $string[$i];
             if (self::getEnclosedChar($char)) {
                 $enclosedPart = self::parseEnclosedString(substr($string, $i));
@@ -162,13 +165,11 @@ abstract class StringHelper
                 $i += self::countLeftSpaces(substr($string, $i));
                 $offset = $i;
                 continue;
-            } else if ($i === $len - 1) {
-                $splittedList[] = substr($string, $offset, ++$i - $offset);
             } else {
                 $i++;
             }
         }
-        
+        var_dump($splittedList);
         $string = substr($string, $i);
         
         return array_map('trim', $splittedList);

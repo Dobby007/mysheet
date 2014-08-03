@@ -35,9 +35,9 @@ class StringHelperTest extends BaseTest
     /**
      * @dataProvider dataSplittedListParsing
      */
-    public function testSplittedListParsing($string, $delimiter, $expected)
+    public function testSplittedListParsing($string, $delimiter, $stopAtSpace, $expected)
     {
-        $result = StringHelper::parseSplittedString($string, $delimiter);
+        $result = StringHelper::parseSplittedString($string, $delimiter, $stopAtSpace);
         $this->assertEquals($expected, $result);
     }
     
@@ -55,25 +55,26 @@ class StringHelperTest extends BaseTest
     
     public function dataFunctionParsing() {
         return [
-            ['rgb(0, 120, 255)', false, ['rgb', '0', '120', '255']],
+            ['rgb( 0, 120, 255)', false, ['rgb', '0', '120', '255']],
             ['rgba   (10% , 20%, 30%)', false, ['rgba', '10%', '20%', '30%']],
             [':not(.selected)', false, [':not', '.selected']],
-            [':not(.selected .hover)', true, [':not', '.selected .hover']],
+            [':not( .selected .hover)', true, [':not', '.selected .hover']],
         ];
     }
     
     public function dataSplittedListParsing() {
         return [
-            ['abc, 123, 0, 0%', ',', ['abc', '123', '0', '0%']],
-            ['abc   , 123, 0!    ,   0%', ',', ['abc', '123', '0!', '0%']],
-            ['1px   , 0%', ',', ['1px', '0%']],
-            ['1px   , \'0%\'    ', ',', ['1px', '\'0%\'']],
-            ['1px   , 0%    ', ',', ['1px', '0%']],
-            ['1px/0.5    ', '/', ['1px', '0.5']],
-            ['1px', ',', ['1px']],
-            ['1|0', '|', ['1', '0']],
-            ['"1px,"   , 0%    ', ',', ['"1px,"', '0%']],
-            ['(1, 0, 2), 0% ', ',', ['(1, 0, 2)', '0%']],
+            ['abc, 123, 0, 0%', ',', true, ['abc', '123', '0', '0%']],
+            ['abc   , 123, 0!    ,   0%', ',', true, ['abc', '123', '0!', '0%']],
+            ['1px   , 0%', ',', true, ['1px', '0%']],
+            ['1px   , \'0%\'    ', ',', true, ['1px', '\'0%\'']],
+            ['1px   , 0%    ', ',', true, ['1px', '0%']],
+            ['1px/0.5    ', '/', true, ['1px', '0.5']],
+            ['1px', ',', true, ['1px']],
+            ['1|0', '|', true, ['1', '0']],
+            ['"1px,"   , 0%    ', ',', true, ['"1px,"', '0%']],
+            ['(1, 0, 2), 0% ', ',', true, ['(1, 0, 2)', '0%']],
+            ['body:any(:hover, :active)', ',', false, ['body:any(:hover, :active)']],
         ];
     }
     
