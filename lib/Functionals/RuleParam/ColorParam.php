@@ -10,9 +10,9 @@ namespace MySheet\Functionals\RuleParam;
 
 use MySheet as MSN;
 use MySheet\Essentials\RuleParam;
-use MySheet\Helpers\StringHelper;
 use MySheet\Helpers\SettingsHelper;
-
+use MySheet\Helpers\StringHelper;
+use MySheet\Essentials\ColorLib\ColorLib;
 
 /**
  * Class that represents a color in both MSS and CSS. It is a rule parameter (RuleParam).
@@ -44,6 +44,7 @@ class ColorParam extends RuleParam {
                 $this->_colorLib = SettingsHelper::createObjectFromSettings($this->getSetting('color.lib'));
             }
         }
+        
         if (!$this->_colorLib) {
             //throw
         }
@@ -91,11 +92,11 @@ class ColorParam extends RuleParam {
             $type = $this->getType();
         } else {
             $cur_type = $this->getType();
-            if ($cur_type === 'html') {
-                $cur_type = 'hex';
+            if ($cur_type === ColorLib::THTML) {
+                $cur_type = ColorLib::THEX;
                 $newcolor = [self::getHtmlColor($newcolor[0])];
             }
-            $type = $this->getSetting('color.defaultType', 'hex');
+            $type = $this->getSetting('color.defaultType', ColorLib::THEX);
             $newcolor = $this->getColorLib()->setColor($cur_type, $newcolor)->transformTo($type);
         }
         
@@ -104,25 +105,24 @@ class ColorParam extends RuleParam {
     
     public function __toString() {
         return $this->toRealCss();
-        new FunctionParam();
     }
     
     public static function colorToString($type, array $color) {
         switch ($type) {
-            case 'rgb':
-            case 'rgba':
+            case ColorLib::TRGB:
+            case ColorLib::TRGBA:
                 $arr = [$color['r'], $color['g'], $color['b']];
-                if ($type === 'rgba') {
+                if ($type === ColorLib::TRGBA) {
                     $arr[] = $color['a'];
                 }
                 return $type . '(' . implode(', ', $arr) . ')';
-            case 'hsl':
+            case ColorLib::THSL:
                 return sprintf('hsl(%d, %d%%, %d%%)', $color['hue'], $color['sat'], $color['lt']);
-            case 'hsla':
+            case ColorLib::THSLA:
                 return sprintf('hsla(%d, %d%%, %d%%, %.2f)', $color['hue'], $color['sat'], $color['lt'], $color['a']);
-            case 'hex':
+            case ColorLib::THEX:
                 return '#' . $color[0];
-            case 'html':
+            case ColorLib::THTML:
                 return $color[0];
         }
     }
@@ -149,7 +149,7 @@ class ColorParam extends RuleParam {
         }
 
         return [
-            'type' => 'hex',
+            'type' => ColorLib::THEX,
             'color' => [$hexCode]
         ];
         
@@ -171,6 +171,7 @@ class ColorParam extends RuleParam {
             }
             $arg = $metric['metric'];
         }
+        
 
         //tricky thing to check number of arguments
         if (strlen($function['name']) !== count($arguments)) {
@@ -181,7 +182,6 @@ class ColorParam extends RuleParam {
             'type' => $function['name'],
             'color' => []
         ];
-
         $color = &$result['color'];
         switch ($function['name']) {
             case 'rgb':
@@ -246,7 +246,7 @@ class ColorParam extends RuleParam {
     public static function parse(&$string) {
         if (preg_match('/^([a-z]+)/i', $string, $matches) && ($hcolor = self::getHtmlColor($matches[1]))) {
             parent::trimStringBy($string, strlen($matches[0]));
-            return new self('html', [$matches[1]]);
+            return new self(ColorLib::THTML, [$matches[1]]);
         } else if (preg_match('/^(#[[:xdigit:]]{3}|#[[:xdigit:]]{6}|(?:rgb|rgba|hsl|hsla|hsb)\(.+\))(?:$|\s)/i', $string, $matches)) {
             $color = self::parseColorString($matches[1]);
             if ($color) {

@@ -64,6 +64,7 @@ class MrColorLib extends ColorLib {
                     'blue' => $this->getSourceChannel('b'),
                     'alpha' => $this->getSourceChannel('a', 1)
                 ]);
+                break;
             case self::THSL:
             case self::THSLA:
                 $this->color = Color::create([
@@ -72,11 +73,12 @@ class MrColorLib extends ColorLib {
                     'lightness' => $this->getSourceChannel('lt') / 100,
                     'alpha' => $this->getSourceChannel('a', 1)
                 ]);
-                
+                break;
             case self::THEX:
                 $this->color = Color::create([
                     'hex' => $this->getSourceChannel(0)
                 ]);
+                break;
         }
 //        $this->color = Color::create([
 //            'red' => 144,
@@ -124,7 +126,6 @@ class MrColorLib extends ColorLib {
         }
         return null;
     }
-    
     
     private function msChannelName($mrName) {
         if (isset(self::$msMap[$mrName])) {

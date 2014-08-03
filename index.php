@@ -28,11 +28,35 @@ $code = <<<TEXT
     h1 , h2, h3,h4
         color rgb(220,120, 30 )
         border-color #f3f
-        border-bottom-color hsl(350, 80%, 80%)
+        border-bottom-color hsl(300, 80%, 80%)
         background-color red
         font-size 10px
         .sort 
             color sdfsd
+            .underline
+                text-decoration underline ;; ;
+                border-bottom :    1px           solid     gray  ;
+    
+    body:any(:hover, :active)
+        padding 0
+        margin 0
+        gradient as
+        \$varname = mememe
+        html.ie6 & .title
+            font-size 24px
+            color red
+            .colored
+            h1 as
+            .grayed
+                color purple
+                .colorsd
+                    width 300px
+                    border-radius 4px 5px 6px 7px 8px 9px
+
+
+
+ 
+        
 TEXT;
         
 $code2 = <<<TEXT
@@ -47,6 +71,27 @@ body {
 } 
 
 TEXT;
+
+$code3 = <<<TEXT
+h1
+    color red
+
+h2 {
+    color rgb(220,120, 30 )
+}
+
+h3 
+{
+    color: red
+}
+
+h4
+    color: red;
+    
+h5 { color: red; background-color: green; }
+
+TEXT;
+
 
 
 $result = $mysheet->parseCode($code);

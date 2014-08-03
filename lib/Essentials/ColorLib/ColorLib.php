@@ -22,7 +22,8 @@ abstract class ColorLib {
           TRGBA = 'rgba',
           THEX = 'hex',
           THSL = 'hsl',
-          THSLA = 'hsla';
+          THSLA = 'hsla',
+          THTML = 'html';
     
     protected $type;
     protected $source_color;

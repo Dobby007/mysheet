@@ -1,0 +1,31 @@
+h2 {
+    color red
+    span {
+        color: red; background-color: green;
+    }
+    span.underline
+        text-decoration underline
+        .reversed {
+            direction: rtl
+        }
+}
+
+    
+====
+
+h2 {
+    color: #ff0000
+}
+
+h2 span {
+    color: #ff0000;
+    background-color: #008000
+}
+
+h2 span.underline {
+    text-decoration: underline
+}
+
+h2 span.underline .reversed {
+    direction: rtl
+}

@@ -34,6 +34,15 @@ class FunctionalTest extends BaseTest
         $this->assertEquals( $expectedCss, trim($doc->toRealCss()) );
     }
     
+    /**
+     * @dataProvider dataFreeSyntax
+     */
+    public function testFreeSyntax($mssSource, $expectedCss)
+    {
+        $doc = $this->mysheet->parseCode($mssSource);
+        $this->assertEquals( $expectedCss, trim($doc->toRealCss()) );
+    }
+    
     public function dataMultipleSelectors() {
         $tests = self::getAvailableTests('FunctionalTest', 'MultipleSelectors');
         $tests = array_map(function ($filePath) {
@@ -43,9 +52,19 @@ class FunctionalTest extends BaseTest
                 $test['expected']
             ];
         }, $tests);
-//        var_dump($tests);
         return $tests;
     }
     
+    public function dataFreeSyntax() {
+        $tests = self::getAvailableTests('FunctionalTest', 'FreeSyntax');
+        $tests = array_map(function ($filePath) {
+            $test = self::getTest($filePath);
+            return [
+                $test['source'],
+                $test['expected']
+            ];
+        }, $tests);
+        return $tests;
+    }
     
 }

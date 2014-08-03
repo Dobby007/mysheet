@@ -13,44 +13,47 @@ namespace MySheet\Helpers;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-abstract class StringHelper {
-
-    public static function parseFunction(&$input) {
-        $funcName = '';
-        $arguments = false;
-        
-        $text = ltrim($input);
+abstract class StringHelper
+{
+    public static function parseStringUntil(&$input, $substr) {
+        $text = $input;
         $textLen = strlen($text);
         $i = 0;
-        $space_found = false;
         
         while ($i < $textLen) {
-            if ($text[$i] === '(') {
+            if ($text[$i] === $substr) {
                 break;
-            } else if (!$space_found && !ctype_space($text[$i])) {
-                $funcName .= $text[$i];
-            } else if (ctype_space($text[$i])) {
-                $space_found = true;
-            } else if ($space_found) {
-                break;
+            } else {
+                $i++;
             }
-            $i++;
         }
-        $args_offset = $i;
-        if (substr($text, $args_offset, 1) !== '(') {
+        
+        if ($i < $textLen) {
+            $input = substr($input, $i);
+            return substr($text, 0, $i);
+        } else {
+            return false;
+        }
+    }
+    
+    public static function parseFunction(&$input, $spaceInArgs = false) {
+        $text = ltrim($input);
+        $arguments = false;
+        $funcName = self::parseStringUntil($text, '(');
+        if ($funcName === false) {
             return false;
         }
         
-        $enclosedWithBrackets = StringHelper::parseEnclosedString(substr($text, $args_offset));
+        $args_offset = strlen($funcName);
+        $enclosedWithBrackets = StringHelper::parseEnclosedString($text);
         if ($enclosedWithBrackets) {
             $argString = substr($enclosedWithBrackets, 1, -1);
-            $arguments = StringHelper::parseSplittedString($argString, ',');
+            $arguments = StringHelper::parseSplittedString($argString, ',', !$spaceInArgs);
         }
-        
         if (!empty($arguments) && !empty($funcName)) {
             $input = substr($input, $args_offset + strlen($enclosedWithBrackets));
             return [
-                'name' => $funcName,
+                'name' => trim($funcName),
                 'arguments' => $arguments
             ];
         }
@@ -147,25 +150,23 @@ abstract class StringHelper {
                     $i += strlen($enclosedPart);
                     continue;
                 }
-                
             } else if ( $char === $delimiter || ($stopAtSpace === true && ctype_space($char)) ) {
                 $splittedList[] = substr($string, $offset, $i - $offset);
                 
                 $i += self::countLeftSpaces(substr($string, $i));
                 if ($i >= $len || $string[$i] !== $delimiter) {
                     break;
+                } else {
+                    $i++;
                 }
-                $i++;
                 $i += self::countLeftSpaces(substr($string, $i));
                 $offset = $i;
                 continue;
+            } else if ($i === $len - 1) {
+                $splittedList[] = substr($string, $offset, ++$i - $offset);
             } else {
                 $i++;
             }
-        }
-        
-        if ($i >= $len - 1) {
-            $splittedList[] = substr($string, $offset, $i - $offset);
         }
         
         $string = substr($string, $i);

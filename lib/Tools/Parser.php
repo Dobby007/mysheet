@@ -72,6 +72,7 @@ class Parser implements IParser {
 
         $tabsize = false;
         $is_tabbed = false;
+        /* @var $lines SourceLine[] */
         $lines = [];
         $curly_blocks = [];
         
@@ -129,8 +130,14 @@ class Parser implements IParser {
             
             while ($i < $len) {
                 if ($line[$i] === '{') {
-                    $lines[] = new SourceLine(trim(substr($line, $offset, $i - $offset)), $nlev, '{');
-//                    var_dump($nlev);
+                    $newline = trim(substr($line, $offset, $i - $offset));
+                    if (!empty($newline)) {
+                        $lines[] = new SourceLine($newline, $nlev, '{');
+                    } else if (end($lines) instanceof SourceLine) {
+                        /* @var $prevLine SourceLine */
+                        $prevLine = end($lines);
+                        $prevLine->setCurlyBracket('{');
+                    }
                     $curly_blocks[] = $nlev;
                     $nlev++;
                     $offset = $i + 1;

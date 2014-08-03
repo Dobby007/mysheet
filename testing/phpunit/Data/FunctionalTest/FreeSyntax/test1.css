@@ -1,0 +1,39 @@
+h1
+    color red
+
+h2 {
+    color red
+}
+
+h3 
+{
+    color: red
+}
+
+h4
+    color: red;
+    
+h5 { color: red; background-color: green; }
+    
+====
+
+h1 {
+    color: #ff0000
+}
+
+h2 {
+    color: #ff0000
+}
+
+h3 {
+    color: #ff0000
+}
+
+h4 {
+    color: #ff0000
+}
+
+h5 {
+    color: #ff0000;
+    background-color: #008000
+}
