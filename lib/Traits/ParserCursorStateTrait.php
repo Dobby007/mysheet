@@ -8,8 +8,6 @@
 
 namespace MySheet\Traits;
 
-use MySheet\Helpers\HandlerCallResult;
-
 /**
  * Description of HandlerClassTrait
  *

@@ -227,5 +227,37 @@ abstract class StringHelper
         }
         return $string;
     }
+    
+    /**
+     * 
+     * @param string $line Text line
+     * @param boolean $count_tabs True if you want to count \t characters instead of spaces
+     * @return int|boolean Returns the number of spaces till the first meaning character
+     */
+    public static function countLineSpaces($line, $count_tabs = false) {
+        $linelen = strlen($line);
+        $i = 0;
+
+        while ($i < $linelen) {
+            if (!self::isSpaceSymbol($line[$i]) && $i > 0) {
+                return $i;
+            } else if ($line[$i] === "\r" || $line[$i] === "\n") {
+                return false;
+            } else if ($i === 0 && !self::isSpaceSymbol($line[$i])) {
+                return 0;
+            }
+
+            $i++;
+        }
+
+        return false;
+    }
+
+    public static function isSpaceSymbol($char) {
+        if ($char === ' ' || $char === "\t")
+            return true;
+
+        return false;
+    }
 
 }
