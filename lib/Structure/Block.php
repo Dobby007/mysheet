@@ -37,6 +37,16 @@ abstract class Block {
             $this->parent = $parent;
     }
 
+    public function getDepth() {
+        $block = $this;
+        $depth = 0;
+        while ($block->getParent() instanceof SourceClosure) {
+            $block = $block->getParent();
+            $depth++;
+        }
+        return $depth;
+    }
+    
     /**
      * @return array Array of compiled lines
      */

@@ -129,13 +129,13 @@ class BlockParser implements IParser {
                     $offset = $i + 1;
                     $handled = true;
                 } else if ($line[$i] === '}' && count($curly_blocks) > 0) {
+                    $newLine = trim(substr($line, $offset, $i - $offset));
                     if (!empty($newLine)) {
                         $curBlock->addLine($newLine);
                     }
                     array_pop($curly_blocks);
                     $newLevel--;
                     $curBlock = $this->getParentClosureByLevel($curBlock, $newLevel);
-                    var_dump('-');
                     $offset = $i + 1;
                     $handled = true;
                 }
@@ -165,7 +165,10 @@ class BlockParser implements IParser {
     
     public function parseContext(ParserContext $context) {
         $this->curLine = 0;
-        $curLine = $this->curline();
+        $curLine = $context->curLine();
+        if (!$curLine) {
+            return [];
+        }
         //we need to create a temp document to insert parsed blocks in it
         $rootBlock = new Document();
         $curBlock = $rootBlock;
@@ -179,7 +182,8 @@ class BlockParser implements IParser {
                 }
                 $context->restoreCursorState();
             }
-//            var_dump($result);
+            
+            var_dump('level is ' . $curBlock->getDepth(), 'source level is ' . $curLine->getLevel());
             
             if (
                 $curBlock instanceof NodeBlock && 
@@ -192,6 +196,12 @@ class BlockParser implements IParser {
             } else {
                 //throw can not get parent object of $curLineNumber
             }
+            
+            //if current source closure has nested closures then we can guarantee that the next line is deeper than the current one
+            if ($context->curClosure()->countChildren() > 0) {
+                $curBlock = $result;
+            }
+            
             /*
             $nextLine = $this->getLine($this->getLineNumber() + 1);
             if ($result && $nextLine) {
@@ -211,8 +221,8 @@ class BlockParser implements IParser {
                 } else {
                     //throw bad tab indentation
                 }
-            }*/break;
-        } while ($curLine = $this->nextline());
+            }*/
+        } while ($curLine = $context->nextLine(true));
         
         return $rootBlock->getChildren();
     }
@@ -229,14 +239,12 @@ class BlockParser implements IParser {
         if ($level < $block->getLevel()) {
             while ($level < $block->getLevel()) {
                 $block = $block->getParent();
-                var_dump('-');
             }
         }
         return $block;
     }
     
     protected function addChildToClosure(SourceClosure $block) {
-        var_dump('+');
         return $block->addChildClosure(new SourceClosure())
                      ->getChildClosure(-1);
     }

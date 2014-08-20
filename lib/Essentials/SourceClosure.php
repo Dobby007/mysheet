@@ -22,6 +22,10 @@ class SourceClosure {
 //        $this->setParent($parentBlock);
 //    }
 
+    /**
+     * Function returns parent closure
+     * @return SourceClosure|null
+     */
     public function getParent() {
         return $this->parent;
     }
@@ -29,6 +33,20 @@ class SourceClosure {
     protected function setParent(SourceClosure $parent) {
         $this->parent = $parent;
         return $this;
+    }
+    
+    /**
+     * Function returns the index of the specified closure or false if it's not found.
+     * @param SourceClosure $closure
+     * @return int|boolean
+     */
+    public function indexOf(SourceClosure $closure) {
+        foreach ($this->children as $index => $child) {
+            if ($child === $closure) {
+                return $index;
+            }
+        }
+        return false;
     }
     
     public function getPrevNeighbour() {
@@ -39,13 +57,23 @@ class SourceClosure {
         return $this->getNeighbour(true);
     }
     
-    protected function getNeighbour($getNext) {
+    protected function getNeighbour($getNext, $ignoreChildren = false) {
         $neighbour = null;
-        if ($msb = $this->getChildClosure($getNext ? 0 : -1)) {
+        if (!$ignoreChildren && ($msb = $this->getChildClosure($getNext ? 0 : -1))) {
             $neighbour = $msb;
-        } else if ($this->getParent()) {
-            $neighbour = $mySourceBlock->getParent();
+        } else {
+            $parent = $this->getParent();
+            if ($parent === null) {
+                return null;
+            }
+            $index = $parent->indexOf($this) + ($getNext ? 1 : -1);
+            if ($index < $parent->countChildren()) {
+                return $parent->getChildClosure($index);
+            } else {
+                return $parent->getNeighbour($getNext, true);
+            }
         }
+//        echo $neighbour;
         return $neighbour;
     }
     
@@ -63,7 +91,7 @@ class SourceClosure {
         if (isset($this->lines[$index])) {
             return new SourceLine($this->lines[$index], $this->getLevel());
         }
-        return null;
+        return false;
     }
     
     public function setLine($index, $line) {
@@ -118,7 +146,7 @@ class SourceClosure {
     }
     
     /**
-     * Get all children that belong to this block
+     * Get all children that belong to this closure
      * @return SourceClosure[]
      */
     public function getChildren() {

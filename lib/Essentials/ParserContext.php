@@ -59,17 +59,35 @@ class ParserContext {
         $this->parser = $parser;
     }
     
-    public function nextLine() {
+    public function nextLine($jump = false) {
         if ($this->getLine($this->getCurrentLineIndex() + 1)) {
             $this->setCurrentLineIndex($this->getCurrentLineIndex() + 1);
+            return $this->curLine();
+        } else if ($jump === true) {
+            do {
+                if (!$this->goToClosure(1)) {
+                    return false;
+                }
+            } while (!$this->getLine(0));
+            
+            $this->setCurrentLineIndex(0);
             return $this->curLine();
         }
         return false;
     }
     
-    public function prevLine() {
+    public function prevLine($jump = false) {
         if ($this->getLine($this->getCurrentLineIndex() - 1)) {
             $this->setCurrentLineIndex($this->getCurrentLineIndex() - 1);
+            return $this->curLine();
+        } else if ($jump === true) {
+            do {
+                if (!$this->goToClosure(1)) {
+                    return false;
+                }
+            } while (!$this->getLine(0));
+            
+            $this->setCurrentLineIndex(-1);
             return $this->curLine();
         }
         return false;
@@ -101,8 +119,11 @@ class ParserContext {
                 $offset++;
             }
         }
-        $this->setCursor($myClosure, 0);
-        return $myClosure;
+        if ($myClosure instanceof SourceClosure) {
+            $this->setCursor($myClosure, 0);
+            return $myClosure;
+        }
+        return false;
     }
     
     public function getCurrentLineIndex() {
@@ -117,6 +138,10 @@ class ParserContext {
     public function setCurrentLineIndex($lineIndex) {
         if (!$this->curClosure()) {
             return false;
+        }
+        
+        if ($lineIndex < 0) {
+            $lineIndex = $this->curClosure()->countLines() + $lineIndex;
         }
         
         if ($lineIndex >= 0 && $lineIndex < $this->curClosure()->countLines()) {

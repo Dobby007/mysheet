@@ -41,7 +41,6 @@ class RulesetParserExtension extends ParserExtension
         $curLine = $context->curLine();
         do {
             $line = $curLine->getLine();
-            echo $line;
             $declarations = StringHelper::parseSplittedString($line, ';', false);
             $allIsRight = ArrayHelper::jsAll($declarations, function($item) {
                 return Declaration::canBeDeclaration($item);
@@ -54,10 +53,6 @@ class RulesetParserExtension extends ParserExtension
             }
         } while ($curLine = $context->nextLine());    
             
-        if ($ruleset->countDeclarations() >= 0) {
-            return $ruleset;
-        }
-
-        return false;
+        return $ruleset;
     }
 }
