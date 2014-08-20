@@ -81,7 +81,7 @@ body {
 TEXT;
 
 $code3 = <<<TEXT
-h1
+h1 span, h1 i
     color red
     font-style italic
 

@@ -16,12 +16,10 @@ namespace MySheet\Essentials;
 class SourceLine {
     private $line;
     private $level;
-    private $curlyBracket;
     
-    function __construct($line, $level, $curlyBracket = false) {
+    function __construct($line, $level) {
         $this->setLine($line);
         $this->setLevel($level);
-        $this->setCurlyBracket($curlyBracket);
     }
     
     public function getLine() {
@@ -32,18 +30,6 @@ class SourceLine {
         return $this->level;
     }
 
-    public function hasOpenCurlyBracket() {
-        return $this->curlyBracket === '}';
-    }
-    
-    public function hasCloseCurlyBracket() {
-        return $this->curlyBracket === '{';
-    }
-    
-    public function hasCurlyBracket() {
-        return $this->hasOpenCurlyBracket() || $this->hasCloseCurlyBracket();
-    }
-
     public function setLine($line) {
         $this->line = (string) $line;
         return $this;
@@ -51,13 +37,6 @@ class SourceLine {
 
     public function setLevel($level) {
         $this->level = (int) $level;
-        return $this;
-    }
-
-    public function setCurlyBracket($curlyBracket) {
-        if (in_array($curlyBracket, ['{', '}', false])) {
-            $this->curlyBracket = $curlyBracket;
-        }
         return $this;
     }
     
@@ -70,7 +49,7 @@ class SourceLine {
     }
 
     public function __toString() {
-        return $this->getLevel() . ', ' . $this->getLine() . ' ' . $this->curlyBracket;
+        return $this->getLevel() . ', ' . $this->getLine();
     }
 
 }

@@ -12,6 +12,7 @@ use MySheet\Essentials\ParserExtension;
 use MySheet\Structure\Ruleset;
 use MySheet\Structure\Declaration;
 use MySheet\Helpers\StringHelper;
+use MySheet\Helpers\ArrayHelper;
 /**
  * Description of RulesetParserExtension
  *
@@ -22,46 +23,40 @@ class RulesetParserExtension extends ParserExtension
     
     public function parse() {
         $context = $this->getContext();
-        $firstLine = $curLine = $context->curline();
+        //Check if children exist
+        if ($context->curClosure()->countChildren() < 1) {
+            return false;
+        }
+        
+        $firstLine = $curLine = $context->curLine();
         $ruleset = new Ruleset(null);
         
         do {
-            if ($curLine->getLevel() == $firstLine->getLevel()) {
-                $curLine = $curLine->getLine();
-                $selectors = StringHelper::parseSplittedString($curLine, ',', false);
-                $ruleset->addSelectors($selectors);
-            } else if ($curLine->getLevel() == $firstLine->getLevel() + 1) {
-                $nextline = $context->getLine($context->getLineNumber() + 1);
-                $declaration = $curLine->getLine();
-                //if ruleset contains no declarations and just has children
-                if ($nextline) {
-                    if (
-                        $nextline->getLevel() > $curLine->getLevel() ||
-                        !Declaration::canBeDeclaration($declaration)
-                    ) {
-                        $context->prevline();
-                        break;
-                    } else if (
-                        $firstLine->getLevel() >= $nextline->getLevel() ||
-                        !Declaration::canBeDeclaration($nextline->getLine())
-                    ) {
-                        $ruleset->addDeclarations($declaration);
-                        break;
-                    }
-                }
-
-                $ruleset->addDeclarations($declaration);
-            } else {
-                return false;
-            }
-            
-        } while ($curLine = $context->nextline());
-                
+            $line = $curLine->getLine();
+            $selectors = StringHelper::parseSplittedString($line, ',', false);
+            $ruleset->addSelectors($selectors);
+        } while ($curLine = $context->nextLine());
         
+        $context->goToClosure(1);
+        $curLine = $context->curLine();
+        do {
+            $line = $curLine->getLine();
+            echo $line;
+            $declarations = StringHelper::parseSplittedString($line, ';', false);
+            $allIsRight = ArrayHelper::jsAll($declarations, function($item) {
+                return Declaration::canBeDeclaration($item);
+            });
+            
+            if ($allIsRight) {
+                $ruleset->addDeclarations($declarations);
+            } else {
+                break;
+            }
+        } while ($curLine = $context->nextLine());    
+            
         if ($ruleset->countDeclarations() >= 0) {
             return $ruleset;
         }
-
 
         return false;
     }

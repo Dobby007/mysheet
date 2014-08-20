@@ -169,7 +169,7 @@ abstract class StringHelper
                 $i++;
             }
         }
-        var_dump($splittedList);
+//        var_dump($splittedList);
         $string = substr($string, $i);
         
         return array_map('trim', $splittedList);

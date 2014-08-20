@@ -11,7 +11,8 @@ namespace MySheet\Essentials;
 use MySheet\Tools\IParser;
 use MySheet\Traits\ParserLinesTrait;
 use MySheet\Traits\ParserCursorStateTrait;
-
+use MySheet\Essentials\ParserExtension;
+use MySheet\Essentials\SourceClosure;
 /**
  * Description of ParserContext
  *
@@ -31,16 +32,21 @@ class ParserContext {
     private $lineIndex;
     
     /**
-     * @var SourceBlock
+     * @var SourceClosure
      */
-    private $sourceBlock;
+    private $sourceClosure;
     
-    public function __construct(IParser $parser, array $blockTree, $curLine) {
-        $this->blockTree = $blockTree;
-        $this->setLineCursor($curLine);
+    /**
+     * @var SourceClosure
+     */
+    private $rootSourceClosure;
+    
+    public function __construct(IParser $parser, SourceClosure $rootSourceClosure) {
+        $this->rootSourceClosure = $rootSourceClosure;
         $this->setParser($parser);
+        $this->setCursor($this->rootSourceClosure->getChildClosure(0), 0);
     }
-    
+ 
     /**
      * 
      * @return IParser
@@ -54,56 +60,103 @@ class ParserContext {
     }
     
     public function nextLine() {
-        return $this->curLine();
+        if ($this->getLine($this->getCurrentLineIndex() + 1)) {
+            $this->setCurrentLineIndex($this->getCurrentLineIndex() + 1);
+            return $this->curLine();
+        }
+        return false;
     }
     
     public function prevLine() {
-        return $this->curLine();
+        if ($this->getLine($this->getCurrentLineIndex() - 1)) {
+            $this->setCurrentLineIndex($this->getCurrentLineIndex() - 1);
+            return $this->curLine();
+        }
+        return false;
     }
     
     public function curLine() {
-        return $this->curSourceBlock()->getLine($this->lineIndex);
-    }
+        if ($this->curClosure()) {
+            return $this->curClosure()->getLine($this->lineIndex);
+        }
+        return false;
+    }   
     
     /**
      * Function is used to return the source block where the cursor is set
-     * @return SourceBlock
+     * @return SourceClosure
      */
-    public function curSourceBlock() {
-        return $this->sourceBlock;
+    public function curClosure() {
+        return $this->sourceClosure;
+    }
+    
+    public function goToClosure($offset) {
+        $myClosure = $this->curClosure();
+        while ($offset !== 0) {
+            if ($offset > 0) {
+                $myClosure = $myClosure->getNextNeighbour();
+                $offset--;
+            } else {
+                $myClosure = $myClosure->getPrevNeighbour();
+                $offset++;
+            }
+        }
+        $this->setCursor($myClosure, 0);
+        return $myClosure;
     }
     
     public function getCurrentLineIndex() {
         return $this->lineIndex;
     }
     
-    public function getLine($offset) {
-        $mySourceBlock = $this->sourceBlock;
-        $myLineIndex = $this->lineIndex;
-        
-        while ($offset !== 0) {
-            if ($myLineIndex < $mySourceBlock->countLines() - 1) {
-                $myLineIndex++;
-            } else {
-                if ($msb = $mySourceBlock->getChildBlock($offset > 0 ? 0 : -1)) {
-                    $mySourceBlock = $msb;
-                } else if ($mySourceBlock) {
-                    
-                }
-                
-                
-            }
-            if ($offset > 0) {
-                $offset--;
-            } else {
-                $offset++;
-            }
-        }
-        
+    public function setCursor(SourceClosure $closure, $lineIndex) {
+        $this->sourceClosure = $closure;
+        $this->setCurrentLineIndex($lineIndex);
     }
     
+    public function setCurrentLineIndex($lineIndex) {
+        if (!$this->curClosure()) {
+            return false;
+        }
+        
+        if ($lineIndex >= 0 && $lineIndex < $this->curClosure()->countLines()) {
+            $this->lineIndex = $lineIndex;
+        }
+        
+        return false;
+    }
+    
+    public function getLine($lineIndex) {
+        if (!$this->curClosure()) {
+            return false;
+        }
+        
+        return $this->curClosure()->getLine($lineIndex);
+    }
+    
+    
+    
+    /**
+     * Method runs parsing for this parser context
+     * @param ParserExtension $extension The extension you want to parse context with
+     * @return \MySheet\Structure\Block|bool
+     */
     public function parse(ParserExtension $extension) {
         $extension->setContext($this);
         return $extension->parse();
+    }
+    
+    private $savedCursor = null;
+    
+    public function saveCursorState() {
+        $this->savedCursor = [$this->curClosure(), $this->getCurrentLineIndex()];
+    }
+
+    public function restoreCursorState() {
+        if ($this->savedCursor !== null) {
+            $this->setCursor($this->savedCursor[0], $this->savedCursor[1]);
+            return true;
+        }
+        return false;
     }
 }

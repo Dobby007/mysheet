@@ -13,9 +13,8 @@ namespace MySheet\Essentials;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class SourceBlock {
+class SourceClosure {
     private $parent;
-    private $level;
     private $lines = array();
     private $children = array();
     
@@ -27,15 +26,33 @@ class SourceBlock {
         return $this->parent;
     }
 
-    protected function setParent(SourceBlock $parent) {
+    protected function setParent(SourceClosure $parent) {
         $this->parent = $parent;
         return $this;
+    }
+    
+    public function getPrevNeighbour() {
+        return $this->getNeighbour(false);
+    }
+    
+    public function getNextNeighbour() {
+        return $this->getNeighbour(true);
+    }
+    
+    protected function getNeighbour($getNext) {
+        $neighbour = null;
+        if ($msb = $this->getChildClosure($getNext ? 0 : -1)) {
+            $neighbour = $msb;
+        } else if ($this->getParent()) {
+            $neighbour = $mySourceBlock->getParent();
+        }
+        return $neighbour;
     }
     
     public function getLevel() {
         $block = $this;
         $level = 0;
-        while ($block->getParent() instanceof SourceBlock) {
+        while ($block->getParent() instanceof SourceClosure) {
             $block = $block->getParent();
             $level++;
         }
@@ -44,7 +61,7 @@ class SourceBlock {
     
     public function getLine($index) {
         if (isset($this->lines[$index])) {
-            return $this->lines[$index];
+            return new SourceLine($this->lines[$index], $this->getLevel());
         }
         return null;
     }
@@ -74,7 +91,7 @@ class SourceBlock {
     }
     
     
-    public function getChildBlock($index) {
+    public function getChildClosure($index) {
         if ($index < 0) {
             $index = count($this->children) + $index;
         }
@@ -85,7 +102,7 @@ class SourceBlock {
         return null;
     }
     
-    public function setChildBlock($index, SourceBlock $block) {
+    public function setChildClosure($index, SourceClosure $block) {
         if ($index !== null && isset($this->children[$index])) {
             $this->children[$index] = $block;
             $block->setParent($this);
@@ -96,13 +113,13 @@ class SourceBlock {
         return $this;
     }
     
-    public function addChildBlock(SourceBlock $block) {
-        return $this->setChildBlock(null, $block);
+    public function addChildClosure(SourceClosure $block) {
+        return $this->setChildClosure(null, $block);
     }
     
     /**
      * Get all children that belong to this block
-     * @return SourceBlock[]
+     * @return SourceClosure[]
      */
     public function getChildren() {
         return $this->children;

@@ -85,4 +85,13 @@ abstract class ArrayHelper {
         return implode($separator, $lines);
     }
 
+    
+    public static function jsAll($array, callable $callback) {
+        foreach ($array as $item) {
+            if (!$callback($item)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

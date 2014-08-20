@@ -10,7 +10,7 @@ use MySheet\Error\ErrorTable;
 use MySheet\Essentials\ParserExtension;
 use MySheet\Essentials\ParserContext;
 use MySheet\Essentials\SourceLine;
-use MySheet\Essentials\SourceBlock;
+use MySheet\Essentials\SourceClosure;
 use MySheet\Traits\RootClassTrait;
 use MySheet\Traits\ParserLinesTrait;
 use MySheet\Traits\ParserCursorStateTrait;
@@ -27,10 +27,11 @@ class BlockParser implements IParser {
         ParserLinesTrait,
         ParserCursorStateTrait;
 
-    private $code = null;
-    private $context = null;
-    private $doc = null;
     protected $extensions = array();
+    
+    private $code = null;
+    private $sourceClosure = null;
+    private $doc = null;
 
     public function __construct($code) {
         $this->setCode($code);
@@ -61,7 +62,8 @@ class BlockParser implements IParser {
 
         try {
             $this->divideIntoLines();
-            $parsedBlocks = $this->parseContext($this->context);
+            $context = new ParserContext($this, $this->sourceClosure);
+            $parsedBlocks = $this->parseContext($context);
             foreach ($parsedBlocks as $parsedBlock) {
                 $this->doc->addChild($parsedBlock);
             }
@@ -81,12 +83,12 @@ class BlockParser implements IParser {
         $curly_blocks = [];
         $blockTree = [];
         
-        $rootBlock = (new SourceBlock())->addChildBlock(new SourceBlock());
-        /* @var $curBlock SourceBlock */
-        $curBlock = $rootBlock->getChildBlock(-1);
+        $rootBlock = (new SourceClosure())->addChildClosure(new SourceClosure());
+        /* @var $curBlock SourceClosure */
+        $curBlock = $rootBlock->getChildClosure(-1);
         
         array_walk($this->lines, function($line, $index) use(&$indentSize, &$tabsInsteadSpaces, &$lines, &$curly_blocks, &$curBlock, &$blockTree) {
-            /* @var $curBlock SourceBlock */
+            /* @var $curBlock SourceClosure */
             if ($indentSize === null && substr($line, 0, 1) === "\t") {
                 $tabsInsteadSpaces = true;
             }
@@ -117,13 +119,13 @@ class BlockParser implements IParser {
                     $newLine = trim(substr($line, $offset, $i - $offset));
                     if (!empty($newLine)) {
                         if (!$handled) {
-                            $curBlock = $this->findAppropriateBlock($curBlock, $lineLevel - 1);
+                            $curBlock = $this->findAppropriateClosure($curBlock, $lineLevel - 1);
                         }
                         $curBlock->addLine($newLine);
                     }
                     $curly_blocks[] = $newLevel;
                     $newLevel++;
-                    $curBlock = $this->addChildToBlock($curBlock);
+                    $curBlock = $this->addChildToClosure($curBlock);
                     $offset = $i + 1;
                     $handled = true;
                 } else if ($line[$i] === '}' && count($curly_blocks) > 0) {
@@ -132,7 +134,7 @@ class BlockParser implements IParser {
                     }
                     array_pop($curly_blocks);
                     $newLevel--;
-                    $curBlock = $this->getParentBlockByLevel($curBlock, $newLevel);
+                    $curBlock = $this->getParentClosureByLevel($curBlock, $newLevel);
                     var_dump('-');
                     $offset = $i + 1;
                     $handled = true;
@@ -146,7 +148,7 @@ class BlockParser implements IParser {
                     $curBlock->addLine($endstr);
                 }
             } else {
-                $curBlock = $this->findAppropriateBlock($curBlock, $lineLevel);
+                $curBlock = $this->findAppropriateClosure($curBlock, $lineLevel);
                 $curBlock->addLine(rtrim(substr($line, $spacesCount)));
             }
         });
@@ -158,7 +160,7 @@ class BlockParser implements IParser {
         echo $curBlock;
         echo "\n===\n\n";
         var_dump($curBlock);
-        $this->
+        $this->sourceClosure = $curBlock;
     }
     
     public function parseContext(ParserContext $context) {
@@ -177,6 +179,7 @@ class BlockParser implements IParser {
                 }
                 $context->restoreCursorState();
             }
+//            var_dump($result);
             
             if (
                 $curBlock instanceof NodeBlock && 
@@ -189,7 +192,7 @@ class BlockParser implements IParser {
             } else {
                 //throw can not get parent object of $curLineNumber
             }
-            
+            /*
             $nextLine = $this->getLine($this->getLineNumber() + 1);
             if ($result && $nextLine) {
                 if (
@@ -208,7 +211,7 @@ class BlockParser implements IParser {
                 } else {
                     //throw bad tab indentation
                 }
-            }
+            }*/break;
         } while ($curLine = $this->nextline());
         
         return $rootBlock->getChildren();
@@ -222,7 +225,7 @@ class BlockParser implements IParser {
         return $result;
     }
 
-    protected function getParentBlockByLevel(SourceBlock $block, $level) {
+    protected function getParentClosureByLevel(SourceClosure $block, $level) {
         if ($level < $block->getLevel()) {
             while ($level < $block->getLevel()) {
                 $block = $block->getParent();
@@ -232,19 +235,19 @@ class BlockParser implements IParser {
         return $block;
     }
     
-    protected function addChildToBlock(SourceBlock $block) {
+    protected function addChildToClosure(SourceClosure $block) {
         var_dump('+');
-        return $block->addChildBlock(new SourceBlock())
-                     ->getChildBlock(-1);
+        return $block->addChildClosure(new SourceClosure())
+                     ->getChildClosure(-1);
     }
     
-    protected function findAppropriateBlock(SourceBlock $curBlock, $lineLevel) {
+    protected function findAppropriateClosure(SourceClosure $curBlock, $lineLevel) {
         $curBlockLevel = $curBlock->getLevel();
         //if level of current line is less than the level of current block, we need to find appropriate parent for it
-        $curBlock = $this->getParentBlockByLevel($curBlock, $lineLevel);
+        $curBlock = $this->getParentClosureByLevel($curBlock, $lineLevel);
         //we've gotta add a new block if the levels of current line and previous block are not the same
         if ($lineLevel !== $curBlockLevel) {
-            $curBlock = $this->addChildToBlock($curBlock);
+            $curBlock = $this->addChildToClosure($curBlock);
         }
         return $curBlock;
     }

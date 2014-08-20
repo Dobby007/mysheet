@@ -32,8 +32,8 @@ class MixinParserExtension extends ParserExtension {
     
     public function parse() {
         $context = $this->getContext();
-        $firstLine = $curLine = $context->curline();
-        
+        $firstLine = $curLine = $context->curLine();
+//        var_dump($context->curClosure(), $context->getCurrentLineIndex());
         if (!$firstLine->startsWith('@mixin')) {
             return false;
         }
