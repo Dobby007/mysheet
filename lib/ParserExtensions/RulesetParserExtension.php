@@ -39,6 +39,10 @@ class RulesetParserExtension extends ParserExtension
         
         $context->goToClosure(1);
         $curLine = $context->curLine();
+        $lastLine = $context->curClosure()->countLines() - 1;
+        if ($context->curClosure()->hasChildren()) {
+            $lastLine--;
+        }
         do {
             $line = $curLine->getLine();
             $declarations = StringHelper::parseSplittedString($line, ';', false);
@@ -49,9 +53,10 @@ class RulesetParserExtension extends ParserExtension
             if ($allIsRight) {
                 $ruleset->addDeclarations($declarations);
             } else {
+                $context->prevLine();
                 break;
             }
-        } while ($curLine = $context->nextLine());    
+        } while ($context->getCurrentLineIndex() < $lastLine && $curLine = $context->nextLine());    
             
         return $ruleset;
     }

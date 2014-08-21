@@ -70,8 +70,8 @@ TEXT;
 $code2 = <<<TEXT
 html { color false; h1: true; hi: #333}
 body {   
-    rule: red 
-    .wrapper 
+    rule: red
+    .wrapper
         decl value
         set h1
             color high-definition
@@ -106,7 +106,7 @@ body:any(:hover, :active) {
     padding 0
     margin 0
     gradient as
-    \$varname = mememe
+    
     html.ie6 & .title
         font-size 24px
         color red
@@ -118,7 +118,7 @@ body:any(:hover, :active) {
 TEXT;
 
 
-$result = $mysheet->parseCode($code3);
+$result = $mysheet->parseCode($code);
 
 var_dump($result);
 

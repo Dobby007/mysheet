@@ -156,6 +156,10 @@ class SourceClosure {
     public function countChildren() {
         return count($this->children);
     }
+    
+    public function hasChildren() {
+        return $this->countChildren() > 0;
+    }
 
     public function convertToString($indentStr = '    ') {
         $result = '';

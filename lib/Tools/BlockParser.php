@@ -87,25 +87,25 @@ class BlockParser implements IParser {
         /* @var $curBlock SourceClosure */
         $curBlock = $rootBlock->getChildClosure(-1);
         
-        array_walk($this->lines, function($line, $index) use(&$indentSize, &$tabsInsteadSpaces, &$lines, &$curly_blocks, &$curBlock, &$blockTree) {
+        array_walk($this->lines, function($line, $index) use(&$indentSize, &$tabsInsteadSpaces, &$lines, &$curly_blocks, &$curBlock, &$rootBlock) {
             /* @var $curBlock SourceClosure */
             if ($indentSize === null && substr($line, 0, 1) === "\t") {
                 $tabsInsteadSpaces = true;
             }
-            $spacesCount = self::countLineSpaces($line, $tabsInsteadSpaces, $$indentSize);
+            $spacesCount = self::countLineSpaces($line, $tabsInsteadSpaces, $indentSize);
             if ($spacesCount === false) {
                 return;
             }
             
-            $curBlockLevel = $curBlock->getLevel();
-            $lineLevel = $$indentSize > 0 ? intval($spacesCount / $$indentSize) : 0;
+            $lineLevel = $indentSize > 0 ? intval($spacesCount / $indentSize) : 0;
             $lineLevel++;
+            
+            if ($lineLevel > $curBlock->getLevel()) {
+                $lineLevel = $curBlock->getLevel() + 1;
+            }
+            
             if (count($curly_blocks) > 0 && $lineLevel <= end($curly_blocks)) {
-                if ($lineLevel > $curBlockLevel + 1) {
-                    $lineLevel = $curBlockLevel + 1;
-                } else {
-                    $lineLevel = end($curly_blocks);
-                }
+                $lineLevel = end($curly_blocks) + 1;
             }
             
             $newLevel = $lineLevel;
@@ -119,7 +119,7 @@ class BlockParser implements IParser {
                     $newLine = trim(substr($line, $offset, $i - $offset));
                     if (!empty($newLine)) {
                         if (!$handled) {
-                            $curBlock = $this->findAppropriateClosure($curBlock, $lineLevel - 1);
+                            $curBlock = $this->findAppropriateClosure($curBlock, $lineLevel);
                         }
                         $curBlock->addLine($newLine);
                     }
@@ -237,7 +237,7 @@ class BlockParser implements IParser {
 
     protected function getParentClosureByLevel(SourceClosure $block, $level) {
         if ($level < $block->getLevel()) {
-            while ($level < $block->getLevel()) {
+            while ($level <= $block->getLevel()) {
                 $block = $block->getParent();
             }
         }
