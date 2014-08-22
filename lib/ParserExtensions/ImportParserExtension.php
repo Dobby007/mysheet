@@ -21,7 +21,7 @@ class ImportParserExtension extends ParserExtension
     
     public function parse() {
         $context = $this->getContext();
-        $firstLine = $curLine = $context->curline();
+        $firstLine = $curLine = $context->curLine();
         
         if ($curLine->startsWith('@import ')) {
             $importDir = new ImportDirective(null, substr($curLine->getLine(), 7));

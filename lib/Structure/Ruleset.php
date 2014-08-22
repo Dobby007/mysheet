@@ -8,6 +8,7 @@ use MySheet\Structure\RuleGroup;
 use MySheet\Helpers\ArrayHelper;
 use MySheet\Essentials\StringBuilder;
 use MySheet\Essentials\VariableScope;
+use MySheet\Helpers\StringHelper;
 
 /**
  * Class that represents CSS rule set that consists of selectors (Selector) and declarations (Declaration)
@@ -70,12 +71,15 @@ class Ruleset extends NodeBlock {
 
     public function addDeclarations($declarations) {
         if (is_string($declarations)) {
-            $declarations = preg_split('/(?![\s;]+$);/', $declarations);
-        }
-
+            $declarations = StringHelper::parseSplittedString($declarations, ';', false);
+//            $declarations = preg_split('/(?![\s;]+$);/', $declarations);
+        }    
         if (is_array($declarations)) {
             foreach ($declarations as $declaration) {
-                $this->addDeclaration($declaration);
+                //ignore empty strings: they can appear if user typed semicolon several times
+                if (!empty($declaration)) {
+                    $this->addDeclaration($declaration);
+                }
             }
         }
     }
@@ -127,11 +131,9 @@ class Ruleset extends NodeBlock {
 
         array_walk($declarations, function($decl) use (&$compiled_declarations) {
             $result = $decl->toRealCss();
-//            var_dump(gettype($result), get_class($result));
 
             if ($result instanceof RuleGroup) {
                 foreach ($result->getLines(': ') as $line) {
-//                    var_dump($line);
                     $compiled_declarations[] = (string) $line;
                 }
             } else {

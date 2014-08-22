@@ -50,11 +50,28 @@ class SourceClosure {
     }
     
     public function getPrevNeighbour() {
-        return $this->getNeighbour(false);
+        $parent = $this->getParent();
+        if ($parent === null) {
+            return null;
+        }
+        $index = $parent->indexOf($this) - 1;
+        if ($index >= 0 && $index < $parent->countChildren()) {
+            $closure = $parent->getChildClosure($index);
+            while ($closure->hasChildren()) {
+                $closure = $closure->getChildClosure(-1);
+            }
+            return $closure;
+        } else {
+            return $parent;
+        }
     }
     
     public function getNextNeighbour() {
         return $this->getNeighbour(true);
+    }
+    
+    protected function getDeepestElement() {
+        
     }
     
     protected function getNeighbour($getNext, $ignoreChildren = false) {
@@ -67,13 +84,12 @@ class SourceClosure {
                 return null;
             }
             $index = $parent->indexOf($this) + ($getNext ? 1 : -1);
-            if ($index < $parent->countChildren()) {
+            if ($index >= 0 && $index < $parent->countChildren()) {
                 return $parent->getChildClosure($index);
             } else {
                 return $parent->getNeighbour($getNext, true);
             }
         }
-//        echo $neighbour;
         return $neighbour;
     }
     
@@ -121,7 +137,7 @@ class SourceClosure {
     
     public function getChildClosure($index) {
         if ($index < 0) {
-            $index = count($this->children) + $index;
+            $index = $this->countChildren() + $index;
         }
         
         if (isset($this->children[$index])) {

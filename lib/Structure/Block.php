@@ -40,7 +40,7 @@ abstract class Block {
     public function getDepth() {
         $block = $this;
         $depth = 0;
-        while ($block->getParent() instanceof SourceClosure) {
+        while ($block->getParent() instanceof Block) {
             $block = $block->getParent();
             $depth++;
         }

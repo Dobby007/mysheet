@@ -82,11 +82,11 @@ class ParserContext {
             return $this->curLine();
         } else if ($jump === true) {
             do {
-                if (!$this->goToClosure(1)) {
+                if (!$this->goToClosure(-1)) {
                     return false;
                 }
             } while (!$this->getLine(0));
-            
+//            echo($this->curClosure());
             $this->setCurrentLineIndex(-1);
             return $this->curLine();
         }

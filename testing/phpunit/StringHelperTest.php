@@ -75,6 +75,7 @@ class StringHelperTest extends BaseTest
             ['"1px,"   , 0%    ', ',', true, ['"1px,"', '0%']],
             ['(1, 0, 2), 0% ', ',', true, ['(1, 0, 2)', '0%']],
             ['body:any(:hover, :active)', ',', false, ['body:any(:hover, :active)']],
+            ['a ; ; ; ;', ';', false, ['a','','']],
             ['"Arail black", Times', ',', true, ['"Arail black"', 'Times']]
         ];
     }

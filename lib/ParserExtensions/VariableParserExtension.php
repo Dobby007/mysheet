@@ -20,7 +20,7 @@ class VariableParserExtension extends ParserExtension
     
     public function parse() {
         $context = $this->getContext();
-        $curLine = $context->curline();
+        $curLine = $context->curLine();
         if ($curLine->startsWith('$')) {
             if (!preg_match('/([a-z_][a-z_0-9]*)\s*=\s*(.+)/i', substr($curLine->getLine(), 1), $matches)) {
                 //throw

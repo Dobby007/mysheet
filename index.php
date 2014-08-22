@@ -34,7 +34,7 @@ $code = <<<TEXT
         .sort 
             color sdfsd
             .underline
-                text-decoration underline ;; ;
+                text-decoration underline ;
                 border-bottom :    1px           solid     gray  ;
     
     body:any(:hover, :active) {
@@ -76,7 +76,10 @@ body {
         set h1
             color high-definition
     
-} 
+}
+
+.header
+    border thick
 
 TEXT;
 
@@ -117,10 +120,15 @@ body:any(:hover, :active) {
         }
 TEXT;
 
+$code5 = <<<TEXT
+h1 {color: red;} h2 {border: 1px solid green} h3 {text-align:right }
+span
+    tutu tt
+TEXT;
 
-$result = $mysheet->parseCode($code);
+$result = $mysheet->parseCode($code5);
 
-var_dump($result);
+//var_dump($result);
 
 echo "\n\n:::COMPILED:::\n\n" . $result->toRealCss();
 

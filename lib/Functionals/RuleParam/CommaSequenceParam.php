@@ -55,7 +55,6 @@ class CommaSequenceParam extends RuleParam {
     
     protected static function splitCommaList(&$string) {
         $stringCopy = $string;
-        echo "\n";
         $commaList = StringHelper::parseSplittedString($stringCopy, ',');
         
 //        var_dump('Source String: ', $string, 'Comma List: ', $commaList);

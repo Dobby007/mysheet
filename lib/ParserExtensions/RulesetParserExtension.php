@@ -44,15 +44,9 @@ class RulesetParserExtension extends ParserExtension
             $lastLine--;
         }
         do {
-            $line = $curLine->getLine();
-            $declarations = StringHelper::parseSplittedString($line, ';', false);
-            $allIsRight = ArrayHelper::jsAll($declarations, function($item) {
-                return Declaration::canBeDeclaration($item);
-            });
-            
-            if ($allIsRight) {
-                $ruleset->addDeclarations($declarations);
-            } else {
+            try {
+                $ruleset->addDeclarations($curLine->getLine());
+            } catch (\MySheet\Error\ParseException $exc) {
                 $context->prevLine();
                 break;
             }

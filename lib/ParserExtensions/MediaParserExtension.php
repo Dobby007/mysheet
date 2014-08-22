@@ -20,16 +20,15 @@ class MediaParserExtension extends ParserExtension
     
     public function parse() {
         $context = $this->getContext();
-        $firstLine = $curLine = $context->curline();
+        $firstLine = $curLine = $context->curLine();
         
+//        var_dump('media:', $curLine);
         if ($curLine->startsWith('@media ')) {
             $mediaReq = new MediaRequest(null);
             $mediaReq->setRequest(substr($curLine->getLine(), 7));
             return $mediaReq;
         }
         
-        
-
         return false;
     }
 }

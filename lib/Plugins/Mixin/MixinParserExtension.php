@@ -33,12 +33,10 @@ class MixinParserExtension extends ParserExtension {
     public function parse() {
         $context = $this->getContext();
         $firstLine = $curLine = $context->curLine();
-//        var_dump($context->curClosure(), $context->getCurrentLineIndex());
-        if (!$firstLine->startsWith('@mixin')) {
+        if (!$firstLine->startsWith('@mixin ')) {
             return false;
         }
-        
-        if ($firstLine->getLevel() !== 0) {
+        if ($firstLine->getLevel() !== 1) {
             throw new ParseException(ErrorTable::E_BAD_INDENTATION);
         }
         
@@ -50,13 +48,12 @@ class MixinParserExtension extends ParserExtension {
         
         $mixin = new Mixin($this->plugin, $mixin_decl[1], $mixin_locals[0]);
         
-        while ($curLine = $context->nextline()) {
+        while ($curLine = $context->nextLine(true)) {
             if ($curLine->getLevel() > $firstLine->getLevel()) {
                 $mixin->addDeclarations($curLine->getLine());
             } else break;
         }
-        $context->prevline();
-//        var_dump($context->curline());
+        $context->prevLine(true);
         return $mixin;
     }
 }
