@@ -126,7 +126,7 @@ span
     tutu tt
 TEXT;
 
-$result = $mysheet->parseCode($code5);
+$result = $mysheet->parseCode($code);
 
 //var_dump($result);
 

@@ -19,7 +19,7 @@ use MySheet\Traits\ParserCursorStateTrait;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class Parser implements IParser {
+class LineParser implements IParser {
 
     use RootClassTrait,
         ParserLinesTrait,

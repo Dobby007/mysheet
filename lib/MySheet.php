@@ -61,28 +61,37 @@ class MySheet {
     }
 
     public function init() {
-        $this->autoload->registerAutoload();
-        I18N::setLanguage($this->getSettings()->language);
-        $parser = $this->getSettings()->parser;
-        $this->parser = new $parser(null);
-        $this->hf = new HandlerFactory();
-        $this->vs = new VariableScope();
-        $this->getHandlerFactory()->registerHandler('Block', 'cssRenderingEnded', function () {
-            $this->getVars()->clean();
-        });
-        $this->flm = new FuncListManager();
-        $this->initRuleParams();
-        $this->initPlugins();
-        $this->initExtensions();
-        $this->getListManager()->getList('RuleParam')->setOrder($this->getSettings()->ruleParams, function ($orderItem, $origItem) {
-            if (!is_string($orderItem) || !is_string($origItem)) {
-                return;
+        try {
+            $this->autoload->registerAutoload();
+            I18N::setLanguage($this->getSettings()->language);
+            $parser = $this->getSettings()->parser;
+            $parserObj = new $parser(null);
+            if (!($parserObj instanceof IParser)) {
+                //throw
+            } else {
+                $this->parser = $parserObj;
             }
-            $origItem = StringHelper::rtrimBySubstring(StringHelper::getClassName($origItem), 'Param');
-            return $origItem === ucfirst($orderItem);
-        });
-
-        $this->autoload->restoreAutoload();
+            $this->hf = new HandlerFactory();
+            $this->vs = new VariableScope();
+            $this->getHandlerFactory()->registerHandler('Block', 'cssRenderingEnded', function () {
+                $this->getVars()->clean();
+            });
+            $this->flm = new FuncListManager();
+            $this->initRuleParams();
+            $this->initPlugins();
+            $this->initExtensions();
+            $this->getListManager()->getList('RuleParam')->setOrder($this->getSettings()->ruleParams, function ($orderItem, $origItem) {
+                if (!is_string($orderItem) || !is_string($origItem)) {
+                    return;
+                }
+                $origItem = StringHelper::rtrimBySubstring(StringHelper::getClassName($origItem), 'Param');
+                return $origItem === ucfirst($orderItem);
+            });
+            $this->autoload->restoreAutoload();
+        } catch (\Exception $exc) {
+            $this->autoload->restoreAutoload();
+            throw $exc;
+        }
     }
 
     protected function initPlugins() {

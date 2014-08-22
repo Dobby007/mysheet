@@ -9,8 +9,6 @@
 namespace MySheet\Essentials;
 
 use MySheet\Tools\IParser;
-use MySheet\Traits\ParserLinesTrait;
-use MySheet\Traits\ParserCursorStateTrait;
 use MySheet\Essentials\ParserExtension;
 use MySheet\Essentials\SourceClosure;
 /**
@@ -19,8 +17,6 @@ use MySheet\Essentials\SourceClosure;
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class ParserContext {
-    use ParserLinesTrait, ParserCursorStateTrait;
-    
     /**
      * @var IParser 
      */
