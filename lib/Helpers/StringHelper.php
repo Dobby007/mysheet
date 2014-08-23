@@ -140,7 +140,7 @@ abstract class StringHelper
         $i = 0;
         
         while (true) {
-            if ($i >= $len - 1) {
+            if ($i >= $len) {
                 $splittedList[] = substr($string, $offset, ++$i - $offset);
                 break;
             }
