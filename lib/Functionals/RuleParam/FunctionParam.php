@@ -6,12 +6,12 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Functionals\RuleParam;
+namespace MSSLib\Functionals\RuleParam;
 
-use MySheet\Essentials\RuleParam;
-use MySheet\Helpers\StringHelper;
-use MySheet\Helpers\ArrayHelper;
-use MySheet\Essentials\VariableScope;
+use MSSLib\Essentials\RuleParam;
+use MSSLib\Helpers\StringHelper;
+use MSSLib\Helpers\ArrayHelper;
+use MSSLib\Essentials\VariableScope;
 
 /**
  * Internal class that allows using functions in rule values. It is a rule parameter (RuleParam).

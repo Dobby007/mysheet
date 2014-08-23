@@ -6,9 +6,9 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Essentials\ColorLib;
+namespace MSSLib\Essentials\ColorLib;
 
-use MySheet\Traits\MagicPropsTrait;
+use MSSLib\Traits\MagicPropsTrait;
 
 /**
  * Description of ColorLib

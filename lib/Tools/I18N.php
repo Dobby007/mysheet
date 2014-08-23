@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Tools;
+namespace MSSLib\Tools;
 
 /**
  * Description of I18N
@@ -24,7 +24,7 @@ class I18N {
     }
     
     protected static function load18Strings($category, $language) {
-        $lang_file = \MySheet\MySheet::WORKDIR . DS . 'Etc' . DS . 'I18N' . DS . $category . DS . $language . '.ini';
+        $lang_file = \MSSLib\MySheet::WORKDIR . DIRECTORY_SEPARATOR . 'Etc' . DIRECTORY_SEPARATOR . 'I18N' . DIRECTORY_SEPARATOR . $category . DIRECTORY_SEPARATOR . $language . '.ini';
         self::$files[self::get18Name($category, $language)] = file_exists($lang_file) ? parse_ini_file($lang_file, true) : [];
     }
     

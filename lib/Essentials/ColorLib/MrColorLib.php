@@ -6,9 +6,10 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Essentials\ColorLib;
+namespace MSSLib\Essentials\ColorLib;
 
-use MySheet as MSN;
+use MSSLib as MSN;
+use MSSLib\MySheet;
 use SyHolloway\MrColor\Color;
 
 /**
@@ -16,7 +17,8 @@ use SyHolloway\MrColor\Color;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class MrColorLib extends ColorLib {
+class MrColorLib extends ColorLib
+{
     /**
      * Internal color object
      * @var Color
@@ -92,7 +94,7 @@ class MrColorLib extends ColorLib {
 //        $this->color->lightness = 0.5;
         
 //        var_dump($this->color->hex, $this->color->red, $this->color->green, $this->color->blue, $this->color->hue, $this->color->saturation, $this->color->lightness);
-        echo $this->type . ':' . $this->color . "\n\n";
+//        echo $this->type . ':' . $this->color . "\n\n";
     }
     
     public function transformTo($type) {
@@ -115,7 +117,7 @@ class MrColorLib extends ColorLib {
     }
     
     public function setLibPath($path) {
-        require_once ROOTDIR . $path . DS . 'manual-init' . MSN\EXT;
+        require_once MySheet::WORKDIR . MSN\DS . $path . MSN\DS . 'manual-init' . MSN\EXT;
     }
     
     
@@ -141,7 +143,7 @@ class MrColorLib extends ColorLib {
         
         $result = [];
         foreach (func_get_args() as $arg) {
-            var_dump($arg, $this->color->$arg);
+//            var_dump($arg, $this->color->$arg);
             $result[$this->msChannelName($arg)] = $this->getMrChannel($arg);
         }
         return $result;

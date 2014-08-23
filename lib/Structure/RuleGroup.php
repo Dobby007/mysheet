@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Structure;
+namespace MSSLib\Structure;
 
 /**
  * Description of PathGroup

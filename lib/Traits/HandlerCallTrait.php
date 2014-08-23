@@ -6,9 +6,9 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Traits;
+namespace MSSLib\Traits;
 
-use MySheet\Essentials\HandlerCallResult;
+use MSSLib\Essentials\HandlerCallResult;
 
 //require_once ROOTDIR . 'Helpers' . DS . 'HandlerCallResult' . EXT;
 

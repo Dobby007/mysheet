@@ -6,9 +6,9 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Functionals\RuleParam;
+namespace MSSLib\Functionals\RuleParam;
 
-use MySheet\Essentials\RuleParam;
+use MSSLib\Essentials\RuleParam;
 
 /**
  * Class that represents all other rule parameters (RuleParam) that do not match requirements of any other rule parameter (RuleParam).

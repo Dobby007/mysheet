@@ -6,11 +6,11 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Essentials;
+namespace MSSLib\Essentials;
 
-use MySheet\Essentials\ParserContext;
-use MySheet\Tools\IParser;
-use MySheet\Traits\RootClassTrait;
+use MSSLib\Essentials\ParserContext;
+use MSSLib\Tools\IParser;
+use MSSLib\Traits\RootClassTrait;
 
 /**
  * Description of ParserExtension

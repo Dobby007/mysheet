@@ -1,12 +1,12 @@
 <?php
 
-namespace MySheet\Structure;
+namespace MSSLib\Structure;
 
-use MySheet\Helpers\ArrayHelper;
-use MySheet\Traits\RootClassTrait;
-use MySheet\Traits\HandlerCallTrait;
-use MySheet\Essentials\VariableScope;
-use MySheet\Essentials\StringBuilder;
+use MSSLib\Helpers\ArrayHelper;
+use MSSLib\Traits\RootClassTrait;
+use MSSLib\Traits\HandlerCallTrait;
+use MSSLib\Essentials\VariableScope;
+use MSSLib\Essentials\StringBuilder;
 
 abstract class Block {
 

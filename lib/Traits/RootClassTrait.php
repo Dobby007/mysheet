@@ -6,10 +6,10 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Traits;
+namespace MSSLib\Traits;
 
-use MySheet\MySheet;
-use MySheet\Tools\MSSettings;
+use MSSLib\MySheet;
+use MSSLib\Tools\MSSettings;
 
 /**
  * Description of RootClassTrait

@@ -1,13 +1,13 @@
 <?php
 
-namespace MySheet\Structure;
+namespace MSSLib\Structure;
 
-use MySheet\Structure\RuleValue;
-use MySheet\Traits\RootClassTrait;
-use MySheet\Traits\HandlerCallTrait;
-use MySheet\Error\ParseException;
-use MySheet\Error\ErrorTable;
-use MySheet\Essentials\VariableScope;
+use MSSLib\Structure\RuleValue;
+use MSSLib\Traits\RootClassTrait;
+use MSSLib\Traits\HandlerCallTrait;
+use MSSLib\Error\ParseException;
+use MSSLib\Error\ErrorTable;
+use MSSLib\Essentials\VariableScope;
 
 
 /**

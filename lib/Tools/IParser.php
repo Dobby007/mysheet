@@ -1,8 +1,8 @@
 <?php
 
-namespace MySheet\Tools;
+namespace MSSLib\Tools;
 
-use MySheet\Essentials\ParserExtension;
+use MSSLib\Essentials\ParserExtension;
 
 /**
  *

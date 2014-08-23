@@ -6,11 +6,11 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Plugins\Mixin;
+namespace MSSLib\Plugins\Mixin;
 
-use MySheet\Plugins\PluginBase;
-use MySheet\Structure\Declaration;
-use MySheet\Essentials\VariableScope;
+use MSSLib\Plugins\PluginBase;
+use MSSLib\Structure\Declaration;
+use MSSLib\Essentials\VariableScope;
 
 /**
  * Description of Mixin

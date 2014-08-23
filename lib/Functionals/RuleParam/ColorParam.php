@@ -6,21 +6,24 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Functionals\RuleParam;
+namespace MSSLib\Functionals\RuleParam;
 
-use MySheet as MSN;
-use MySheet\Essentials\RuleParam;
-use MySheet\Helpers\SettingsHelper;
-use MySheet\Helpers\StringHelper;
-use MySheet\Essentials\ColorLib\ColorLib;
+use MSSLib as MSN;
+use MSSLib\MySheet;
+use MSSLib\Essentials\RuleParam;
+use MSSLib\Helpers\SettingsHelper;
+use MSSLib\Helpers\StringHelper;
+use MSSLib\Essentials\ColorLib\ColorLib;
+use MSSLib\Error\SystemException;
+use MSSLib\Error\InputException;
 
 /**
  * Class that represents a color in both MSS and CSS. It is a rule parameter (RuleParam).
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class ColorParam extends RuleParam {
-    
+class ColorParam extends RuleParam 
+{    
     protected static $allowed_types = ['html', 'hex', 'rgb', 'rgba', 'hsl', 'hsla'];
     protected static $css_supported_types = ['html', 'hex', 'rgbs', 'rgba', 'hsl', 'hsla'];
     protected static $html_colors;
@@ -46,7 +49,7 @@ class ColorParam extends RuleParam {
         }
         
         if (!$this->_colorLib) {
-            //throw
+            throw new SystemException(null, 'NO_COLOR_LIB');
         }
         
         return $this->_colorLib;
@@ -66,7 +69,7 @@ class ColorParam extends RuleParam {
         if (self::isRightType($type)) {
             $this->type = $type;
         } else {
-            //throw
+            throw new InputException(null, 'WRONG_COLOR_TYPE');
         }
     }
 
@@ -74,7 +77,7 @@ class ColorParam extends RuleParam {
         if ($this->isCorrectColor($this->getType(), $color)) {
             $this->color = $color;
         } else {
-            //throw
+            throw new InputException(null, 'WRONG_COLOR_FORMAT');
         }
     }
     
@@ -235,7 +238,7 @@ class ColorParam extends RuleParam {
     public static function getHtmlColor($name) {
         static $html_colors = null;
         if ($html_colors === null) {
-            $html_colors = require_once(ROOTDIR . 'Includes' . DS . 'HtmlColors' . MSN\EXT);
+            $html_colors = require_once(MySheet::WORKDIR . MSN\DS . 'Etc' . MSN\DS . 'Includes' . MSN\DS . 'HtmlColors' . MSN\EXT);
         }
         if (isset($html_colors[$name])) {
             return $html_colors[$name];

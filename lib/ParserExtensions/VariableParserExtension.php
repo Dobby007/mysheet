@@ -6,10 +6,11 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\ParserExtensions;
+namespace MSSLib\ParserExtensions;
 
-use MySheet\Essentials\ParserExtension;
-use MySheet\Structure\VarDefinition;
+use MSSLib\Essentials\ParserExtension;
+use MSSLib\Structure\VarDefinition;
+use MSSLib\Error\ParseException;
 /**
  * Description of RulesetParserExtension
  *
@@ -17,16 +18,14 @@ use MySheet\Structure\VarDefinition;
  */
 class VariableParserExtension extends ParserExtension
 {
-    
     public function parse() {
         $context = $this->getContext();
         $curLine = $context->curLine();
         if ($curLine->startsWith('$')) {
+            var_dump($curLine);
             if (!preg_match('/([a-z_][a-z_0-9]*)\s*=\s*(.+)/i', substr($curLine->getLine(), 1), $matches)) {
-                //throw
-                return false;
+                throw new ParseException(null, 'BAD_DEFINITION');
             }
-//            var_dump('parse var', $matches);
             return new VarDefinition(null, $matches[1], $matches[2]);
         }
 

@@ -1,13 +1,13 @@
 <?php
-use MySheet as MSN;
-use MySheet\MySheet;
+use MSSLib as MSN;
+use MSSLib\MySheet;
 
 return [
     'ruleParams' => 'commaSequence string variable color function metric other',
     'parserExtensions' => 'import media variable ruleset',
     'color' => [
         'lib' => [
-            'class' => '\MySheet\Essentials\ColorLib\MrColorLib',
+            'class' => '\MSSLib\Essentials\ColorLib\MrColorLib',
             'libPath' => '../../php_libs/mrcolor'
         ],
         'defaultType' => 'hex',
@@ -24,9 +24,9 @@ return [
 //        'suffixCCB' => ''
     ],
     'import' => [
-        'paths' => [MySheet::WORKDIR . DS . 'MssTemplates'],
+        'paths' => [MySheet::WORKDIR . MSN\DS . 'Etc' . MSN\DS . 'MssTemplates'],
         'includeError' => 'exception'
     ],
-    'parser' => 'MySheet\Tools\BlockParser',
+    'parser' => '\MSSLib\Tools\BlockParser',
     'language' => 'ru_ru'
 ];

@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Helpers;
+namespace MSSLib\Helpers;
 
 /**
  * Description of SettingsHelper

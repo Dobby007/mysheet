@@ -1,10 +1,10 @@
 <?php
 
-namespace MySheet\Structure;
+namespace MSSLib\Structure;
 
-use MySheet\Structure\RuleValue;
-use MySheet\Functionals\RuleParam\StringParam;
-use MySheet\Essentials\VariableScope;
+use MSSLib\Structure\RuleValue;
+use MSSLib\Functionals\RuleParam\StringParam;
+use MSSLib\Essentials\VariableScope;
 
 /**
  * Description of Ruleset

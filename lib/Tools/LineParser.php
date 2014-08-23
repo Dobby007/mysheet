@@ -1,18 +1,18 @@
 <?php
 
-namespace MySheet\Tools;
+namespace MSSLib\Tools;
 
-use MySheet\Tools\IParser;
-use MySheet\Structure\NodeBlock;
-use MySheet\Structure\Document;
-use MySheet\Error\ParseException;
-use MySheet\Error\ErrorTable;
-use MySheet\Essentials\ParserExtension;
-use MySheet\Essentials\ParserContext;
-use MySheet\Essentials\SourceLine;
-use MySheet\Traits\RootClassTrait;
-use MySheet\Traits\ParserLinesTrait;
-use MySheet\Traits\ParserCursorStateTrait;
+use MSSLib\Tools\IParser;
+use MSSLib\Structure\NodeBlock;
+use MSSLib\Structure\Document;
+use MSSLib\Error\ParseException;
+use MSSLib\Error\ErrorTable;
+use MSSLib\Essentials\ParserExtension;
+use MSSLib\Essentials\ParserContext;
+use MSSLib\Essentials\SourceLine;
+use MSSLib\Traits\RootClassTrait;
+use MSSLib\Traits\ParserLinesTrait;
+use MSSLib\Traits\ParserCursorStateTrait;
 
 /**
  * Description of Parser

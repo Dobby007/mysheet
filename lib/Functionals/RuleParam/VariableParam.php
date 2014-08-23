@@ -6,10 +6,11 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Functionals\RuleParam;
+namespace MSSLib\Functionals\RuleParam;
 
-use MySheet\Essentials\RuleParam;
-use MySheet\Essentials\VariableScope;
+use MSSLib\Essentials\RuleParam;
+use MSSLib\Essentials\VariableScope;
+use MSSLib\Error\ParseException;
 
 /**
  * Class that represents variable in rule value (RuleValue). It is rule parameter (RuleParam).
@@ -33,7 +34,7 @@ class VariableParam extends RuleParam {
         if (VariableScope::canBeVariable($varName)) {
             $this->varName = $varName;
         } else {
-            //throw
+            throw new ParseException(null, 'BAD_VARIABLE_NAME');
         }
     }
 

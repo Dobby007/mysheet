@@ -1,6 +1,6 @@
 <?php
 
-namespace MySheet\Structure;
+namespace MSSLib\Structure;
 
 /**
  * Description of Document

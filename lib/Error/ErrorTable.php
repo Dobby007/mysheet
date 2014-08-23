@@ -1,6 +1,6 @@
 <?php
 
-namespace MySheet\Error;
+namespace MSSLib\Error;
 
 /**
  * Description of Error

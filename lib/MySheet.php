@@ -1,24 +1,23 @@
 <?php
 
-namespace MySheet;
+namespace MSSLib;
 
 const DS = DIRECTORY_SEPARATOR;
 const EXT = '.php';
+const WORKDIR = __DIR__;
 
-define('DS', DIRECTORY_SEPARATOR);
-define('ROOTDIR', __DIR__ . DS);
-define('MSSNS', 'MySheet');
+define('MSSNS', 'MSSLib');
 
-require_once ROOTDIR . 'Essentials' . DS . 'Autoload' . EXT;
+require_once WORKDIR . DS . 'Essentials' . DS . 'Autoload' . EXT;
 
-use MySheet\Essentials\Autoload;
-use MySheet\Essentials\HandlerFactory;
-use MySheet\Tools\IParser;
-use MySheet\Tools\MSSettings;
-use MySheet\Essentials\FuncListManager;
-use MySheet\Essentials\VariableScope;
-use MySheet\Helpers\StringHelper;
-use MySheet\Tools\I18N;
+use MSSLib\Essentials\Autoload;
+use MSSLib\Essentials\HandlerFactory;
+use MSSLib\Tools\IParser;
+use MSSLib\Tools\MSSettings;
+use MSSLib\Essentials\FuncListManager;
+use MSSLib\Essentials\VariableScope;
+use MSSLib\Helpers\StringHelper;
+use MSSLib\Tools\I18N;
 
 /**
  * Description of MySheet
@@ -67,7 +66,7 @@ class MySheet {
             $parser = $this->getSettings()->parser;
             $parserObj = new $parser(null);
             if (!($parserObj instanceof IParser)) {
-                //throw
+                throw new SystemException(null, 'BAD_PARSER');
             } else {
                 $this->parser = $parserObj;
             }
@@ -107,7 +106,7 @@ class MySheet {
     }
 
     protected function initExtensions() {
-        $peNs = '\MySheet\ParserExtensions\\';
+        $peNs = '\\MSSLib\\ParserExtensions\\';
         foreach ($this->getSettings()->parserExtensions as $peClass) {
             $class = $peNs . ucfirst($peClass) . 'ParserExtension';
             $this->parser->addParserExtension($class);
@@ -116,7 +115,7 @@ class MySheet {
 
     protected function initRuleParams() {
         $availableParams = require_once('Config' . DS . 'RuleParams' . EXT);
-        $ruleParamNs = 'MySheet\\Functionals\\RuleParam\\';
+        $ruleParamNs = '\\MSSLib\\Functionals\\RuleParam\\';
         foreach ($availableParams as $paramClass) {
             $class = $ruleParamNs . ucfirst($paramClass) . 'Param';
             $this->getListManager()->getList('RuleParam')->addFunctional($class);
@@ -165,7 +164,7 @@ class MySheet {
     public function registerPlugin($plugin, array $settings = []) {
         if (is_string($plugin)) {
             $plugin = ucfirst($plugin);
-            $pluginClass = '\MySheet\Plugins\\' . $plugin . '\Plugin' . $plugin;
+            $pluginClass = '\\MSSLib\Plugins\\' . $plugin . '\Plugin' . $plugin;
             if (class_exists($pluginClass)) {
                 /* @var $pi \MySheet\Plugins\PluginBase */
                 $pi = new $pluginClass();

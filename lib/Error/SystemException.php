@@ -8,9 +8,9 @@ namespace MSSLib\Error;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class CompileException extends MySheetException {
+class SystemException extends MySheetException {
     public function __construct($category, $error_code, array $arguments = []) {
-        parent::__construct(empty($category) ? 'Compiling' : $category, $error_code, $arguments);
+        parent::__construct(empty($category) ? 'System' : $category, $error_code, $arguments);
     }
     
     protected function updateArguments($arguments) {

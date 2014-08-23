@@ -6,13 +6,13 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\ParserExtensions;
+namespace MSSLib\ParserExtensions;
 
-use MySheet\Essentials\ParserExtension;
-use MySheet\Structure\Ruleset;
-use MySheet\Structure\Declaration;
-use MySheet\Helpers\StringHelper;
-use MySheet\Helpers\ArrayHelper;
+use MSSLib\Essentials\ParserExtension;
+use MSSLib\Structure\Ruleset;
+use MSSLib\Structure\Declaration;
+use MSSLib\Helpers\StringHelper;
+use MSSLib\Helpers\ArrayHelper;
 /**
  * Description of RulesetParserExtension
  *
@@ -46,7 +46,7 @@ class RulesetParserExtension extends ParserExtension
         do {
             try {
                 $ruleset->addDeclarations($curLine->getLine());
-            } catch (\MySheet\Error\ParseException $exc) {
+            } catch (\MSSLib\Error\ParseException $exc) {
                 $context->prevLine();
                 break;
             }

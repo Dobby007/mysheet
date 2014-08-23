@@ -6,14 +6,14 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Plugins\Mixin;
+namespace MSSLib\Plugins\Mixin;
 
-use MySheet\Structure\Declaration;
-use MySheet\Structure\LeafBlock;
-use MySheet\Traits\RootClassTrait;
-use MySheet\Traits\PluginClassTrait;
-use MySheet\Essentials\VariableScope;
-use MySheet\Structure\RuleGroup;
+use MSSLib\Structure\Declaration;
+use MSSLib\Structure\LeafBlock;
+use MSSLib\Traits\RootClassTrait;
+use MSSLib\Traits\PluginClassTrait;
+use MSSLib\Essentials\VariableScope;
+use MSSLib\Structure\RuleGroup;
 
 
 /**

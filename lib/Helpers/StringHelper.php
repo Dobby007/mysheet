@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Helpers;
+namespace MSSLib\Helpers;
 
 /**
  * Class that helps to work with strings and provides basic operations to work with them in MySheet

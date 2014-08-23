@@ -1,9 +1,9 @@
 <?php
 
 
-namespace MySheet\Error;
+namespace MSSLib\Error;
 
-use MySheet\Tools\I18N;
+use MSSLib\Tools\I18N;
 
 /**
  * Description of ParseException

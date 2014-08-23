@@ -6,10 +6,10 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\ParserExtensions;
+namespace MSSLib\ParserExtensions;
 
-use MySheet\Essentials\ParserExtension;
-use MySheet\Structure\ImportDirective;
+use MSSLib\Essentials\ParserExtension;
+use MSSLib\Structure\ImportDirective;
 
 /**
  * Description of RulesetParserExtension

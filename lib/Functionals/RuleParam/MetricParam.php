@@ -6,9 +6,9 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Functionals\RuleParam;
+namespace MSSLib\Functionals\RuleParam;
 
-use MySheet\Essentials\RuleParam;
+use MSSLib\Essentials\RuleParam;
 
 /**
  * Class that represents a metric (with its' type) in both MSS and CSS. It is a rule parameter (RuleParam).

@@ -6,8 +6,9 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Traits;
+namespace MSSLib\Traits;
 
+use MSSLib\Error\ParseException;
 
 /**
  * Description of RuleParamListTrait
@@ -65,7 +66,7 @@ trait RuleParamListTrait {
         });
         
         if (!$result) {
-            //throw
+            throw new ParseException(null, 'PARAM_NOT_PARSED');
         }
         
         return $result;

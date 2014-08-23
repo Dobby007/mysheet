@@ -6,10 +6,11 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Essentials;
+namespace MSSLib\Essentials;
 
-use MySheet\Traits\RootClassTrait;
-use MySheet\MySheet;
+use MSSLib\MySheet;
+use MSSLib\Traits\RootClassTrait;
+use MSSLib\Error\ParseException;
 
 /**
  * Description of RuleParam
@@ -43,7 +44,7 @@ abstract class RuleParam {
         });
         
         if (!$result) {
-            //throw
+            throw new ParseException(null, 'PARAM_NOT_PARSED');
         }
         
         return $result;

@@ -6,10 +6,10 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Tools;
+namespace MSSLib\Tools;
 
-use MySheet as MS;
-use MySheet\Traits\MagicPropsTrait;
+use MSSLib as MS;
+use MSSLib\Traits\MagicPropsTrait;
 
 /**
  * Description of MSSettings
@@ -18,7 +18,8 @@ use MySheet\Traits\MagicPropsTrait;
  * @property string[] ruleParams
  * @property string[] parserExtensions
  */
-class MSSettings {
+class MSSettings
+{
     use MagicPropsTrait;
     
     public $color;
@@ -37,7 +38,7 @@ class MSSettings {
     }
     
     public function load(array $settings) {
-        $default = require(ROOTDIR . 'Config/DefaultSettings' . MS\EXT);
+        $default = require(MS\WORKDIR . MS\DS . 'Config' . MS\DS . 'DefaultSettings' . MS\EXT);
         $settings = array_merge($default, $settings);
 
         foreach ($settings as $name => $value) {

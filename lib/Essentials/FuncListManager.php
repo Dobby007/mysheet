@@ -6,10 +6,10 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Essentials;
+namespace MSSLib\Essentials;
 
-use MySheet\Essentials\FuncList;
-use MySheet\Error\StopException;
+use MSSLib\Essentials\FuncList;
+use MSSLib\Error\StopException;
 
 /**
  * Description of FuncListManager

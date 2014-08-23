@@ -6,9 +6,9 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Traits;
+namespace MSSLib\Traits;
 
-use MySheet\Essentials\SourceLine;
+use MSSLib\Essentials\SourceLine;
 
 /**
  * Description of HandlerClassTrait

@@ -1,13 +1,13 @@
 <?php
 
-namespace MySheet\Structure;
+namespace MSSLib\Structure;
 
-use MySheet\Structure\Selector;
-use MySheet\Structure\Declaration;
-use MySheet\Structure\RuleGroup;
-use MySheet\Helpers\ArrayHelper;
-use MySheet\Essentials\StringBuilder;
-use MySheet\Essentials\VariableScope;
+use MSSLib\Structure\Selector;
+use MSSLib\Structure\Declaration;
+use MSSLib\Structure\RuleGroup;
+use MSSLib\Helpers\ArrayHelper;
+use MSSLib\Essentials\StringBuilder;
+use MSSLib\Essentials\VariableScope;
 
 /**
  * Description of Ruleset

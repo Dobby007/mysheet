@@ -6,9 +6,9 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Essentials;
+namespace MSSLib\Essentials;
 
-use MySheet\Helpers\ArrayHelper;
+use MSSLib\Helpers\ArrayHelper;
 
 /**
  * Description of StringBuilder

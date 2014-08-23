@@ -6,14 +6,14 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Functionals\RuleParam;
+namespace MSSLib\Functionals\RuleParam;
 
-use MySheet\Essentials\RuleParam;
-use MySheet\Helpers\ArrayHelper;
-use MySheet\Helpers\StringHelper;
-use MySheet\Essentials\VariableScope;
-use MySheet\Traits\RuleParamListTrait;
-use MySheet\Essentials\DelimitedString;
+use MSSLib\Essentials\RuleParam;
+use MSSLib\Helpers\ArrayHelper;
+use MSSLib\Helpers\StringHelper;
+use MSSLib\Essentials\VariableScope;
+use MSSLib\Traits\RuleParamListTrait;
+use MSSLib\Essentials\DelimitedString;
 
 /**
  * Class that represents a sequence of rule parameters delimited by commas.

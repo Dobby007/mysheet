@@ -6,13 +6,13 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Plugins\SelectorExtensions;
+namespace MSSLib\Plugins\SelectorExtensions;
 
-use MySheet\Plugins\PluginBase;
-use MySheet\Essentials\VariableScope;
-use MySheet\Helpers\StringHelper;
-use MySheet\Structure\PathGroup;
-use MySheet\Structure\Selector;
+use MSSLib\Plugins\PluginBase;
+use MSSLib\Essentials\VariableScope;
+use MSSLib\Helpers\StringHelper;
+use MSSLib\Structure\PathGroup;
+use MSSLib\Structure\Selector;
 
 
 /**
@@ -36,7 +36,6 @@ class PluginSelectorExtensions extends PluginBase {
     public function parseParentHandler(Selector $selector, PathGroup $pathGroup) {
         $newPaths = [];
         $parentPaths = $selector->getRuleset()->getParentPaths();
-//        var_dump('parent paths:', $parentPaths);
         
         if (empty($parentPaths)) {
             $parentPaths = [''];
@@ -45,7 +44,6 @@ class PluginSelectorExtensions extends PluginBase {
         foreach ($pathGroup->getPaths() as $path) {
             foreach ($parentPaths as $parentPath) {
                 $newPath = str_replace('&', (string)$parentPath, $path, $count);
-//                var_dump('PARENT PATH:' . $parentPath . ', path=' . $newPath);
                 if ($count > 0) {
                     $selector->setFullSelector(true);
                     $newPaths[] = $newPath;

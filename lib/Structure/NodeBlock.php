@@ -1,23 +1,18 @@
 <?php
 
-namespace MySheet\Structure;
+namespace MSSLib\Structure;
 
-use MySheet\Structure\Block;
-use MySheet\Helpers\ArrayHelper;
-use MySheet\Essentials\VariableScope;
-use MySheet\Essentials\StringBuilder;
+use MSSLib\Structure\Block;
+use MSSLib\Essentials\VariableScope;
+use MSSLib\Essentials\StringBuilder;
 
 abstract class NodeBlock extends Block {
 
     private $children = array();
 
-    public function addChild($item) {
-        if ($item instanceof NodeBlock || $item instanceof LeafBlock) {
-            $this->children[] = $item;
-            $item->setParent($this);
-        } else {
-            //throw
-        }
+    public function addChild(Block $item) {
+        $this->children[] = $item;
+        $item->setParent($this);
     }
 
     public function removeChild($index) {

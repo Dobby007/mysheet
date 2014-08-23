@@ -6,12 +6,12 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Plugins\Mixin;
+namespace MSSLib\Plugins\Mixin;
 
-use MySheet\Essentials\ParserExtension;
-use MySheet\Error\ParseException;
-use MySheet\Error\ErrorTable;
-use MySheet\Traits\PluginClassTrait;
+use MSSLib\Essentials\ParserExtension;
+use MSSLib\Error\ParseException;
+use MSSLib\Error\ErrorTable;
+use MSSLib\Traits\PluginClassTrait;
 
 /**
  * Description of MixinParserExtension

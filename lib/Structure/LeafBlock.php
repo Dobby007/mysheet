@@ -1,9 +1,9 @@
 <?php
 
-namespace MySheet\Structure;
+namespace MSSLib\Structure;
 
-use MySheet\Structure\Block;
-use MySheet\Helpers\ArrayHelper;
+use MSSLib\Structure\Block;
+use MSSLib\Helpers\ArrayHelper;
 
 abstract class LeafBlock extends Block {
 

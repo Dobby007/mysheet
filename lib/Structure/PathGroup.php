@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Structure;
+namespace MSSLib\Structure;
 
 /**
  * Class that allows rendering of MSS selectors to CSS ones.

@@ -1,24 +1,26 @@
 <?php
 
-namespace MySheet\Essentials;
+namespace MSSLib\Essentials;
 
-use MySheet as MS;
+use MSSLib as MSN;
 
 /**
  * Description of Autoload
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class Autoload {
+class Autoload
+{
     
     public function autoload($class) {
         if (substr($class, 0, strlen(MSSNS) + 1) === MSSNS . '\\') {
             $class = substr($class, strlen(MSSNS) + 1);
-            $file = str_replace(['\\', '/'], DS, $class);
-            if (!file_exists(ROOTDIR . $file . MS\EXT)) {
-                debug_print_backtrace();
+            $file = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $class);
+            $filePath = MSN\WORKDIR . DIRECTORY_SEPARATOR . $file . MSN\EXT;
+            if (!file_exists($filePath)) {
+                throw new Exception('Class not found: ' . $class);
             }
-            require_once ROOTDIR . $file . MS\EXT;
+            require_once $filePath;
         }
     }
     

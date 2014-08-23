@@ -6,10 +6,11 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Essentials;
+namespace MSSLib\Essentials;
 
-use MySheet\Traits\RootClassTrait;
-use MySheet\Helpers\ArrayHelper;
+use MSSLib\Traits\RootClassTrait;
+use MSSLib\Helpers\ArrayHelper;
+use MSSLib\Error\ParseException;
 
 /**
  * Description of VariableList
@@ -47,15 +48,16 @@ class VariableScope implements \ArrayAccess {
     }
     
     public function set($name, $value) {
-        if (is_null($name))
+        if (is_null($name)) {
             $this->map[] = $value;
-        else if (self::canBeVariable($name)) {
+        } else if (self::canBeVariable($name)) {
             if (is_int($name) && !$this->numericVarsEnabled())
                 return false;
                 
             $this->map[$name] = $value;
-        } else
-            throw new Exception ('Can not be variable');
+        } else {
+            throw new ParseException(null, 'BAD_VARIABLE_NAME');
+        }
         
         return $this;
     }

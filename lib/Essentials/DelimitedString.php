@@ -6,9 +6,9 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Essentials;
+namespace MSSLib\Essentials;
 
-use MySheet\Helpers\StringHelper;
+use MSSLib\Helpers\StringHelper;
 
 /**
  * Description of SeparatedString

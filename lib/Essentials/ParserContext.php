@@ -6,11 +6,11 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Essentials;
+namespace MSSLib\Essentials;
 
-use MySheet\Tools\IParser;
-use MySheet\Essentials\ParserExtension;
-use MySheet\Essentials\SourceClosure;
+use MSSLib\Tools\IParser;
+use MSSLib\Essentials\ParserExtension;
+use MSSLib\Essentials\SourceClosure;
 /**
  * Description of ParserContext
  *

@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Traits;
+namespace MSSLib\Traits;
 
 /**
  * Description of HandlerClassTrait

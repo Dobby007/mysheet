@@ -1,11 +1,12 @@
 <?php
 
-namespace MySheet\Structure;
+namespace MSSLib\Structure;
 
-use MySheet\Essentials\VariableScope;
-use MySheet\Essentials\RuleParam;
-use MySheet\Essentials\FuncListManager;
-use MySheet\Traits\RootClassTrait;
+use MSSLib\Essentials\VariableScope;
+use MSSLib\Essentials\RuleParam;
+use MSSLib\Essentials\FuncListManager;
+use MSSLib\Traits\RootClassTrait;
+use MSSLib\Error\ParseException;
 
 /**
  * Class that represents rule value with its' rule parameters (RuleParam)
@@ -71,7 +72,7 @@ class RuleValue {
         });
         
         if (!$result) {
-            //throw
+            throw new ParseException(null, 'PARAM_NOT_PARSED');
         }
         
         return $result;

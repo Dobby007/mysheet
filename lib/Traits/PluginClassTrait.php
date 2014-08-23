@@ -6,9 +6,9 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Traits;
+namespace MSSLib\Traits;
 
-use MySheet\Plugins\PluginBase;
+use MSSLib\Plugins\PluginBase;
 
 /**
  * Description of PluginClassTrait

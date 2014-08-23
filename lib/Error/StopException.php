@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Error;
+namespace MSSLib\Error;
 
 /**
  * Description of StopException

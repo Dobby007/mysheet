@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace MySheet\Essentials;
+namespace MSSLib\Essentials;
 
 /**
  * Description of Settings

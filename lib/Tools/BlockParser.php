@@ -1,26 +1,26 @@
 <?php
 
-namespace MySheet\Tools;
+namespace MSSLib\Tools;
 
-use MySheet\Tools\IParser;
-use MySheet\Structure\Block;
-use MySheet\Structure\NodeBlock;
-use MySheet\Structure\Document;
-use MySheet\Error\ParseException;
-use MySheet\Essentials\ParserExtension;
-use MySheet\Essentials\ParserContext;
-use MySheet\Essentials\SourceLine;
-use MySheet\Essentials\SourceClosure;
-use MySheet\Traits\RootClassTrait;
-use MySheet\Helpers\StringHelper;
+use MSSLib\Tools\IParser;
+use MSSLib\Structure\Block;
+use MSSLib\Structure\NodeBlock;
+use MSSLib\Structure\Document;
+use MSSLib\Error\ParseException;
+use MSSLib\Essentials\ParserExtension;
+use MSSLib\Essentials\ParserContext;
+use MSSLib\Essentials\SourceLine;
+use MSSLib\Essentials\SourceClosure;
+use MSSLib\Traits\RootClassTrait;
+use MSSLib\Helpers\StringHelper;
 
 /**
  * Description of Parser
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class BlockParser implements IParser {
-
+class BlockParser implements IParser 
+{
     use RootClassTrait;
 
     protected $extensions = array();
@@ -182,7 +182,7 @@ class BlockParser implements IParser {
                 while ($curBlock->getDepth() > $curLineLevel) {
                     $curBlock = $curBlock->getParent();
                     if ($curBlock === null) {
-                        //throw can not get parent object of $this->getLineNumber() + 1
+                        throw new ParseException(null, 'PARENT_NOT_FOUND');
                     }
                 }
             }
@@ -202,11 +202,9 @@ class BlockParser implements IParser {
             ) {
                 $curBlock->addChild($result);
             } else if (!($result instanceof Block)) {
-                //throw unrecognized sequence
-                throw new ParseException(2, 1);
+                throw new ParseException(null, 'UNRECOGNIZED_SEQUENCE');
             } else {
-                //throw can not get parent object of $curLineNumber
-                throw new ParseException(1, 2);
+                throw new ParseException(null, 'PARENT_NOT_FOUND');
             }
             
             //if current source closure has nested closures then we can guarantee that the next line is deeper than the current one
