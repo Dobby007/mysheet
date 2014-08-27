@@ -7,7 +7,7 @@
 //define('EXT', '.php');
 require_once 'lib/MySheet.php';
 
-use MySheet\MySheet;
+use MSSLib\MySheet;
 
 $mysheet = MySheet::Instance();
 

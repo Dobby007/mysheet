@@ -1,6 +1,6 @@
 <?php
 
-namespace MySheet\Testing\PHPUnit;
+namespace MSSLib\Testing\PHPUnit;
 
 const WORKDIR = __DIR__;
 const DS = DIRECTORY_SEPARATOR;

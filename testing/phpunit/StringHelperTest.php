@@ -1,17 +1,21 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *  Copyright 2014 Alexander Gilevich (alegil91@gmail.com)
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at 
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-namespace MySheet\Testing\PHPUnit\Tests;
+namespace MSSLib\Testing\PHPUnit\Tests;
 
-use MySheet\Testing\PHPUnit;
-use MySheet\MySheet;
-use MySheet\Helpers\StringHelper;
-use MySheet\Helpers\ArrayHelper;
+use MSSLib\Testing\PHPUnit;
+use MSSLib\MySheet;
+use MSSLib\Helpers\StringHelper;
+use MSSLib\Helpers\ArrayHelper;
 
 /**
  * Description of simple
@@ -75,8 +79,8 @@ class StringHelperTest extends BaseTest
             ['"1px,"   , 0%    ', ',', true, ['"1px,"', '0%']],
             ['(1, 0, 2), 0% ', ',', true, ['(1, 0, 2)', '0%']],
             ['body:any(:hover, :active)', ',', false, ['body:any(:hover, :active)']],
-            ['a ; ; ; ;', ';', false, ['a','','']],
-            ['"Arail black", Times', ',', true, ['"Arail black"', 'Times']]
+            ['a ; ; ; ;', ';', false, ['a', '', '', '', '']],
+            ['"Arail black", Times,', ',', true, ['"Arail black"', 'Times', '']]
         ];
     }
     
