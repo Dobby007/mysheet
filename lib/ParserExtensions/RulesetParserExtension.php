@@ -38,7 +38,11 @@ class RulesetParserExtension extends ParserExtension
         do {
             $line = $curLine->getLine();
             $selectors = StringHelper::parseSplittedString($line, ',', false);
-            $ruleset->addSelectors($selectors);
+            try {
+                $ruleset->addSelectors($selectors);
+            } catch (\MSSLib\Error\ParseException $exc) {
+                return false;
+            }
         } while ($curLine = $context->nextLine());
         
         $context->goToClosure(1);

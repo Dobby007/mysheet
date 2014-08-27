@@ -12,6 +12,7 @@ interface IParser {
     public function comeon();
     public function addParserExtension($extension);
 
+    
     public function getCode();
     public function setCode($code);
 }

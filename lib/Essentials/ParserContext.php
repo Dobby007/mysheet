@@ -126,6 +126,14 @@ class ParserContext {
         return false;
     }
     
+    public function getGlobalLineNumber() {
+        $line = $this->getCurrentLineIndex();
+        while ($myClosure = $this->curClosure()->getPrevNeighbour()) {
+            $line += $myClosure->countLines();
+        }
+        return $line;
+    }
+    
     public function getCurrentLineIndex() {
         return $this->lineIndex;
     }

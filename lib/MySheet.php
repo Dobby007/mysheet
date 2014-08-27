@@ -164,7 +164,6 @@ class MySheet {
 
             $fullpath = $path . DS . $file;
             if (is_file($fullpath)) {
-                var_dump($fullpath);
                 return $this->parseFile($fullpath, false);
             }
         }
@@ -174,8 +173,12 @@ class MySheet {
 
     public function registerPlugin($plugin, array $settings = []) {
         if (is_string($plugin)) {
-            $plugin = ucfirst($plugin);
-            $pluginClass = '\\MSSLib\Plugins\\' . $plugin . '\Plugin' . $plugin;
+            $pluginClass = $plugin;
+            if (strpos($pluginClass, '\\') === false) {
+                $pluginClass = ucfirst($plugin);
+                $pluginClass = '\\MSSLib\Plugins\\' . $pluginClass . '\Plugin' . $pluginClass;
+            }
+            
             if (class_exists($pluginClass)) {
                 /* @var $pi \MySheet\Plugins\PluginBase */
                 $pi = new $pluginClass();

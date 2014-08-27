@@ -188,7 +188,6 @@ class BlockParser implements IParser
             }
             
             foreach ($this->extensions as $extension) {
-                $cc = $context->curLine();
                 $result = $this->tryParse($context, $extension);
                 if ($result !== false) {
                     break;
@@ -202,9 +201,9 @@ class BlockParser implements IParser
             ) {
                 $curBlock->addChild($result);
             } else if (!($result instanceof Block)) {
-                throw new ParseException(null, 'UNRECOGNIZED_SEQUENCE');
+                throw new ParseException(null, 'UNRECOGNIZED_SEQUENCE', [$context->curLine()->getLine()]);
             } else {
-                throw new ParseException(null, 'PARENT_NOT_FOUND');
+                throw new ParseException(null, 'PARENT_NOT_FOUND', [$context->curLine()->getLine()]);
             }
             
             //if current source closure has nested closures then we can guarantee that the next line is deeper than the current one
