@@ -19,14 +19,14 @@ class Autoload
             $filePath = MSN\WORKDIR . DIRECTORY_SEPARATOR . $file . MSN\EXT;
             if (!file_exists($filePath)) {
                 throw new Exception('Class not found: ' . $class);
+            } else {
+                include_once $filePath;
             }
-            require_once $filePath;
         }
     }
     
     public function restoreAutoload() {
         spl_autoload_unregister([$this, 'autoload']);
-        
     }
     
     public function registerAutoload() {
