@@ -14,24 +14,36 @@ namespace MSSLib\Tools;
 
 use MSSLib as MS;
 use MSSLib\Traits\MagicPropsTrait;
+use MSSLib\Traits\MagicMethodsTrait;
 
 /**
  * Description of MSSettings
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  * @property string[] ruleParams
- * @property string[] parserExtensions
+ * @property string[] parserExtensions 
+ * @method this setColor(array $colorOptions) Sets instructions for the lib on how to work with colors
+ * @method array getColor() Gets options of color proccessing in the MySheet
+ * @method this setPlugins(array $colorOptions) Sets the priority of plugins 
+ * @method array getPlugins() Gets the priority of plugins
+ * @method this setCssRenderer(array $rendererOptions) Sets the style of the output CSS
+ * @method array getCssRenderer() Gets the style of the output CSS
+ * @method this setParser(string $parser) Sets the class of the parser (must be a realization of IParser)
+ * @method \MSSLib\Tools\IParser getParser() Gets the class of the parser
+ * @method this setImport(array $importOptions) Sets the options of importing MSS files
+ * @method array getImport() Gets the options of importing MSS files
+ * @method this setLanguage(string $lang) Sets the language that is used in MySheet
+ * @method string getLanguage() Gets the language that is used in MySheet
  */
 class MSSettings
 {
-    use MagicPropsTrait;
+    use MagicPropsTrait, 
+        MagicMethodsTrait;
     
     public $color;
     public $plugins;
     public $cssRenderer;
     public $parser;
-    public $cacher;
-    public $colorLibs;
     public $import;
     public $language;
     private $_ruleParams;

@@ -20,6 +20,7 @@ const WORKDIR = __DIR__;
 define('MSSNS', 'MSSLib');
 
 require_once WORKDIR . DS . 'Essentials' . DS . 'Autoload' . EXT;
+require_once WORKDIR . DS . 'Tools' . DS . 'MSSettings' . EXT;
 
 use MSSLib\Essentials\Autoload;
 use MSSLib\Essentials\HandlerFactory;
@@ -55,24 +56,24 @@ class MySheet {
 
     private function __construct() {
         $this->autoload = new Autoload();
-
-        $this->autoload->registerAutoload();
-        $this->setSettings(new MSSettings());
-        $this->autoload->restoreAutoload();
     }
 
-    public static function Instance() {
+    public static function Instance(MSSettings $settings = null) {
         static $instance;
         if ($instance === null) {
             $instance = new self();
-            $instance->init();
+            $instance->init($settings);
         }
         return $instance;
     }
 
-    public function init() {
+    public function init(MSSettings $settings = null) {
         try {
             $this->autoload->registerAutoload();
+            if (!$settings) {
+                $settings = new MSSettings();
+            }
+            $this->setSettings($settings);
             I18N::setLanguage($this->getSettings()->language);
             $parser = $this->getSettings()->parser;
             $parserObj = new $parser(null);
@@ -209,6 +210,8 @@ class MySheet {
         $this->settings = $settings;
     }
 
+    
+    
     /**
      * @return HandlerFactory Instance of HandlerFactory class
      */

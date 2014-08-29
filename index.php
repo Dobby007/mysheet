@@ -8,7 +8,12 @@
 require_once 'lib/MySheet.php';
 
 use MSSLib\MySheet;
+use MSSLib\Tools\MSSettings;
 
+$settings = new MSSettings();
+$settings->setCssRenderer([
+    'prefixOCB' => "\n{"
+]);
 $mysheet = MySheet::Instance();
 
 //@mixin border-radius

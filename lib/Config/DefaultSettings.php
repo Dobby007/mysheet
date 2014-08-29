@@ -8,7 +8,7 @@ return [
     'color' => [
         'lib' => [
             'class' => '\MSSLib\Essentials\ColorLib\MrColorLib',
-            'libPath' => '../../php_libs/mrcolor'
+            'libPath' => '../../mrcolor-0.0.1'
         ],
         'defaultType' => 'hex',
         'transform' => 'all'
