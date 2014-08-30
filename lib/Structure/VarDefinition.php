@@ -19,6 +19,7 @@ use MSSLib\Structure\RuleGroup;
 use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Essentials\StringBuilder;
 use MSSLib\Essentials\VariableScope;
+use MSSLib\Tools\Debugger;
 
 /**
  * Description of Ruleset
@@ -54,7 +55,7 @@ class VarDefinition extends LeafBlock {
     }
         
     protected function compileRealCss(VariableScope $vars = null) {
-        var_dump('DEFINE VAR: ' . $this->getVarName());
+        Debugger::logString('DEFINE VAR: ' . $this->getVarName());
         $this->getRoot()->getVars()->set($this->getVarName(), 'aa');
     }
 }

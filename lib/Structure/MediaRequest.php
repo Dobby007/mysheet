@@ -18,6 +18,7 @@ use MSSLib\Structure\RuleGroup;
 use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Essentials\StringBuilder;
 use MSSLib\Essentials\VariableScope;
+use MSSLib\Tools\Debugger;
 
 /**
  * Description of Ruleset
@@ -47,7 +48,7 @@ class MediaRequest extends NodeBlock {
         $request = $this->getRequest();
         $childrenLines = parent::compileRealCss();
         if ($request) {
-            var_dump('MEDIA REQUEST COMPILATION: '. $request);
+            Debugger::logString('MEDIA REQUEST COMPILATION: '. $request);
             $lines = new StringBuilder();
             $lines->addLine('@media ' . $request);
             $lines->appendText(

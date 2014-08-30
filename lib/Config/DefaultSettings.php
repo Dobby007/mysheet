@@ -6,7 +6,10 @@ return [
     'ruleParams' => 'commaSequence string variable color function metric other',
     'parserExtensions' => 'import media variable ruleset',
     'color' => [
-        'lib' => 1,
+        'lib' => [
+            'class' => '\MSSLib\Essentials\ColorLib\MrColorLib',
+//            'libPath' => '../../php_libs/mrcolor-0.0.1'
+        ],
         'defaultType' => 'hex',
         'transform' => 'all'
     ],

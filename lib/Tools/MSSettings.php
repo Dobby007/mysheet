@@ -37,8 +37,8 @@ use MSSLib\Traits\MagicMethodsTrait;
  */
 class MSSettings
 {
-    use MagicPropsTrait, 
-        MagicMethodsTrait;
+    use MagicPropsTrait,
+        MagicMethodsTrait;                                                                                                                                                               // :-)
     
     public $color;
     public $plugins;
@@ -91,7 +91,7 @@ class MSSettings
         $rootVar = &$var;
         foreach ($complex_name as $name) {
             if (is_array($var)) {
-                $var[$name] = [];
+                $var[$name] = isset($var[$name]) ? $var[$name] : false;
             } else {
                 $var = [
                     $name => []

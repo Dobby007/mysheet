@@ -41,9 +41,9 @@ $mysheet = MySheet::Instance();
 $mysheet->getAutoload()->registerAutoload();
 $settings = new MSSettings();
 $settings->setCssRenderer([
-    'prefixOCB' => "\n{"
+    'prefixOCB' => "\n"
 ]);
-//$settings->set('color.lib.libPath', 'sss');
+$settings->set('color.lib.libPath', '../../php_libs/mrcolor-0.0.1/');
 $mysheet->getAutoload()->restoreAutoload();
 $mysheet->init($settings);
 

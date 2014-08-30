@@ -90,7 +90,7 @@ class RuleValue {
     }
     
     public function getValue(VariableScope $vars = null, $as_array = false) {
-        var_dump($this->params);
+        //we use our own array_map clone here because of php strange behaviour: exceptions can't get out of this function
         $result = ArrayHelper::map(function(RuleParam $item) use($vars) {
             return $item->toRealCss($vars);
         }, $this->params);

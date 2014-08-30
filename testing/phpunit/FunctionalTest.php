@@ -27,6 +27,7 @@ class FunctionalTest extends BaseTest
     protected function setUp()
     {
         $this->mysheet = MySheet::Instance();
+        MySheet::Instance()->init();
     }
     
     /**
