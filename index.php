@@ -43,7 +43,12 @@ $settings = new MSSettings();
 $settings->setCssRenderer([
     'prefixOCB' => "\n"
 ]);
+$settings->setCssRenderer([
+    'prefixCCB' => "\n",
+    'prefixOCB' => ""
+]);
 $settings->set('color.lib.libPath', '../../php_libs/mrcolor-0.0.1/');
+var_dump($settings);
 $mysheet->getAutoload()->restoreAutoload();
 $mysheet->init($settings);
 

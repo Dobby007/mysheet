@@ -32,11 +32,22 @@ trait MagicMethodsTrait {
                 if (!isset($arguments[0])) {
                     throw new Exception('Value must be set for property `' . $propName . '`');
                 }
-                $this->$propName = $arguments[0];
+                $this->__magicSetProperty($propName, $arguments[0]);
                 return $this;
             }
         } else {
             throw new \Exception('Undefined property: $' . $propName);
         }
+    }
+    
+    /**
+     * Method is called when user tries to set a value to a property through its' magic "get" and "set" methods
+     * @param string $propName
+     * @param mixed $propValue
+     * @return boolean
+     */
+    protected function __magicSetProperty($propName, $propValue) {
+        $this->$propName = $propValue;
+        return true;
     }
 }
