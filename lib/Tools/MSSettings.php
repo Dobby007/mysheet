@@ -55,7 +55,7 @@ class MSSettings
     
     public function load(array $settings) {
         $default = require(MS\WORKDIR . MS\DS . 'Config' . MS\DS . 'DefaultSettings' . MS\EXT);
-        $settings = array_merge($default, $settings);
+        $settings = array_replace_recursive($default, $settings);
 
         foreach ($settings as $name => $value) {
             $this->$name = $value;
@@ -82,6 +82,29 @@ class MSSettings
         }
         
         return $var;
+    }
+    
+    public function set($complex_name, $value) {
+        $complex_name = explode('.', $complex_name);
+        $propName = array_shift($complex_name);
+        $var = $this->$propName;
+        $rootVar = &$var;
+        foreach ($complex_name as $name) {
+            if (is_array($var)) {
+                $var[$name] = [];
+            } else {
+                $var = [
+                    $name => []
+                ];
+            }
+            
+            if (isset($var[$name])) {
+                $var = &$var[$name];
+            }
+        }
+        $var = $value;
+        $this->$propName = $rootVar;
+        return $this;
     }
     
     protected function convertPrioritySettingToArray($prioritySetting) {

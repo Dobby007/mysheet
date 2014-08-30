@@ -20,8 +20,8 @@ namespace MSSLib\Traits;
 trait MagicMethodsTrait {
     
     public function __call($method_name, array $arguments) {
-        $prefix = substr($name, 0, 3);
-        $propName = lcfirst(substr($name, 3));
+        $prefix = substr($method_name, 0, 3);
+        $propName = lcfirst(substr($method_name, 3));
         
         if (method_exists($this, $method_name)) {
             return $this->$method_name();
@@ -36,9 +36,7 @@ trait MagicMethodsTrait {
                 return $this;
             }
         } else {
-            throw new \Exception('Undefined property: $' . $name);
+            throw new \Exception('Undefined property: $' . $propName);
         }
     }
-    
-//    protected abstract function canNotFindProperty($name);
 }

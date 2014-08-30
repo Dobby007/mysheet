@@ -15,6 +15,7 @@ namespace MSSLib\Structure;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Essentials\RuleParam;
 use MSSLib\Essentials\FuncListManager;
+use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Traits\RootClassTrait;
 use MSSLib\Error\ParseException;
 
@@ -89,7 +90,8 @@ class RuleValue {
     }
     
     public function getValue(VariableScope $vars = null, $as_array = false) {
-        $result = array_map(function(RuleParam $item) use($vars) {
+        var_dump($this->params);
+        $result = ArrayHelper::map(function(RuleParam $item) use($vars) {
             return $item->toRealCss($vars);
         }, $this->params);
         
@@ -113,10 +115,6 @@ class RuleValue {
     
     public function toRealCss(VariableScope $vars = null) {
         return $this->getValue($vars);
-    }
-    
-    public function __toString() {
-        return $this->toRealCss();
     }
 
 }

@@ -103,10 +103,6 @@ class Selector {
         $this->fullSelector = !!$fullSelector;
     }
     
-    public function __toString() {
-        return (string) $this->getCssPathGroup();
-    }
-    
     public static function unionSelectors(array $parent_selectors, Selector $selector) {
         if (empty($parent_selectors)) {
             $parent_selectors[] = '';

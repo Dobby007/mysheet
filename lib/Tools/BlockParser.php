@@ -15,7 +15,7 @@ use MSSLib\Traits\RootClassTrait;
 use MSSLib\Helpers\StringHelper;
 
 /**
- * Description of Parser
+ * Parser class is used to parse a MSS or CSS text into a document.
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
@@ -154,13 +154,10 @@ class BlockParser implements IParser
             }
         });
         
-        echo "\n\n-==LINES==-\n";
         while ($curBlock->getParent()) {
             $curBlock = $curBlock->getParent();
         }
-        echo $curBlock;
-        var_dump($curBlock);
-        echo "\n===\n\n";
+        Debugger::logString("\n\n-==LINES==-\n" . $curBlock . "\n===\n\n");
         $this->sourceClosure = $curBlock;
     }
     

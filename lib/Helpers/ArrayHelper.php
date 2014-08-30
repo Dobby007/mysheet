@@ -71,6 +71,14 @@ abstract class ArrayHelper {
         return $return;
     }
     
+    public static function map(callable $callback, array $array) {
+        $return = array();
+        foreach ($array as $key => $val) {
+            $return[$key] = $callback($val);
+        }
+        return $return;
+    }
+    
     public static function processLines(array $lines, $prefix, $suffix, $separator, $ignoreLastLine = true) {
         $count = count($lines);
         for ($i = 0; $i < $count; $i++) {

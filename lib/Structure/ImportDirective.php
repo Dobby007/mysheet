@@ -15,6 +15,7 @@ namespace MSSLib\Structure;
 use MSSLib\Structure\RuleValue;
 use MSSLib\Functionals\RuleParam\StringParam;
 use MSSLib\Essentials\VariableScope;
+use MSSLib\Tools\Debugger;
 
 /**
  * Description of Ruleset
@@ -48,16 +49,15 @@ class ImportDirective extends LeafBlock {
                 $url instanceof StringParam && 
                 substr($url->getText(), -4) === '.mss'
             ) {
-                var_dump('IMPORT COMPILATION: '. $url);
+                Debugger::logString('IMPORT COMPILATION: '. $url);
                 $url = str_replace('..', '', $url->getText());
                 $resultDoc = $this->getRoot()->parseImportFile($url);
                 if ($resultDoc instanceof Block) {
-//                    var_dump('Result Document:', $resultDoc);
                     return $resultDoc->toRealCss(false, false);
                 }
                 
             } else {
-                return '@import ' . $value;
+                return '@import ' . $value->toRealCss();
             }
         }
         

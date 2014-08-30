@@ -20,7 +20,7 @@ const WORKDIR = __DIR__;
 define('MSSNS', 'MSSLib');
 
 require_once WORKDIR . DS . 'Essentials' . DS . 'Autoload' . EXT;
-require_once WORKDIR . DS . 'Tools' . DS . 'MSSettings' . EXT;
+require_once WORKDIR . DS . 'Tools' . DS . 'Debugger' . EXT;
 
 use MSSLib\Essentials\Autoload;
 use MSSLib\Essentials\HandlerFactory;
@@ -53,16 +53,17 @@ class MySheet {
     private $vs;
     protected $settings;
     protected $plugins = array();
+    
+
 
     private function __construct() {
         $this->autoload = new Autoload();
     }
 
-    public static function Instance(MSSettings $settings = null) {
+    public static function Instance() {
         static $instance;
         if ($instance === null) {
             $instance = new self();
-            $instance->init($settings);
         }
         return $instance;
     }
@@ -98,6 +99,7 @@ class MySheet {
                 $origItem = StringHelper::rtrimBySubstring(StringHelper::getClassName($origItem), 'Param');
                 return $origItem === ucfirst($orderItem);
             });
+            
             $this->autoload->restoreAutoload();
         } catch (\Exception $exc) {
             $this->autoload->restoreAutoload();
@@ -245,6 +247,10 @@ class MySheet {
      */
     public function getVars() {
         return $this->vs;
+    }
+    
+    public static function setDebugMode($debugMode) {
+        return Tools\Debugger::setDebugMode($debugMode);
     }
 
 }

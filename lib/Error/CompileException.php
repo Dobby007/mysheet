@@ -3,6 +3,8 @@
 
 namespace MSSLib\Error;
 
+use MSSLib\Tools\I18N;
+
 /**
  * Description of CompileException
  *

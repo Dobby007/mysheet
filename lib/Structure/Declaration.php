@@ -88,10 +88,6 @@ class Declaration {
         return $this->getRuleName() . ': ' . $this->getRuleValue()->getValue($arguments);
     }
     
-    public function __toString() {
-        return (string)$this->toRealCss();
-    }
-    
     public static function canBeDeclaration($string, &$matches = null) {
         $res = !!preg_match('/^([-a-z][a-z\d_-]*)\s*(?::|\s)\s*([-#\d"\'.a-z$@].*)$/i', $string, $matches);
 //        var_dump('REGEX::: ', $string,$res, $matches);

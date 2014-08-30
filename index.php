@@ -4,20 +4,49 @@
 <pre>
 <?php
 
+function register_other1() {
+    echo "\nreg1";
+    spl_autoload_register(function ($className) {
+        echo "\nCan not load class with other autoload 1: " . $className;
+    });
+}
+
+function register_other2() {
+    echo "\nreg2";
+    spl_autoload_register(function ($className) {
+        echo "\nCan not load class with other autoload 2: " . $className;
+    });
+}
+
+function register_other3() {
+    echo "\nreg3";
+    spl_autoload_register(function ($className) {
+        echo "\nCan not load class with other autoload 3: " . $className;
+    });
+}
+
+
+
+
 //define('EXT', '.php');
 require_once 'lib/MySheet.php';
 
 use MSSLib\MySheet;
 use MSSLib\Tools\MSSettings;
 
+//MySheet::setDebugMode(true);
+
+$mysheet = MySheet::Instance();
+
+$mysheet->getAutoload()->registerAutoload();
 $settings = new MSSettings();
 $settings->setCssRenderer([
     'prefixOCB' => "\n{"
 ]);
-$mysheet = MySheet::Instance();
+//$settings->set('color.lib.libPath', 'sss');
+$mysheet->getAutoload()->restoreAutoload();
+$mysheet->init($settings);
 
-//@mixin border-radius
-//  
 
 $code = <<<TEXT
 @import "somefile.mss" aural, screen, tv #090
