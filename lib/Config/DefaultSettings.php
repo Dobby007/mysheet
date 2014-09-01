@@ -10,7 +10,6 @@ return [
             'class' => '\MSSLib\Essentials\ColorLib\MrColorLib',
 //            'libPath' => '../../php_libs/mrcolor-0.0.1'
         ],
-        'defaultType' => 'hex',
         'transform' => 'all'
     ],
     'plugins' => [

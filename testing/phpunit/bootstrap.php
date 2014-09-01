@@ -9,5 +9,5 @@ const EXT = '.php';
 
 require_once 'BaseTest' . EXT;
 require_once '../../lib/MySheet' . EXT;
-require_once '../../../php_libs/mrcolor-0.0.1/manual-init' . EXT;
+require_once '../../../mrcolor/manual-init' . EXT;
 

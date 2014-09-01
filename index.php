@@ -47,8 +47,8 @@ $settings->setCssRenderer([
     'prefixCCB' => "\n",
     'prefixOCB' => ""
 ]);
-$settings->set('color.lib.libPath', '../../php_libs/mrcolor-0.0.1/');
-var_dump($settings);
+$settings->set('color.lib.libPath', '../../mrcolor');
+//var_dump($settings);
 $mysheet->getAutoload()->restoreAutoload();
 $mysheet->init($settings);
 
@@ -67,7 +67,7 @@ $code = <<<TEXT
     h1 , h2, h3,h4
         color rgb(220,120, 30 )
         border-color #f3f
-        border-bottom-color hsl(300, 80%, 80%)
+        border-bottom-color hsla(350, 80%, 80%, 1)
         background-color red
         font-size 10px
         .sort 

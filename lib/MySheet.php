@@ -128,7 +128,7 @@ class MySheet {
     }
 
     protected function initRuleParams() {
-        $availableParams = require_once('Config' . DS . 'RuleParams' . EXT);
+        $availableParams = require(self::WORKDIR . DS . 'Config' . DS . 'RuleParams' . EXT);
         $ruleParamNs = '\\MSSLib\\Functionals\\RuleParam\\';
         foreach ($availableParams as $paramClass) {
             $class = $ruleParamNs . ucfirst($paramClass) . 'Param';

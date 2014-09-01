@@ -85,6 +85,13 @@ class ColorParam extends RuleParam
         }
     }
     
+    /**
+     * Checks whether current color type has an alpha channel
+     */
+    public function hasAlphaChannel() {
+        return substr($this->getType(), -1) === 'a';
+    }
+    
     public function isCorrectColor($type, array $color) {
         return true;
     }
@@ -103,7 +110,7 @@ class ColorParam extends RuleParam
                 $cur_type = ColorLib::THEX;
                 $newcolor = [self::getHtmlColor($newcolor[0])];
             }
-            $type = $this->getSetting('color.defaultType', ColorLib::THEX);
+            $type = $this->getSetting('color.defaultType', $this->hasAlphaChannel() ? ColorLib::TRGBA : ColorLib::THEX);
             $newcolor = $this->getColorLib()->setColor($cur_type, $newcolor)->transformTo($type);
         }
         
