@@ -24,11 +24,6 @@ use MSSLib\Traits\PluginClassTrait;
  */
 class MixinParserExtension extends ParserExtension {
     use PluginClassTrait;
-    /**
-     * Reference to plugin object
-     * @var PluginMixin
-     */
-    private $plugin;
     
     public function __construct(PluginMixin $plugin) {
         $this->setPlugin($plugin);

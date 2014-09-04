@@ -30,6 +30,7 @@ use MSSLib\Essentials\FuncListManager;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Helpers\StringHelper;
 use MSSLib\Tools\I18N;
+use MSSLib\Error\InputException;
 
 /**
  * Description of MySheet
@@ -105,6 +106,7 @@ class MySheet {
             $this->autoload->restoreAutoload();
             throw $exc;
         }
+        return $this;
     }
 
     protected function initPlugins() {
@@ -139,6 +141,10 @@ class MySheet {
     public function parseFile($file, $autoload = true) {
         if (is_file($file)) {
             return $this->parseCode(file_get_contents($file), $autoload);
+        } else {
+            $this->getAutoload()->registerAutoload();
+            throw new InputException(null, 'FILE_NOT_FOUND', [$file]);
+            $this->getAutoload()->restoreAutoload();
         }
         return null;
     }

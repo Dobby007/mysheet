@@ -55,16 +55,13 @@ class BlockParser implements IParser
         $this->doc = new Document();
         $this->curBlock = $this->doc;
 
-        try {
-            $this->divideIntoLines();
-            $context = new ParserContext($this, $this->sourceClosure);
-            $parsedBlocks = $this->parseContext($context);
-            foreach ($parsedBlocks as $parsedBlock) {
-                $this->doc->addChild($parsedBlock);
-            }
-        } catch (ParseException $exc) {
-            echo 'Error happened: ' . (string)$exc . "\n";
+        $this->divideIntoLines();
+        $context = new ParserContext($this, $this->sourceClosure);
+        $parsedBlocks = $this->parseContext($context);
+        foreach ($parsedBlocks as $parsedBlock) {
+            $this->doc->addChild($parsedBlock);
         }
+        
         return $this->doc;
     }
 

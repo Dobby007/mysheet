@@ -57,7 +57,7 @@ abstract class RuleParam {
     /**
      * @return RuleParam|false
      */
-    public static function parse(MySheet $rootInstance, &$string) { }
+    public static function parse(&$string) { }
     
     public static function trimStringBy(&$string, $length) {
         $string = substr($string, $length);

@@ -33,9 +33,7 @@ class SettingsHelper {
         }
         $classname = $settings['class'];
         $settings = ArrayHelper::filter($settings, function ($key, $value) {
-            if ($key !== 'class')
-                return true;
-            return false;
+            return $key !== 'class';
         });
         return self::createObjectWithSettings($classname, $settings);
     }
