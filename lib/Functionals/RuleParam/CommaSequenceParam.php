@@ -61,9 +61,9 @@ class CommaSequenceParam extends RuleParam {
         $stringCopy = $string;
         $commaList = StringHelper::parseSplittedString($stringCopy, ',');
         
-//        var_dump('Source String: ', $string, 'Comma List: ', $commaList);
         
         if (count($commaList) > 1) {
+//            var_dump('Source String: ', $string, 'Comma List: ', $commaList);
             $string = $stringCopy;
             return $commaList;
         }

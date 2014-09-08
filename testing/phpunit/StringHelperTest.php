@@ -80,7 +80,8 @@ class StringHelperTest extends BaseTest
             ['(1, 0, 2), 0% ', ',', true, ['(1, 0, 2)', '0%']],
             ['body:any(:hover, :active)', ',', false, ['body:any(:hover, :active)']],
             ['a ; ; ; ;', ';', false, ['a', '', '', '', '']],
-            ['"Arail black", Times,', ',', true, ['"Arail black"', 'Times', '']]
+            ['"Arail black", Times,', ',', true, ['"Arail black"', 'Times', '']],
+            ["'Open Sans', sans-serif", ',', true, ["'Open Sans'", "sans-serif"]],
         ];
     }
     

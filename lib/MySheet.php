@@ -166,6 +166,10 @@ class MySheet {
 
     public function parseImportFile($file) {
         $paths = $this->getSettings()->get('import.paths', []);
+        if (!is_array($paths)) {
+            $paths = [$paths];
+        }
+        
         foreach ($paths as $path) {
             if (!is_string($path)) {
                 continue;

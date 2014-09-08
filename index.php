@@ -3,38 +3,12 @@
 
 <pre>
 <?php
-
-function register_other1() {
-    echo "\nreg1";
-    spl_autoload_register(function ($className) {
-        echo "\nCan not load class with other autoload 1: " . $className;
-    });
-}
-
-function register_other2() {
-    echo "\nreg2";
-    spl_autoload_register(function ($className) {
-        echo "\nCan not load class with other autoload 2: " . $className;
-    });
-}
-
-function register_other3() {
-    echo "\nreg3";
-    spl_autoload_register(function ($className) {
-        echo "\nCan not load class with other autoload 3: " . $className;
-    });
-}
-
-
-
-
-//define('EXT', '.php');
 require_once 'lib/MySheet.php';
 
 use MSSLib\MySheet;
 use MSSLib\Tools\MSSettings;
 
-//MySheet::setDebugMode(true);
+MySheet::setDebugMode(true);
 
 $mysheet = MySheet::Instance();
 
@@ -165,7 +139,8 @@ span
     tutu tt
 TEXT;
 
-$result = $mysheet->parseCode($code);
+//$result = $mysheet->parseCode($code);
+$result = $mysheet->parseFile(__DIR__ . '/examples/main.mss');
 
 //var_dump($result);
 

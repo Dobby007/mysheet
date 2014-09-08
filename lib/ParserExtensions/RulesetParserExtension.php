@@ -50,7 +50,13 @@ class RulesetParserExtension extends ParserExtension
         $lastLine = $context->curClosure()->countLines() - 1;
         if ($context->curClosure()->hasChildren()) {
             $lastLine--;
+            //if current clusure has only 1 line, then we have got to rewind a bit
+            if ($lastLine < 0) {
+                $context->prevLine(true);
+                return $ruleset;
+            }
         }
+        
         do {
             try {
                 $ruleset->addDeclarations($curLine->getLine());
@@ -59,7 +65,8 @@ class RulesetParserExtension extends ParserExtension
                 break;
             }
         } while ($context->getCurrentLineIndex() < $lastLine && $curLine = $context->nextLine());    
-            
+        
+        
         return $ruleset;
     }
 }

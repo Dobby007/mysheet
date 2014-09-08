@@ -127,7 +127,7 @@ class ColorParam extends RuleParam
             case ColorLib::TRGBA:
                 $arr = [$color['r'], $color['g'], $color['b']];
                 if ($type === ColorLib::TRGBA) {
-                    $arr[] = $color['a'];
+                    $arr[] = $color['a'] / 100;
                 }
                 return $type . '(' . implode(', ', $arr) . ')';
             case ColorLib::THSL:

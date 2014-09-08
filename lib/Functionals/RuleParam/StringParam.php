@@ -50,7 +50,7 @@ class StringParam extends RuleParam {
         
     public static function parse(&$string) {
         //TODO: consider that the string might have escaped double qoutes
-        if (preg_match('/^"(.*)"/', $string, $matches)) {
+        if (preg_match('/^(?|"(.*)"|\'(.*)\')/', $string, $matches)) {
             parent::trimStringBy($string, strlen($matches[0]));
             return new self($matches[1]);
         }

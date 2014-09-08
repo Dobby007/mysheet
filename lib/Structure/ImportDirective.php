@@ -57,7 +57,7 @@ class ImportDirective extends LeafBlock {
                 }
                 
             } else {
-                return '@import ' . $value->toRealCss();
+                return '@import ' . $value->toRealCss() . ';';
             }
         }
         
