@@ -118,6 +118,6 @@ class Selector {
     }
     
     public static function canBeSelector($string, &$matches = null) {
-        return !!preg_match('/^[a-z0-9\[\]\-.,\s!:\'"=^$#()*&]+$/i', $string, $matches);
+        return !!preg_match('/^[a-z0-9\[\]\-_.,\s!:\'"=^$#()*&]+$/i', $string, $matches);
     }
 }
