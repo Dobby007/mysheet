@@ -4,7 +4,7 @@
     "description": "",
     "keywords": ["css preprocessor", "css parser", "css"],
     "homepage": "http://mss.flydigo.com",
-    "license": "Apache License, Version 2.0",
+    "license": "Apache-2.0",
     "authors": [
         {
             "name": "Alexander Gilevich",
