@@ -140,7 +140,11 @@ class Ruleset extends NodeBlock {
 
         $compiled_declarations = [];
 
-        array_walk($declarations, function($decl) use (&$compiled_declarations) {
+        array_walk($declarations, function(Declaration $decl) use (&$compiled_declarations) {
+            if (!$decl->getRuleEnabled()) {
+                return;
+            }
+            
             $result = $decl->toRealCss();
 
             if ($result instanceof RuleGroup) {

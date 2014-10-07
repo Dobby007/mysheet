@@ -14,11 +14,18 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.4.0",
+        "syholloway/mrcolor" : "0.*"
     },
     "autoload": {
         "psr-4": {
             "MSSLib\\": "src"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/Dobby007/mrcolor"
+        }
+    ]
 }

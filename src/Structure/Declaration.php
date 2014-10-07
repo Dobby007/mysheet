@@ -38,6 +38,7 @@ class Declaration {
      */
     private $ruleValue;
     
+    private $ruleEnabled = true;
     
     public function __construct($declaration) {
         $this->setDeclaration($declaration);
@@ -49,6 +50,7 @@ class Declaration {
     
     public function setRuleName($ruleName) {
         $this->ruleName = strtolower(trim($ruleName));
+        return $this;
     }
     
     /**
@@ -66,20 +68,39 @@ class Declaration {
         if ($ruleValue instanceof RuleValue) {
             $this->ruleValue = $ruleValue;
         }
+        
+        return $this;
     }
     
+    public function getRuleEnabled() {
+        return $this->ruleEnabled;
+    }
+
+    public function setRuleEnabled($ruleEnabled) {
+        $this->ruleEnabled = !!$ruleEnabled;
+        return $this;
+    }
+
+        
     public function setDeclaration($declaration) {
         $right_declaration = is_string($declaration) && self::canBeDeclaration(trim($declaration), $matches);
         
         if ($right_declaration) {
-            $this->setRuleName($matches[1]);
-            $this->setRuleValue($matches[2]);
+            if ($matches[1] === '~') {
+                $this->setRuleEnabled(false);
+            }
+            $this->setRuleName($matches[2]);
+            $this->setRuleValue($matches[3]);
         } else {
             throw new ParseException(null, 'BAD_DECLARATION', [$declaration]);
         }
     }
     
     public function toRealCss(VariableScope $arguments = null) {
+        if (!$this->getRuleEnabled()) {
+            return null;
+        }
+        
         $result = $this->renderCssEvent($this, $arguments);
         if ($result->handled()) {
             return $result->result();
@@ -89,7 +110,7 @@ class Declaration {
     }
     
     public static function canBeDeclaration($string, &$matches = null) {
-        $res = !!preg_match('/^([-a-z][a-z\d_-]*)\s*(?::|\s)\s*([-#\d"\'.a-z$@].*)$/i', $string, $matches);
+        $res = !!preg_match('/^(~)?([-a-z][a-z\d_-]*)\s*(?::|\s)\s*([-#\d"\'.a-z$@].*)$/i', $string, $matches);
 //        var_dump('REGEX::: ', $string,$res, $matches);
         return $res;
     }

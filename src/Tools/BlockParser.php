@@ -108,14 +108,16 @@ class BlockParser implements IParser
             $i = $offset;
             $handled = false;
             
+            Debugger::logString($lineLevel . ': ' . $line);
+            $curBlock = $this->findAppropriateClosure($curBlock, $lineLevel );
             while ($i < $len) {
                 if ($line[$i] === '{') {
                     $newLine = trim(substr($line, $offset, $i - $offset));
                     //if there is a string before this curly bracket
                     if (!empty($newLine)) {
-                        if ($newLevel - $lineLevel === 0) {
+                        if ($newLevel === $lineLevel && $handled) {
                             //we need to find where to put it
-                            $curBlock = $this->findAppropriateClosure($curBlock, $lineLevel);
+                            $curBlock = $this->findAppropriateClosure($curBlock, $lineLevel );
                         }
                         $curBlock->addLine($newLine);
                     }
@@ -131,9 +133,10 @@ class BlockParser implements IParser
                         $curBlock->addLine($newLine);
                     }
                     array_pop($curly_blocks);
-                    //we need to find a right parent for a next closure
+//                    if (empty($curly_blocks)) break;
+                    //also we need to find a proper closure for a next line
+//                    $curBlock = $this->getParentClosureForLevel($curBlock, $newLevel);
                     $newLevel--;
-                    $curBlock = $this->getParentClosureByLevel($curBlock, $newLevel);
                     $offset = $i + 1;
                     $handled = true;
                 }
@@ -146,7 +149,7 @@ class BlockParser implements IParser
                     $curBlock->addLine($endstr);
                 }
             } else {
-                $curBlock = $this->findAppropriateClosure($curBlock, $lineLevel);
+//                $curBlock = $this->findAppropriateClosure($curBlock, $lineLevel);
                 $curBlock->addLine(rtrim(substr($line, $spacesCount)));
             }
         });
@@ -155,6 +158,7 @@ class BlockParser implements IParser
             $curBlock = $curBlock->getParent();
         }
         Debugger::logString("\n\n-==LINES==-\n" . $curBlock . "\n===\n\n");
+        Debugger::logObjects("As Object:", $curBlock, "===\n");
         $this->sourceClosure = $curBlock;
     }
     
@@ -217,8 +221,8 @@ class BlockParser implements IParser
         return $result;
     }
 
-    protected function getParentClosureByLevel(SourceClosure $block, $level) {
-        if ($level < $block->getLevel()) {
+    protected function getParentClosureForLevel(SourceClosure $block, $level) {
+        if ($block->getLevel() >= $level) {
             while ($level <= $block->getLevel()) {
                 $block = $block->getParent();
             }
@@ -231,15 +235,19 @@ class BlockParser implements IParser
                      ->getChildClosure(-1);
     }
     
-    protected function findAppropriateClosure(SourceClosure $curBlock, $lineLevel) {
+    protected function findAppropriateClosure(SourceClosure $curBlock, $neededLevel) {
         $curBlockLevel = $curBlock->getLevel();
-        //if level of current line is less than the level of current block, we need to find appropriate parent for it
-        $curBlock = $this->getParentClosureByLevel($curBlock, $lineLevel);
-        //we've gotta add a new block if the levels of current line and previous block are not the same
-        if ($lineLevel !== $curBlockLevel) {
-            $curBlock = $this->addChildToClosure($curBlock);
+//        var_dump($neededLevel . ' ' . $curBlockLevel);
+        if ($neededLevel === $curBlockLevel && !$curBlock->hasChildren()) {
+            return $curBlock;
         }
-        return $curBlock;
+        //if level of current line is less than the level of current block, we need to find appropriate parent for it
+        $curBlockNew = $this->getParentClosureForLevel($curBlock, $neededLevel);
+        //we've gotta add a new block if the levels of current line and previous block are not the same
+        if ($curBlockLevel !== $neededLevel || $curBlock->hasChildren()) {
+            $curBlockNew = $this->addChildToClosure($curBlockNew);
+        }
+        return $curBlockNew;
     }
     
     protected static function countLineSpaces($line, $tabsInsteadSpaces = false, &$indentSize = null) {

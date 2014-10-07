@@ -40,7 +40,7 @@ class MetricParam extends RuleParam {
     }
 
     public function setMetric($metric) {
-        $this->metric = intval($metric);
+        $this->metric = floatval($metric);
         return $this;
     }
 
@@ -67,7 +67,7 @@ class MetricParam extends RuleParam {
         
     public static function parse(&$string) {
 //            var_dump($string);
-        if (preg_match('/^(-?(?:\d*\.)?\d+)(em|px|%|ex|in|cm|mm|pt|pc)?/i', $string, $matches)) {
+        if (preg_match('/^(-?(?:\d*\.)?\d+)(\S+)?/i', $string, $matches)) {
             parent::trimStringBy($string, strlen($matches[0]));
             return new self($matches[1], empty($matches[2]) ? '' : $matches[2]);
         }
