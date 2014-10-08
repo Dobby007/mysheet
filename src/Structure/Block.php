@@ -68,11 +68,12 @@ abstract class Block {
         
     }
     
-    public function toRealCss($as_array = false, $autoload = true) {
-        if ($autoload === true) {
+    public function toRealCss($as_array = false) {
+        $autoload_enabled = self::getRootObj()->getSettings()->get('system.internal_autoload', false);
+        if ($autoload_enabled === true) {
             $this->getRoot()->getAutoload()->registerAutoload();
-            $this->cssRenderingStartedEvent($this);
         }
+        $this->cssRenderingStartedEvent($this);
         
         /* @var $compiled StringBuilder */
         $compiled = $this->compileRealCss();
@@ -87,8 +88,8 @@ abstract class Block {
             $result = $compiled;
         }
 
-        if ($autoload === true) {
-            $this->cssRenderingEndedEvent($this);
+        $this->cssRenderingEndedEvent($this);
+        if ($autoload_enabled === true) {
             $this->getRoot()->getAutoload()->restoreAutoload();
         }
         return $result;

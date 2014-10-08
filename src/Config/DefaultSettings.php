@@ -22,6 +22,9 @@ return [
 //        'prefixCCB' => '',
 //        'suffixCCB' => ''
     ],
+    'system' => [
+        'internal_autoload' => false
+    ],
     'import' => [
         'paths' => [MySheet::WORKDIR . MSN\DS . 'Etc' . MSN\DS . 'MssTemplates'],
         'includeError' => 'exception'

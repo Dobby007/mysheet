@@ -24,12 +24,14 @@ use MSSLib\Traits\MagicMethodsTrait;
  * @property string[] parserExtensions 
  * @method this setColor(array $colorOptions) Sets instructions for the lib on how to work with colors
  * @method array getColor() Gets options of color proccessing in the MySheet
+ * @method this setSystem(array $colorOptions) Sets system settings
+ * @method array getSystem() Gets system settings
  * @method this setPlugins(array $colorOptions) Sets the priority of plugins 
  * @method array getPlugins() Gets the priority of plugins
  * @method this setCssRenderer(array $rendererOptions) Sets the style of the output CSS
  * @method array getCssRenderer() Gets the style of the output CSS
  * @method this setParser(string $parser) Sets the class of the parser (must be a realization of IParser)
- * @method \MSSLib\Tools\IParser getParser() Gets the class of the parser
+ * @method string getParser() Gets the class of the parser
  * @method this setImport(array $importOptions) Sets the options of importing MSS files
  * @method array getImport() Gets the options of importing MSS files
  * @method this setLanguage(string $lang) Sets the language that is used in MySheet
@@ -46,6 +48,7 @@ class MSSettings
     public $parser;
     public $import;
     public $language;
+    public $system;
     private $_ruleParams;
     private $_parserExtensions;
     

@@ -138,26 +138,34 @@ class MySheet {
         }
     }
 
-    public function parseFile($file, $autoload = true) {
+    public function parseFile($file) {
+        $autoload_enabled = $this->getSettings()->get('system.internal_autoload', false);
         if (is_file($file)) {
             return $this->parseCode(file_get_contents($file), $autoload);
         } else {
-            $this->getAutoload()->registerAutoload();
+            if ($autoload_enabled) {
+                $this->getAutoload()->registerAutoload();
+            }
+            
             throw new InputException(null, 'FILE_NOT_FOUND', [$file]);
-            $this->getAutoload()->restoreAutoload();
+            
+            if ($autoload_enabled) {
+                $this->getAutoload()->restoreAutoload();
+            }
         }
         return null;
     }
 
-    public function parseCode($code, $autoload = true) {
-        if ($autoload) {
+    public function parseCode($code) {
+        $autoload_enabled = $this->getSettings()->get('system.internal_autoload', false);
+        if ($autoload_enabled) {
             $this->autoload->registerAutoload();
         }
 
         $this->parser->setCode($code);
         $result = $this->parser->comeon();
 
-        if ($autoload) {
+        if ($autoload_enabled) {
             $this->autoload->restoreAutoload();
         }
 

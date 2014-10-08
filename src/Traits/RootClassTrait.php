@@ -30,6 +30,13 @@ trait RootClassTrait {
     }
     
     /**
+     * @return MySheet Instance of MySheet class
+     */
+    public static function getRootObj() {
+        return MySheet::Instance();
+    }
+    
+    /**
      * @return MSSettings
      */
     public function getSettings() {
