@@ -76,6 +76,7 @@ class MySheet {
                 $settings = new MSSettings();
             }
             $this->setSettings($settings);
+            $this->initDependecies();
             I18N::setLanguage($this->getSettings()->language);
             $parser = $this->getSettings()->parser;
             $parserObj = new $parser(null);
@@ -121,8 +122,17 @@ class MySheet {
         }
     }
 
+    protected function initDependecies() {
+        foreach ($this->getSettings()->dependencies as $depFile) {
+            if ($depFile === false) {
+                continue;
+            }
+            require_once MySheet::WORKDIR . \MSSLib\DS . $depFile;
+        }
+    }
+    
     protected function initExtensions() {
-        $peNs = '\\MSSLib\\ParserExtensions\\';
+        $peNs = 'MSSLib\\ParserExtensions\\';
         foreach ($this->getSettings()->parserExtensions as $peClass) {
             $class = $peNs . ucfirst($peClass) . 'ParserExtension';
             $this->parser->addParserExtension($class);
@@ -131,7 +141,7 @@ class MySheet {
 
     protected function initRuleParams() {
         $availableParams = require(self::WORKDIR . DS . 'Config' . DS . 'RuleParams' . EXT);
-        $ruleParamNs = '\\MSSLib\\Functionals\\RuleParam\\';
+        $ruleParamNs = 'MSSLib\\Functionals\\RuleParam\\';
         foreach ($availableParams as $paramClass) {
             $class = $ruleParamNs . ucfirst($paramClass) . 'Param';
             $this->getListManager()->getList('RuleParam')->addFunctional($class);

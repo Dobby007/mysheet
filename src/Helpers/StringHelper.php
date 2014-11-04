@@ -64,7 +64,7 @@ abstract class StringHelper
         return false;
     }
     
-    public static function parseMetric($input) {
+    public static function parseMetric(&$input) {
         $input = trim($input);
         $i = 0;
         $len = strlen($input);
@@ -100,8 +100,9 @@ abstract class StringHelper
         return ['metric' => floatval($metric), 'unit' => $unit];
     }
     
-    public static function parseEnclosedString($string) {
+    public static function parseEnclosedString(&$string) {
         $charMap = self::getEnclosedCharMap();
+        $stringCopy = $string;
         
         if (!isset($charMap[substr($string, 0, 1)])) {
             return false;
@@ -131,7 +132,8 @@ abstract class StringHelper
         }
         
         if ($charQueue->isEmpty()) {
-            return substr($string, 0, $i);
+            $string = substr($string, $i);
+            return substr($stringCopy, 0, $i);
         }
         
         return false;

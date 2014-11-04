@@ -69,7 +69,7 @@ class FunctionParam extends RuleParam {
     public static function parse(&$string) {
         $string_copy = $string;
         $function = StringHelper::parseFunction($string_copy);
-        if ($function) {
+        if ($function && ctype_alnum($function['name'])) {
             $string = $string_copy;
             return new self($function['name'], $function['arguments']);
         }

@@ -61,7 +61,7 @@ class BlockParser implements IParser
         foreach ($parsedBlocks as $parsedBlock) {
             $this->doc->addChild($parsedBlock);
         }
-        
+        Debugger::logObjects("Dcoument", $this->doc, "\n");
         return $this->doc;
     }
 

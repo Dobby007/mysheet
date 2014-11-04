@@ -49,6 +49,7 @@ class MSSettings
     public $import;
     public $language;
     public $system;
+    public $dependencies;
     private $_ruleParams;
     private $_parserExtensions;
     

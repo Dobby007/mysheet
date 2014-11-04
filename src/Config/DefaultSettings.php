@@ -3,7 +3,7 @@ use MSSLib as MSN;
 use MSSLib\MySheet;
 
 return [
-    'ruleParams' => 'commaSequence string variable color function metric other',
+    'ruleParams' => 'mathExpr commaSequence string variable color function metric other',
     'parserExtensions' => 'import media variable ruleset',
     'color' => [
         'lib' => [
@@ -11,6 +11,9 @@ return [
 //            'libPath' => '../../php_libs/mrcolor-0.0.1'
         ],
         'transform' => 'all'
+    ],
+    'dependencies' => [
+        'treeLib' => '../../php_libs/nicmart-tree/manual-init.php'
     ],
     'plugins' => [
         'mixin', 'selectorExtensions'
