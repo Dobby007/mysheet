@@ -20,7 +20,8 @@ use MSSLib\Error\StopException;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class FuncListManager {
+class FuncListManager
+{
     const PRIORITY_LOWEST = 0,
           PRIORITY_LOW = 1,
           PRIORITY_NORMAL = 2,
@@ -66,31 +67,7 @@ class FuncListManager {
         return $this->lists[$listname];
     }
     
-    public function addFunctional($listname, $func, $priority = self::PRIORITY_NORMAL) {
-        $this->createList($listname);
-        $this->lists[$listname][] = [$priority, $func];
-        usort($this->lists[$listname], function($a, $b) {
-            if ($a[0] === $b[0])
-                return 0;
-            else
-                return $a > $b ? 1 : -1;
-        });
-    }
-    
-    public function iterateList($listname, callable $callback) {
-        if ($this->listExists($listname)) {
-            try {
-                foreach ($this->lists[$listname] as $functional) {
-                    call_user_func($callback, $functional[1]);
-                }
-            } catch (StopException $exc) { }
-            
-            return true;
-        }
-        return false;
-    }
-    
-    public static function stopIteration() {
-        throw new StopException();
+    public static function stopIteration($result = null) {
+        throw new StopException($result);
     }
 }

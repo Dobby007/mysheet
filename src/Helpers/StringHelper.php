@@ -153,7 +153,8 @@ abstract class StringHelper
             
             $char = $string[$i];
             if (self::getEnclosedChar($char)) {
-                $enclosedPart = self::parseEnclosedString(substr($string, $i));
+                $possibleEnclosed = substr($string, $i);
+                $enclosedPart = self::parseEnclosedString($possibleEnclosed);
 
                 if ($enclosedPart) {
                     $i += strlen($enclosedPart);

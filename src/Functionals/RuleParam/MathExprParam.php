@@ -17,6 +17,7 @@ use MSSLib\Helpers\StringHelper;
 use MSSLib\Essentials\ExpressionTree\ExpressionNode;
 use MSSLib\Essentials\ExpressionTree\OperatorNode;
 use MSSLib\Essentials\ExpressionTree\ParamNode;
+use MSSLib\Helpers\ExpressionTreeHelper;
 
 /**
  *
@@ -42,7 +43,7 @@ class MathExprParam extends RuleParam {
     }
 
     public function toRealCss() {
-        var_dump($this->text);
+//        var_dump($this->text);
         return 'queue';
     }
     
@@ -50,7 +51,7 @@ class MathExprParam extends RuleParam {
         return $this->toRealCss();
     }
     
-    protected static function parseIntoTree(&$expression) {
+    protected static function parseIntoTree(&$expression, $needNormalization = true) {
         $rootTreeNode = $treeNode = new ExpressionNode();
         $expression = ltrim($expression);
         while (strlen($expression) > 0) {
@@ -59,33 +60,42 @@ class MathExprParam extends RuleParam {
             $subExpression = StringHelper::parseEnclosedString($expression);
             if (strlen($subExpression) > 0) {
                 $subExpression = substr($subExpression, 1, -1);
-                $subExpressionNode = self::parseIntoTree($subExpression);
+                $subExpressionNode = self::parseIntoTree($subExpression, false);
                 //if returned type is Node and $subExpression is empty string after the call
                 if ($subExpressionNode instanceof ExpressionNode && empty($subExpression)) {
-                    $treeNode->addChild((new ExpressionNode())->setValue($subExpressionNode));
+                    $treeNode->addChild((new ExpressionNode())->setExpression($subExpressionNode));
                 } else {
                     return false;
                 }
-            } else if (in_array($expression[0], ['+', '-'])) {
+            } else if ($operator = \MSSLib\Helpers\OperatorHelper::parseOperator($expression)) {
                 if (count($nodeChildren) === 0 || end($nodeChildren) instanceof OperatorNode) {
                     return false;
                 }
-                $treeNode->addChild(new OperatorNode($expression[0]));
+                $treeNode->addChild(new OperatorNode($operator));
                 $expression = substr($expression, 1);
             } else {
                 $param = (new self(null))->parseNestedParam($expression);
                 if (!$param) {
-                    if (count($nodeChildren) > 1 && !(end($nodeChildren) instanceof OperatorNode)) {
+                    if (
+                        count($nodeChildren) > 1 && 
+                        !(end($nodeChildren) instanceof OperatorNode)
+                    ) {
                         return $rootTreeNode;
                     }
                     return false;
+                } else if (
+                    $param instanceof RuleParam && 
+                    (count($nodeChildren) === 0 || end($nodeChildren) instanceof OperatorNode)
+                ) {
+                    $treeNode->addChild(new ParamNode($param));
+                } else {
+                    return false;
                 }
-                $treeNode->addChild(new ParamNode($param));
             }
             $expression = ltrim($expression);
         }
         
-        return $rootTreeNode;
+        return $needNormalization ? ExpressionTreeHelper::normalizeTree($rootTreeNode) : $rootTreeNode;
     }
        
     public static function parse(&$string) {

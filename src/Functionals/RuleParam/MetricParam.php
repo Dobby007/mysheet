@@ -19,7 +19,8 @@ use MSSLib\Essentials\RuleParam;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class MetricParam extends RuleParam {
+class MetricParam extends RuleParam
+{
     const DEFAULT_UNIT = '%';
     
     protected $metric;
@@ -28,8 +29,20 @@ class MetricParam extends RuleParam {
     public function __construct($metric, $unit) {
         $this->setMetric($metric);
         $this->setUnit($unit);
+        static $val;
+        if (!$val) {
+            $val = self::registerOperations();
+        }
+//        \MSSLib\Operators\PlusOperator::calculate($this, $this);
     }
 
+    public static function registerOperations() {
+        \MSSLib\Tools\Debugger::logString('Register calculation functions');
+        \MSSLib\Operators\PlusOperator::registerCalculationFunction(get_class(), get_class(), function ($obj1, $obj2) {
+            \MSSLib\Tools\Debugger::logObjects('Sum of two objects is:', $obj1->getMetric() + $obj2->getMetric());
+        });
+        return true;
+    }
     
     public function getMetric() {
         return $this->metric;

@@ -19,6 +19,7 @@
 namespace MSSLib\Essentials\ExpressionTree;
 
 use Tree\Node\Node;
+use MSSLib\Helpers\ExpressionTreeHelper;
 
 /**
  * Description of OperatorNode
@@ -26,17 +27,30 @@ use Tree\Node\Node;
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class ExpressionNode extends Node {
-    public function getValue() {
-        return $this->getChildren();
+    
+    public function __construct(array $children = []) {
+        $this->setExpression($children);
     }
     
-    public function setValue($value) {
+    public function setExpression($value) {
         if (is_array($value)) {
-            $this->setChildren($children);
+            $this->setChildren($value);
         } else if ($value instanceof Node) {
             $this->setChildren($value->getChildren());
         }
         
         return $this;
+    }
+    
+    /**
+     * Gets internal expression as array of nodes (a.k.a. getChildren)
+     * @return array
+     */
+    public function getExpression() {        
+        return $this->getChildren();
+    }
+    
+    public function getValue() {
+        return ExpressionTreeHelper::calculateExpression($this);
     }
 }

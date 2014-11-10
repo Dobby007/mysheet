@@ -72,7 +72,6 @@ abstract class RuleParam {
     public static function tryParse($paramClass, &$string) {
         $callable = $paramClass . '::' . 'parse';
         $string = ltrim($string);
-//        var_dump($callable);
         if (class_exists($paramClass) && is_callable($callable)) {
             return $paramClass::parse($string);
         }

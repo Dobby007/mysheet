@@ -16,38 +16,25 @@
  * limitations under the License.
  */
 
-namespace MSSLib\Essentials\ExpressionTree;
+namespace MSSLib\Operators;
 
-use Tree\Node\Node;
+use MSSLib\Essentials\MathOperator;
 
 /**
- * Description of OperatorNode
+ * Description of PlusOperator
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class OperatorNode extends Node {
-    /**
-     * Gets operator's priority
-     * @return integer
-     */
-    public function getOperatorPriority() {
-        return $this->getOperator()->getPriority();
+class MinusOperator extends MathOperator
+{
+    public static function operatorSymbol() {
+        return '-';
     }
     
-    /**
-     * Gets MathOperator object
-     * @return \MSSLib\Essentials\MathOperator
-     */
-    public function getOperator() {
-        return $this->getValue();
-    }
-    
-    /**
-     * Sets MathOperator object
-     * @return $this
-     */
-    public function setOperator(\MSSLib\Essentials\MathOperator $operator) {
-        $this->setValue($operator);
-        return $this;
+    public static function parse(&$string) {
+        if (substr($string, 0, 1) === self::operatorSymbol()) {
+            $string = substr($string, 1);
+            return new self();
+        }
     }
 }

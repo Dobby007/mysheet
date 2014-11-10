@@ -22,7 +22,7 @@ use MSSLib\Error\StopException;
 class FuncList {
     
     protected $available_items = [];
-    protected $enabled_items = [];
+    protected $enabled_items = null;
     
     
     public function addFunctional($func) {
@@ -60,15 +60,17 @@ class FuncList {
         usort($this->available_items[$listname], $callback);
     }
     
-    public function iterate(callable $callback) {
+    public function iterate(callable $callback, $default = false) {
         $this->ensureEnabledItems();
         try {
             foreach ($this->enabled_items as $functional) {
                 call_user_func($callback, $functional);
             }
-        } catch (StopException $exc) { }
+        } catch (StopException $exc) { 
+            return $exc->getResult();
+        }
 
-        return true;
+        return $default;
     }
     
     protected function ensureEnabledItems() {

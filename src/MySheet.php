@@ -15,9 +15,10 @@ namespace MSSLib;
 
 const DS = DIRECTORY_SEPARATOR;
 const EXT = '.php';
-const WORKDIR = __DIR__;
 
-define('MSSNS', 'MSSLib');
+define('MSSNS', __NAMESPACE__);
+define(MSSNS . '\WORKDIR', __DIR__ . DS);
+
 
 require_once WORKDIR . DS . 'Essentials' . DS . 'Autoload' . EXT;
 require_once WORKDIR . DS . 'Tools' . DS . 'Debugger' . EXT;
@@ -37,7 +38,8 @@ use MSSLib\Error\InputException;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class MySheet {
+class MySheet
+{
 
     const WORKDIR = __DIR__;
 
@@ -94,6 +96,7 @@ class MySheet {
             $this->initRuleParams();
             $this->initPlugins();
             $this->initExtensions();
+            $this->initOperators();
             $this->getListManager()->getList('RuleParam')->setOrder($this->getSettings()->ruleParams, function ($orderItem, $origItem) {
                 if (!is_string($orderItem) || !is_string($origItem)) {
                     return;
@@ -145,6 +148,15 @@ class MySheet {
         foreach ($availableParams as $paramClass) {
             $class = $ruleParamNs . ucfirst($paramClass) . 'Param';
             $this->getListManager()->getList('RuleParam')->addFunctional($class);
+        }
+    }
+    
+    protected function initOperators() {
+        $availableOperators = require(self::WORKDIR . DS . 'Config' . DS . 'OperatorsPrecedence' . EXT);
+        $operatorNs = 'MSSLib\\Operators\\';
+        foreach ($availableOperators as $operator) {
+            $class = $operatorNs . ucfirst($operator) . 'Operator';
+            $this->getListManager()->getList('Operator')->addFunctional($class);
         }
     }
 

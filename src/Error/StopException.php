@@ -17,6 +17,18 @@ namespace MSSLib\Error;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class StopException extends \Exception {
-    //put your code here
+class StopException extends \Exception
+{
+    protected $result;
+    
+    public function __construct($result) {
+        $this->result = $result;
+    }
+    
+    public function getResult() {
+        return $this->result;
+    }
+
+
+
 }
