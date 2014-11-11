@@ -73,6 +73,11 @@ class FuncList {
         return $default;
     }
     
+    public function map(callable $callback) {
+        $this->ensureEnabledItems();
+        return array_map($callback, $this->enabled_items);
+    }
+    
     protected function ensureEnabledItems() {
         if ($this->enabled_items === null) {
             $this->enabled_items = $this->available_items;

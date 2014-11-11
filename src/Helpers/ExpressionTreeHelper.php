@@ -18,6 +18,10 @@
 
 namespace MSSLib\Helpers;
 
+use MSSLib\Essentials\ExpressionTree\ExpressionNode;
+use MSSLib\Essentials\ExpressionTree\OperatorNode;
+use MSSLib\Essentials\ExpressionTree\ParamNode;
+
 /**
  * Description of ExpressionTreeHelper
  *

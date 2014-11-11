@@ -148,6 +148,10 @@ class MySheet
         foreach ($availableParams as $paramClass) {
             $class = $ruleParamNs . ucfirst($paramClass) . 'Param';
             $this->getListManager()->getList('RuleParam')->addFunctional($class);
+            $implementedInterfaces = class_implements($class);
+            if (isset($implementedInterfaces['MSSLib\Essentials\IMathSupport'])) {
+                $class::registerOperations();
+            }
         }
     }
     

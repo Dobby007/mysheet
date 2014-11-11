@@ -13,13 +13,14 @@
 namespace MSSLib\Functionals\RuleParam;
 
 use MSSLib\Essentials\RuleParam;
+use MSSLib\Essentials\IMathSupport;
 
 /**
  * Class that represents a metric (with its' type) in both MSS and CSS. It is a rule parameter (RuleParam).
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class MetricParam extends RuleParam
+class MetricParam extends RuleParam implements IMathSupport
 {
     const DEFAULT_UNIT = '%';
     
@@ -29,23 +30,14 @@ class MetricParam extends RuleParam
     public function __construct($metric, $unit) {
         $this->setMetric($metric);
         $this->setUnit($unit);
-        static $val;
-        if (!$val) {
-            $val = self::registerOperations();
-        }
-//        \MSSLib\Operators\PlusOperator::calculate($this, $this);
-    }
-
-    public static function registerOperations() {
-        \MSSLib\Tools\Debugger::logString('Register calculation functions');
-        \MSSLib\Operators\PlusOperator::registerCalculationFunction(get_class(), get_class(), function ($obj1, $obj2) {
-            \MSSLib\Tools\Debugger::logObjects('Sum of two objects is:', $obj1->getMetric() + $obj2->getMetric());
-        });
-        return true;
     }
     
     public function getMetric() {
         return $this->metric;
+    }
+    
+    public function getFloatMetric() {
+        return $this->getUnit() === '%' ? $this->metric / 100 : $this->metric;
     }
 
     public function getUnit() {
@@ -75,7 +67,7 @@ class MetricParam extends RuleParam
     }
     
     public static function isRightUnit($unit) {
-        return true;
+        return ctype_alpha($unit) && strlen($unit) <= 3;
     }
         
     public static function parse(&$string) {
@@ -85,5 +77,76 @@ class MetricParam extends RuleParam
             return new self($matches[1], empty($matches[2]) ? '' : $matches[2]);
         }
         return false;
+    }
+    
+    public static function registerOperations() {
+        \MSSLib\Operators\PlusOperator::registerCalculationFunction(get_class(), get_class(), function (MetricParam $obj1, MetricParam $obj2) {
+            return self::sumTwoMetrics($obj1, $obj2, true);
+        });
+        \MSSLib\Operators\MinusOperator::registerCalculationFunction(get_class(), get_class(), function (MetricParam $obj1, MetricParam $obj2) {
+            return self::sumTwoMetrics($obj1, $obj2, false);
+        });
+        
+        \MSSLib\Operators\MultiplyOperator::registerCalculationFunction(get_class(), get_class(), function (MetricParam $obj1, MetricParam $obj2) {
+            $resultMetric = false;
+            $resultUnit = false;
+
+            if ($obj1->getUnit() === $obj2->getUnit()) {
+                $resultMetric = $obj2->getMetric() * $obj1->getMetric();
+                $resultUnit = $obj2->getUnit();
+            } else if ($obj2->getUnit() === '%') {
+                $resultMetric = $obj1->getMetric() * $obj1->getMetric() * $obj2->getFloatMetric();
+                $resultUnit = $obj1->getUnit();
+            } else if ($obj1->getUnit() === '%') {
+                $resultMetric = $obj2->getMetric() * $obj2->getMetric() * $obj1->getFloatMetric();
+                $resultUnit = $obj2->getUnit();
+            }
+
+            return $resultMetric === false ? null : new self($resultMetric, $resultUnit);
+        });
+        
+        \MSSLib\Operators\DivideOperator::registerCalculationFunction(get_class(), get_class(), function (MetricParam $obj1, MetricParam $obj2) {
+            $resultMetric = false;
+            $resultUnit = false;
+
+            if ($obj1->getUnit() === $obj2->getUnit()) {
+                $resultMetric = $obj2->getMetric() / $obj1->getMetric();
+                $resultUnit = $obj2->getUnit();
+            } else if ($obj2->getUnit() === '%') {
+                $resultMetric = $obj1->getMetric() / $obj1->getMetric() * $obj2->getFloatMetric();
+                $resultUnit = $obj1->getUnit();
+            }
+
+            return $resultMetric === false ? null : new self($resultMetric, $resultUnit);
+        });
+        
+        
+        
+        return true;
+    }
+    
+    /**
+     * Sums two metric objects
+     * @param \MSSLib\Functionals\RuleParam\MetricParam $obj1 First operand
+     * @param \MSSLib\Functionals\RuleParam\MetricParam $obj2 Second operand
+     * @param bool $doSum True to get sum of two metric objects and False to get difference between them
+     * @return MetricParam|null
+     */
+    public static function sumTwoMetrics(MetricParam $obj1, MetricParam $obj2, $doSum = true) {
+        $resultMetric = false;
+        $resultUnit = false;
+        
+        if ($obj1->getUnit() === $obj2->getUnit()) {
+            $resultMetric = $obj2->getMetric() + ($doSum ? 1 : -1) * $obj1->getMetric();
+            $resultUnit = $obj2->getUnit();
+        } else if ($obj2->getUnit() === '%') {
+            $resultMetric = $obj1->getMetric() + ($doSum ? 1 : -1) * $obj1->getMetric() * $obj2->getFloatMetric();
+            $resultUnit = $obj1->getUnit();
+        } else if ($obj1->getUnit() === '%') {
+            $resultMetric = $obj2->getMetric() + ($doSum ? 1 : -1) * $obj2->getMetric() * $obj1->getFloatMetric();
+            $resultUnit = $obj2->getUnit();
+        }
+        
+        return $resultMetric === false ? null : new self($resultMetric, $resultUnit);
     }
 }

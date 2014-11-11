@@ -24,27 +24,40 @@ use MSSLib\Helpers\ExpressionTreeHelper;
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class MathExprParam extends RuleParam {
-    protected $text;
+    protected $expressionTree;
     
     public function __construct($expression) {
         if (is_string($expression)) {
             self::parseIntoTree($expression);
         } else {
-            $this->setText($expression);
+            $this->setExpressionTree($expression);
         }
     }
 
-    public function getText() {
-        return $this->text;
+    /**
+     * 
+     * @return ExpressionNode
+     */
+    public function getExpressionTree() {
+        return $this->expressionTree;
     }
 
-    public function setText($text) {
-        $this->text = $text;
+    /**
+     * 
+     * @param ExpressionNode $expressionTree
+     * @return $this
+     */
+    public function setExpressionTree($expressionTree) {
+        $this->expressionTree = $expressionTree;
+        return $this;
     }
-
+    
     public function toRealCss() {
-//        var_dump($this->text);
-        return 'queue';
+        $node = $this->getExpressionTree();
+        if ($node) {
+            return $node->getValue();
+        }
+        return null;
     }
     
     public function __toString() {
@@ -99,7 +112,14 @@ class MathExprParam extends RuleParam {
     }
        
     public static function parse(&$string) {
-        if (preg_match('/[+-]/', $string, $matches)) {
+        static $registeredOperators = null;
+        if ($registeredOperators === null) {
+            $registeredOperators = self::getRootObj()->getListManager()->getList('Operator')->map(function ($operatorClass) {
+                return $operatorClass::operatorSymbol();
+            });
+        }
+        
+        if (preg_match('/[' . implode('\\', $registeredOperators) . ']/', $string, $matches)) {
             $strCopy = $string;
             $result = self::parseIntoTree($strCopy);
             if (is_object($result)) {

@@ -38,9 +38,12 @@ abstract class MathOperator
     }
     
     public function calculate($obj1, $obj2 = null) {
+        /** @todo Multiple calculation functions: get first matched function if the calculation succeded */
         $getFuncName = get_class($this) . '::getCalculationFunction';
         $func = call_user_func($getFuncName, $obj1, $obj2);
+        \MSSLib\Tools\Debugger::logObjects(get_class($this), $obj1, $obj2);
         if ($func === false) {
+            return $obj1;
             throw new \MSSLib\Error\CompileException(null, 'UNSUPPORTED_OPERATION', [self::operatorName()]);
         }
         
