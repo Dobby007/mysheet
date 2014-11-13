@@ -10,17 +10,17 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-namespace MSSLib\Functionals\RuleParam;
+namespace MSSLib\EmbeddedClasses;
 
-use MSSLib\Essentials\RuleParam;
+use MSSLib\Essentials\MssClass;
 use MSSLib\Essentials\IMathSupport;
 
 /**
- * Class that represents a metric (with its' type) in both MSS and CSS. It is a rule parameter (RuleParam).
+ * Class that represents a metric (with its' type) in both MSS and CSS. It is a rule parameter (MssClass).
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class MetricParam extends RuleParam implements IMathSupport
+class MetricClass extends MssClass implements IMathSupport
 {
     const DEFAULT_UNIT = '%';
     
@@ -80,14 +80,14 @@ class MetricParam extends RuleParam implements IMathSupport
     }
     
     public static function registerOperations() {
-        \MSSLib\Operators\PlusOperator::registerCalculationFunction(get_class(), get_class(), function (MetricParam $obj1, MetricParam $obj2) {
+        \MSSLib\Operators\PlusOperator::registerCalculationFunction(get_class(), get_class(), function (MetricClass $obj1, MetricClass $obj2) {
             return self::sumTwoMetrics($obj1, $obj2, true);
         });
-        \MSSLib\Operators\MinusOperator::registerCalculationFunction(get_class(), get_class(), function (MetricParam $obj1, MetricParam $obj2) {
+        \MSSLib\Operators\MinusOperator::registerCalculationFunction(get_class(), get_class(), function (MetricClass $obj1, MetricClass $obj2) {
             return self::sumTwoMetrics($obj1, $obj2, false);
         });
         
-        \MSSLib\Operators\MultiplyOperator::registerCalculationFunction(get_class(), get_class(), function (MetricParam $obj1, MetricParam $obj2) {
+        \MSSLib\Operators\MultiplyOperator::registerCalculationFunction(get_class(), get_class(), function (MetricClass $obj1, MetricClass $obj2) {
             $resultMetric = false;
             $resultUnit = false;
 
@@ -105,7 +105,7 @@ class MetricParam extends RuleParam implements IMathSupport
             return $resultMetric === false ? null : new self($resultMetric, $resultUnit);
         });
         
-        \MSSLib\Operators\DivideOperator::registerCalculationFunction(get_class(), get_class(), function (MetricParam $obj1, MetricParam $obj2) {
+        \MSSLib\Operators\DivideOperator::registerCalculationFunction(get_class(), get_class(), function (MetricClass $obj1, MetricClass $obj2) {
             $resultMetric = false;
             $resultUnit = false;
 
@@ -127,12 +127,12 @@ class MetricParam extends RuleParam implements IMathSupport
     
     /**
      * Sums two metric objects
-     * @param \MSSLib\Functionals\RuleParam\MetricParam $obj1 First operand
-     * @param \MSSLib\Functionals\RuleParam\MetricParam $obj2 Second operand
+     * @param \MSSLib\EmbeddedClasses\MetricClass $obj1 First operand
+     * @param \MSSLib\EmbeddedClasses\MetricClass $obj2 Second operand
      * @param bool $doSum True to get sum of two metric objects and False to get difference between them
-     * @return MetricParam|null
+     * @return MetricClass|null
      */
-    public static function sumTwoMetrics(MetricParam $obj1, MetricParam $obj2, $doSum = true) {
+    public static function sumTwoMetrics(MetricClass $obj1, MetricClass $obj2, $doSum = true) {
         $resultMetric = false;
         $resultUnit = false;
         

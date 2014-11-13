@@ -13,14 +13,14 @@
 namespace MSSLib\Structure;
 
 use MSSLib\Essentials\VariableScope;
-use MSSLib\Essentials\RuleParam;
+use MSSLib\Essentials\MssClass;
 use MSSLib\Essentials\FuncListManager;
 use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Traits\RootClassTrait;
 use MSSLib\Error\ParseException;
 
 /**
- * Class that represents rule value with its' rule parameters (RuleParam)
+ * Class that represents rule value with its' rule parameters (MssClass)
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
@@ -38,7 +38,7 @@ class RuleValue {
     }
     
     /**
-     * @return RuleParam[]
+     * @return MssClass[]
      */
     public function getParams() {
         return $this->params;
@@ -54,7 +54,7 @@ class RuleValue {
         }
         
         
-        if ($param instanceof RuleParam) {
+        if ($param instanceof MssClass) {
             if ($index === null) {
                 $this->params[] = $param;
             } else {
@@ -74,9 +74,9 @@ class RuleValue {
     public function parseParam(&$value) {
         $result = false;
         
-        $this->getRoot()->getListManager()->getList('RuleParam')->iterate(function($paramClass) use (&$value, &$result) {
-            $res = RuleParam::tryParse($paramClass, $value);
-            if ($res instanceof RuleParam) {
+        $this->getRoot()->getListManager()->getList('MssClass')->iterate(function($paramClass) use (&$value, &$result) {
+            $res = MssClass::tryParse($paramClass, $value);
+            if ($res instanceof MssClass) {
                 $result = $res;
                 FuncListManager::stopIteration();
             }
@@ -91,7 +91,7 @@ class RuleValue {
     
     public function getValue(VariableScope $vars = null, $as_array = false) {
         //we use our own array_map clone here because of php strange behaviour: exceptions can't get out of this function
-        $result = ArrayHelper::map(function(RuleParam $item) use($vars) {
+        $result = ArrayHelper::map(function(MssClass $item) use($vars) {
             return $item->toRealCss($vars);
         }, $this->params);
         

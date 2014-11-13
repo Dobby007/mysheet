@@ -17,12 +17,12 @@ use MSSLib\Traits\RootClassTrait;
 use MSSLib\Error\ParseException;
 
 /**
- * Description of RuleParam
+ * Description of MssClass
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-abstract class RuleParam {
-
+abstract class MssClass
+{
     use RootClassTrait;
 
     public function __toString() {
@@ -36,13 +36,13 @@ abstract class RuleParam {
 
     protected function parseNestedParam(&$string) {
         $result = null;
-        $this->getRoot()->getListManager()->getList('RuleParam')->iterate(function ($paramClass) use (&$string, &$result) {
+        $this->getRoot()->getListManager()->getList('MssClass')->iterate(function ($paramClass) use (&$string, &$result) {
             if ($paramClass == get_class($this)) {
                 return;
             }
 
-            $res = RuleParam::tryParse($paramClass, $string);
-            if ($res instanceof RuleParam) {
+            $res = MssClass::tryParse($paramClass, $string);
+            if ($res instanceof MssClass) {
                 $result = $res;
                 FuncListManager::stopIteration();
             }
@@ -56,7 +56,7 @@ abstract class RuleParam {
     }
 
     /**
-     * @return RuleParam|false
+     * @return MssClass|false
      */
     public static function parse(&$string) {
         

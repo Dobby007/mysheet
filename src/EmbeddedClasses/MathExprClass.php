@@ -10,9 +10,9 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-namespace MSSLib\Functionals\RuleParam;
+namespace MSSLib\EmbeddedClasses;
 
-use MSSLib\Essentials\RuleParam;
+use MSSLib\Essentials\MssClass;
 use MSSLib\Helpers\StringHelper;
 use MSSLib\Essentials\ExpressionTree\ExpressionNode;
 use MSSLib\Essentials\ExpressionTree\OperatorNode;
@@ -23,7 +23,7 @@ use MSSLib\Helpers\ExpressionTreeHelper;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class MathExprParam extends RuleParam {
+class MathExprClass extends MssClass {
     protected $expressionTree;
     
     public function __construct($expression) {
@@ -97,7 +97,7 @@ class MathExprParam extends RuleParam {
                     }
                     return false;
                 } else if (
-                    $param instanceof RuleParam && 
+                    $param instanceof MssClass && 
                     (count($nodeChildren) === 0 || end($nodeChildren) instanceof OperatorNode)
                 ) {
                     $treeNode->addChild(new ParamNode($param));

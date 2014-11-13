@@ -13,7 +13,7 @@
 namespace MSSLib\Structure;
 
 use MSSLib\Structure\RuleValue;
-use MSSLib\Functionals\RuleParam\StringParam;
+use MSSLib\EmbeddedClasses\StringClass;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Tools\Debugger;
 
@@ -46,7 +46,7 @@ class ImportDirective extends LeafBlock {
             $url = $value->getParam(0);
             if (
                 $value->countParams() === 1 && 
-                $url instanceof StringParam && 
+                $url instanceof StringClass && 
                 substr($url->getText(), -4) === '.mss'
             ) {
                 Debugger::logString('IMPORT COMPILATION: '. $url);

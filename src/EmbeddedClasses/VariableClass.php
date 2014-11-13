@@ -10,19 +10,19 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-namespace MSSLib\Functionals\RuleParam;
+namespace MSSLib\EmbeddedClasses;
 
-use MSSLib\Essentials\RuleParam;
+use MSSLib\Essentials\MssClass;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Error\ParseException;
 
 /**
- * Class that represents variable in rule value (RuleValue). It is rule parameter (RuleParam).
+ * Class that represents variable in rule value (RuleValue). It is rule parameter (MssClass).
  * It is used to reference some expression outside current rule set.
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class VariableParam extends RuleParam {
+class VariableClass extends MssClass {
     private $varName = '';
     
     public function __construct($varName) {

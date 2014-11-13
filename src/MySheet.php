@@ -93,11 +93,11 @@ class MySheet
                 $this->getVars()->clean();
             });
             $this->flm = new FuncListManager();
-            $this->initRuleParams();
+            $this->initMssClasses();
             $this->initPlugins();
             $this->initExtensions();
             $this->initOperators();
-            $this->getListManager()->getList('RuleParam')->setOrder($this->getSettings()->ruleParams, function ($orderItem, $origItem) {
+            $this->getListManager()->getList('MssClass')->setOrder($this->getSettings()->mssClasss, function ($orderItem, $origItem) {
                 if (!is_string($orderItem) || !is_string($origItem)) {
                     return;
                 }
@@ -142,12 +142,13 @@ class MySheet
         }
     }
 
-    protected function initRuleParams() {
-        $availableParams = require(self::WORKDIR . DS . 'Etc' . DS . 'Includes' . DS . 'RuleParams' . EXT);
-        $ruleParamNs = 'MSSLib\\Functionals\\RuleParam\\';
+    protected function initMssClasses() {
+        $availableParams = require(self::WORKDIR . DS . 'Etc' . DS . 'Includes' . DS . 'EmbeddedClasses' . EXT);
+        $mssClassNs = 'MSSLib\\EmbeddedClasses\\';
         foreach ($availableParams as $paramClass) {
-            $class = $ruleParamNs . ucfirst($paramClass) . 'Param';
-            $this->getListManager()->getList('RuleParam')->addFunctional($class);
+            $class = $mssClassNs . ucfirst($paramClass) . 'Class';
+            $this->getListManager()->getList('MssClass')->addFunctional($class);
+            
             $implementedInterfaces = class_implements($class);
             if (isset($implementedInterfaces['MSSLib\Essentials\IMathSupport'])) {
                 $class::registerOperations();
@@ -167,7 +168,7 @@ class MySheet
     public function parseFile($file) {
         $autoload_enabled = $this->getSettings()->get('system.internal_autoload', false);
         if (is_file($file)) {
-            return $this->parseCode(file_get_contents($file), $autoload);
+            return $this->parseCode(file_get_contents($file));
         } else {
             if ($autoload_enabled) {
                 $this->getAutoload()->registerAutoload();

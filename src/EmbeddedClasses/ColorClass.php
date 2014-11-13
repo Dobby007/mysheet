@@ -10,11 +10,11 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-namespace MSSLib\Functionals\RuleParam;
+namespace MSSLib\EmbeddedClasses;
 
 use MSSLib as MSN;
 use MSSLib\MySheet;
-use MSSLib\Essentials\RuleParam;
+use MSSLib\Essentials\MssClass;
 use MSSLib\Helpers\SettingsHelper;
 use MSSLib\Helpers\StringHelper;
 use MSSLib\Essentials\ColorLib\ColorLib;
@@ -22,11 +22,11 @@ use MSSLib\Error\SystemException;
 use MSSLib\Error\InputException;
 
 /**
- * Class that represents a color in both MSS and CSS. It is a rule parameter (RuleParam).
+ * Class that represents a color in both MSS and CSS. It is a rule parameter (MssClass).
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class ColorParam extends RuleParam 
+class ColorClass extends MssClass 
 {    
     protected static $allowed_types = ['html', 'hex', 'rgb', 'rgba', 'hsl', 'hsla'];
     protected static $css_supported_types = ['html', 'hex', 'rgbs', 'rgba', 'hsl', 'hsla'];

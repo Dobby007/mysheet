@@ -10,18 +10,17 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-namespace MSSLib\Functionals\RuleParam;
+namespace MSSLib\EmbeddedClasses;
 
-use MSSLib\Essentials\RuleParam;
+use MSSLib\Essentials\MssClass;
 
 /**
- * Class that represents all other rule parameters (RuleParam) that do not match requirements of any other rule parameter (RuleParam).
- * It is used to represent some text that is not StringParam. The difference between StringParam and this class is 
- * that string is always enclosed with quotes (both single or double quotes) and the text inside this class is not.
+ * Class that represents a string in rule value (RuleValue). It is a rule parameter (MssClass).
+ * String is always enclosed in qoutes.
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class OtherParam extends RuleParam {
+class StringClass extends MssClass {
     protected $text;
     
     public function __construct($text) {
@@ -32,27 +31,26 @@ class OtherParam extends RuleParam {
     public function getText() {
         return $this->text;
     }
+    
+    public function getQuotedText() {
+        return '"' . str_replace('"', '\"', $this->text) . '"';
+    }
 
     public function setText($text) {
         $this->text = $text;
     }
 
-        
     public function toRealCss() {
-        return $this->getText();
+        return $this->getQuotedText();
     }
     
     public function __toString() {
         return $this->toRealCss();
     }
-    
-    public static function isRightUnit($unit) {
-        return true;
-    }
         
     public static function parse(&$string) {
-//            var_dump($string);
-        if (preg_match('/^(\S+)/', $string, $matches)) {
+        //TODO: consider that the string might have escaped double qoutes
+        if (preg_match('/^(?|"(.*)"|\'(.*)\')/', $string, $matches)) {
             parent::trimStringBy($string, strlen($matches[0]));
             return new self($matches[1]);
         }

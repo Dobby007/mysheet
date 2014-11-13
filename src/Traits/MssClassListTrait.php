@@ -15,17 +15,18 @@ namespace MSSLib\Traits;
 use MSSLib\Error\ParseException;
 
 /**
- * Description of RuleParamListTrait
+ * Description of MssClassListTrait
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-trait RuleParamListTrait {
+trait MssClassListTrait
+{
     public function getParam($index) {
         return isset($this->params[$index]) ? $this->params[$index] : false;
     }
     
     /**
-     * @return RuleParam[]
+     * @return MssClass[]
      */
     public function getParams() {
         return $this->params;
@@ -41,7 +42,7 @@ trait RuleParamListTrait {
         }
         
         
-        if ($param instanceof RuleParam) {
+        if ($param instanceof MssClass) {
             if ($index === null) {
                 $this->params[] = $param;
             } else {
@@ -61,9 +62,9 @@ trait RuleParamListTrait {
     public function parseParam(&$value) {
         $result = false;
         
-        $this->getRoot()->getListManager()->getList('RuleParam')->iterate(function($paramClass) use (&$value, &$result) {
-            $res = RuleParam::tryParse($paramClass, $value);
-            if ($res instanceof RuleParam) {
+        $this->getRoot()->getListManager()->getList('MssClass')->iterate(function($paramClass) use (&$value, &$result) {
+            $res = MssClass::tryParse($paramClass, $value);
+            if ($res instanceof MssClass) {
                 $result = $res;
                 FuncListManager::stopIteration();
             }

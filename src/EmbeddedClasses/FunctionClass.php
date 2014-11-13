@@ -10,20 +10,20 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-namespace MSSLib\Functionals\RuleParam;
+namespace MSSLib\EmbeddedClasses;
 
-use MSSLib\Essentials\RuleParam;
+use MSSLib\Essentials\MssClass;
 use MSSLib\Helpers\StringHelper;
 use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Essentials\VariableScope;
 
 /**
- * Internal class that allows using functions in rule values. It is a rule parameter (RuleParam).
+ * Internal class that allows using functions in rule values. It is a rule parameter (MssClass).
  * It represents a function in both MSS and CSS.
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class FunctionParam extends RuleParam {
+class FunctionClass extends MssClass {
     protected $name;
     protected $arguments;
     

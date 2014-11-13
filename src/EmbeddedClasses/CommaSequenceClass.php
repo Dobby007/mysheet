@@ -10,23 +10,23 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-namespace MSSLib\Functionals\RuleParam;
+namespace MSSLib\EmbeddedClasses;
 
-use MSSLib\Essentials\RuleParam;
+use MSSLib\Essentials\MssClass;
 use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Helpers\StringHelper;
 use MSSLib\Essentials\VariableScope;
-use MSSLib\Traits\RuleParamListTrait;
+use MSSLib\Traits\MssClassListTrait;
 use MSSLib\Essentials\DelimitedString;
 
 /**
  * Class that represents a sequence of rule parameters delimited by commas.
- * Class is also a rule parameter (RuleParam) and can be used in RuleValue instance as a rule parameter.
+ * Class is also a rule parameter (MssClass) and can be used in RuleValue instance as a rule parameter.
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class CommaSequenceParam extends RuleParam {
-    use RuleParamListTrait;
+class CommaSequenceClass extends MssClass {
+    use MssClassListTrait;
     
     protected $delimitedString;
     
