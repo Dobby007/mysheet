@@ -143,7 +143,7 @@ class MySheet
     }
 
     protected function initRuleParams() {
-        $availableParams = require(self::WORKDIR . DS . 'Config' . DS . 'RuleParams' . EXT);
+        $availableParams = require(self::WORKDIR . DS . 'Etc' . DS . 'Includes' . DS . 'RuleParams' . EXT);
         $ruleParamNs = 'MSSLib\\Functionals\\RuleParam\\';
         foreach ($availableParams as $paramClass) {
             $class = $ruleParamNs . ucfirst($paramClass) . 'Param';
@@ -156,7 +156,7 @@ class MySheet
     }
     
     protected function initOperators() {
-        $availableOperators = require(self::WORKDIR . DS . 'Config' . DS . 'OperatorsPrecedence' . EXT);
+        $availableOperators = require(self::WORKDIR . DS . 'Etc' . DS . 'Includes' . DS . 'OperatorsPrecedence' . EXT);
         $operatorNs = 'MSSLib\\Operators\\';
         foreach ($availableOperators as $operator) {
             $class = $operatorNs . ucfirst($operator) . 'Operator';

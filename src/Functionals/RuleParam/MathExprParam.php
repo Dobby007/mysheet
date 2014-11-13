@@ -119,6 +119,7 @@ class MathExprParam extends RuleParam {
             });
         }
         
+        //it's very likely that string contains mathematical expression if it contains operators
         if (preg_match('/[' . implode('\\', $registeredOperators) . ']/', $string, $matches)) {
             $strCopy = $string;
             $result = self::parseIntoTree($strCopy);

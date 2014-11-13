@@ -153,7 +153,7 @@ TEXT;
 $code8 = <<<TEXT
 selector
     width 5px + (50px + 3%) * 4px
-    height 100% * 2px
+    height 2em / 50%
 TEXT;
 
 $result = $mysheet->parseCode($code8);

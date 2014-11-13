@@ -95,10 +95,10 @@ class MetricParam extends RuleParam implements IMathSupport
                 $resultMetric = $obj2->getMetric() * $obj1->getMetric();
                 $resultUnit = $obj2->getUnit();
             } else if ($obj2->getUnit() === '%') {
-                $resultMetric = $obj1->getMetric() * $obj1->getMetric() * $obj2->getFloatMetric();
+                $resultMetric = $obj1->getMetric() * ($obj1->getMetric() * $obj2->getFloatMetric());
                 $resultUnit = $obj1->getUnit();
             } else if ($obj1->getUnit() === '%') {
-                $resultMetric = $obj2->getMetric() * $obj2->getMetric() * $obj1->getFloatMetric();
+                $resultMetric = $obj2->getMetric() * ($obj2->getMetric() * $obj1->getFloatMetric());
                 $resultUnit = $obj2->getUnit();
             }
 
@@ -113,7 +113,7 @@ class MetricParam extends RuleParam implements IMathSupport
                 $resultMetric = $obj2->getMetric() / $obj1->getMetric();
                 $resultUnit = $obj2->getUnit();
             } else if ($obj2->getUnit() === '%') {
-                $resultMetric = $obj1->getMetric() / $obj1->getMetric() * $obj2->getFloatMetric();
+                $resultMetric = $obj1->getMetric() / ($obj1->getMetric() * $obj2->getFloatMetric());
                 $resultUnit = $obj1->getUnit();
             }
 

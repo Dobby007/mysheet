@@ -33,23 +33,36 @@ abstract class MathOperator
     
     function __construct() {
         if (!self::$operatorsPrecedence) {
-            self::$operatorsPrecedence = array_reverse(require(MSN\WORKDIR . 'Config' . MSN\DS . 'OperatorsPrecedence' . MSN\EXT));
+            self::$operatorsPrecedence = array_reverse(require(MSN\WORKDIR . 'Etc' . MSN\DS  . 'Includes' . MSN\DS . 'OperatorsPrecedence' . MSN\EXT));
         }
     }
     
+    /**
+     * Calculates two operands
+     * @param mixed $obj1
+     * @param mixed $obj2
+     * @return mixed Result of calculation
+     * @throws \MSSLib\Error\CompileException
+     */
     public function calculate($obj1, $obj2 = null) {
         /** @todo Multiple calculation functions: get first matched function if the calculation succeded */
-        $getFuncName = get_class($this) . '::getCalculationFunction';
-        $func = call_user_func($getFuncName, $obj1, $obj2);
-        \MSSLib\Tools\Debugger::logObjects(get_class($this), $obj1, $obj2);
-        if ($func === false) {
-            return $obj1;
+        $getFuncName = get_class($this) . '::getCalculationFunctions';
+        $calcFuncs = call_user_func($getFuncName, $obj1, $obj2);
+        $result = null;
+//        \MSSLib\Tools\Debugger::logObjects(get_class($this), $obj1, $obj2);
+        foreach ($calcFuncs as $calcFunc) {
+            $result = call_user_func_array($calcFunc, func_get_args());
+        }
+        if ($result === null) {
             throw new \MSSLib\Error\CompileException(null, 'UNSUPPORTED_OPERATION', [self::operatorName()]);
         }
-        
-        return call_user_func_array($func, func_get_args());
+        return $result;
     }
     
+    /**
+     * Gets priority of current operator
+     * @return int|false
+     */
     public function getPriority() {
         $operatorName = self::getOperatorNameByClassName(get_class($this));
         if ($operatorName) {
@@ -59,11 +72,20 @@ abstract class MathOperator
         return false;
     }
     
+    /**
+     * Gets current operator name
+     * @return string
+     */
     public static function operatorName() {
         $operatorName = self::getOperatorNameByClassName(get_called_class());
         return $operatorName;
     }
     
+    /**
+     * Extracts operator name from the class name or returns false otherwise
+     * @param string $className
+     * @return string|false
+     */
     public static function getOperatorNameByClassName($className) {
         if (preg_match('/([a-z]+)Operator$/i', $className, $matches)) {
             $operatorName = lcfirst($matches[1]);
@@ -72,24 +94,42 @@ abstract class MathOperator
         return false;
     }
     
+    /**
+     * Registers calculation function for two types of operands
+     * @param type $operandType1
+     * @param type $operandType2
+     * @param \MSSLib\Essentials\callable $calcFunc
+     */
     public static function registerCalculationFunction($operandType1, $operandType2, callable $calcFunc) {
         MySheet::Instance()->getListManager()->getList('operator' . self::operatorName())->addFunctional(new MathOperation(self::operatorName(), $operandType1, $operandType2, $calcFunc));
     }
     
-    public static function getCalculationFunction($obj1, $obj2 = null) {
+    /**
+     * Gets available calculation function for two passed operands
+     * @param mixed $obj1 First operand
+     * @param mixed $obj2 Second operand
+     * @return callable[]
+     */
+    public static function getCalculationFunctions($obj1, $obj2 = null) {
         $result = false;
         $operatorName = self::operatorName();
-        MySheet::Instance()->getListManager()->getList('operator' . $operatorName)->iterate(function (MathOperation $mathOperation) 
+        $mathOperations = MySheet::Instance()->getListManager()->getList('operator' . $operatorName)->filter(function (MathOperation $mathOperation) 
                 use (&$result, $obj1, $obj2, $operatorName) 
         {
-            if ($mathOperation->compare($operatorName, get_class($obj1), get_class($obj2))) {
-                $result = $mathOperation->getCalculationFunction();
-                FuncListManager::stopIteration();
-            }
+            return $mathOperation->compare($operatorName, get_class($obj1), get_class($obj2));
         });
-        return $result;
+        
+        return array_map(function (MathOperation $mathOperation) {
+            return $mathOperation->getCalculationFunction();
+        }, $mathOperations);
     }
     
+    /**
+     * Parses string if the operator presented in it
+     * @param string $paramClass
+     * @param string $string
+     * @return mixed
+     */
     public static function tryParse($paramClass, &$string) {
         $callable = $paramClass . '::' . 'parse';
         $string = ltrim($string);
@@ -100,10 +140,16 @@ abstract class MathOperator
         return false;
     }
     
+    /**
+     * Virtual method that need to be overrided
+     */
     public static function parse(&$string) {
         
     }
     
+    /**
+     * Virtual method that need to be overrided
+     */
     public static function operatorSymbol() {
         
     }
