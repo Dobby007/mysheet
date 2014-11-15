@@ -49,7 +49,7 @@ class CommaSequenceClass extends MssClass {
         });
     }
     
-    public function toRealCss(VariableScope $vars = null) {
+    public function toRealCss(VariableScope $vars) {
         return ArrayHelper::implode_objects(', ', $this->getDelimitedString()->getList(), 'toRealCss', $vars);
     }
     

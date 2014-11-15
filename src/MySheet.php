@@ -104,10 +104,7 @@ class MySheet
                 $origItem = StringHelper::rtrimBySubstring(StringHelper::getClassName($origItem), 'Param');
                 return $origItem === ucfirst($orderItem);
             });
-            
-            $this->autoload->restoreAutoload();
         } catch (\Exception $exc) {
-            $this->autoload->restoreAutoload();
             throw $exc;
         }
         return $this;
@@ -175,10 +172,6 @@ class MySheet
             }
             
             throw new InputException(null, 'FILE_NOT_FOUND', [$file]);
-            
-            if ($autoload_enabled) {
-                $this->getAutoload()->restoreAutoload();
-            }
         }
         return null;
     }
@@ -191,10 +184,6 @@ class MySheet
 
         $this->parser->setCode($code);
         $result = $this->parser->comeon();
-
-        if ($autoload_enabled) {
-            $this->autoload->restoreAutoload();
-        }
 
         return $result;
     }
@@ -212,7 +201,7 @@ class MySheet
 
             $fullpath = $path . DS . $file;
             if (is_file($fullpath)) {
-                return $this->parseFile($fullpath, false);
+                return $this->parseFile($fullpath);
             }
         }
 

@@ -46,7 +46,7 @@ $code1 = <<<TEXT
         border-color #f3f
         border-bottom-color hsla(350, 80%, 80%, 1)
         background-color red
-        font-size 10px
+        font-size 36px + 50% * 2
         .sort 
             color sdfsd
             .underline
@@ -156,7 +156,7 @@ selector
     height 2em / 50%
 TEXT;
 
-$result = $mysheet->parseCode($code8);
+$result = $mysheet->parseCode($code1);
 //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
 
 //var_dump($result);

@@ -20,6 +20,7 @@ use MSSLib\Helpers\StringHelper;
 use MSSLib\Essentials\ColorLib\ColorLib;
 use MSSLib\Error\SystemException;
 use MSSLib\Error\InputException;
+use MSSLib\Essentials\VariableScope;
 
 /**
  * Class that represents a color in both MSS and CSS. It is a rule parameter (MssClass).
@@ -96,7 +97,7 @@ class ColorClass extends MssClass
         return true;
     }
     
-    public function toRealCss() {
+    public function toRealCss(VariableScope $vars) {
         $type = null;
         $newcolor = $this->getColor();
         if (

@@ -54,7 +54,7 @@ class FunctionClass extends MssClass {
         return $this;
     }
 
-    public function toRealCss(VariableScope $vars = null) {
+    public function toRealCss(VariableScope $vars) {
         return  $this->getName() . 
                 '(' . 
                 ArrayHelper::implode_objects(', ', $this->getArguments(), 'toRealCss', $vars) . 

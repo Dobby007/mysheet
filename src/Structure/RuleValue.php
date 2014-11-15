@@ -113,7 +113,7 @@ class RuleValue {
         }
     }
     
-    public function toRealCss(VariableScope $vars = null) {
+    public function toRealCss(VariableScope $vars) {
         return $this->getValue($vars);
     }
 

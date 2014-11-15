@@ -54,8 +54,8 @@ class VarDefinition extends LeafBlock {
         return $this;
     }
         
-    protected function compileRealCss(VariableScope $vars = null) {
+    protected function compileRealCss(VariableScope $vars) {
         Debugger::logString('DEFINE VAR: ' . $this->getVarName());
-        $this->getRoot()->getVars()->set($this->getVarName(), 'aa');
+        $vars->set($this->getVarName(), $this->getVarExpression());
     }
 }

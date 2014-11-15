@@ -124,7 +124,7 @@ class Ruleset extends NodeBlock {
         return $combined;
     }
 
-    protected function compileRealCss(VariableScope $vars = null) {
+    protected function compileRealCss(VariableScope $vars) {
         $lines = new StringBuilder();
         $selectors = $this->getCssPaths();
         $declarations = $this->getDeclarations();
@@ -140,12 +140,12 @@ class Ruleset extends NodeBlock {
 
         $compiled_declarations = [];
 
-        array_walk($declarations, function(Declaration $decl) use (&$compiled_declarations) {
+        array_walk($declarations, function(Declaration $decl) use (&$compiled_declarations, $vars) {
             if (!$decl->getRuleEnabled()) {
                 return;
             }
             
-            $result = $decl->toRealCss();
+            $result = $decl->toRealCss($vars);
 
             if ($result instanceof RuleGroup) {
                 foreach ($result->getLines(': ') as $line) {
@@ -183,8 +183,7 @@ class Ruleset extends NodeBlock {
 //            ArrayHelper::concat($lines, $selectors, '{', $compiled_declarations, '}');
         }
 
-        $lines->addLines(parent::compileRealCss());
-//        ArrayHelper::concat($lines, parent::compileRealCss());
+        $lines->addLines(parent::compileRealCss($vars));
 
 
         return $lines;

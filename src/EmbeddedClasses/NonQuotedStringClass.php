@@ -13,6 +13,7 @@
 namespace MSSLib\EmbeddedClasses;
 
 use MSSLib\Essentials\MssClass;
+use MSSLib\Essentials\VariableScope;
 
 /**
  * Class that represents all other rule parameters (MssClass) that do not match requirements of any other rule parameter (MssClass).
@@ -38,12 +39,8 @@ class NonQuotedStringClass extends MssClass {
     }
 
         
-    public function toRealCss() {
+    public function toRealCss(VariableScope $vars) {
         return $this->getText();
-    }
-    
-    public function __toString() {
-        return $this->toRealCss();
     }
     
     public static function isRightUnit($unit) {

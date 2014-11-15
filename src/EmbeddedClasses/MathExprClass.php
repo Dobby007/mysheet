@@ -18,6 +18,7 @@ use MSSLib\Essentials\ExpressionTree\ExpressionNode;
 use MSSLib\Essentials\ExpressionTree\OperatorNode;
 use MSSLib\Essentials\ExpressionTree\ParamNode;
 use MSSLib\Helpers\ExpressionTreeHelper;
+use MSSLib\Essentials\VariableScope;
 
 /**
  *
@@ -52,10 +53,10 @@ class MathExprClass extends MssClass {
         return $this;
     }
     
-    public function toRealCss() {
+    public function toRealCss(VariableScope $vars) {
         $node = $this->getExpressionTree();
         if ($node) {
-            return $node->getValue();
+            return $node->getCalculatedValue($vars);
         }
         return null;
     }

@@ -21,6 +21,7 @@ namespace MSSLib\Helpers;
 use MSSLib\Essentials\ExpressionTree\ExpressionNode;
 use MSSLib\Essentials\ExpressionTree\OperatorNode;
 use MSSLib\Essentials\ExpressionTree\ParamNode;
+use MSSLib\Essentials\VariableScope;
 
 /**
  * Description of ExpressionTreeHelper
@@ -59,7 +60,7 @@ class ExpressionTreeHelper
         return $node;
     }
     
-    public static function calculateExpression(ExpressionNode $node) {
+    public static function calculateExpression(ExpressionNode $node, VariableScope $vars = null) {
         /* @var $children \Tree\Node\NodeInterface[] */
         $children = $node->getChildren();
         $countChildren = count($children);
@@ -68,16 +69,16 @@ class ExpressionTreeHelper
             if (!($children[1] instanceof OperatorNode)) {
                 //throw
             }
-            return $children[1]->getOperator()->calculate($children[0]->getValue(), $children[2]->getValue());
+            return $children[1]->getOperator()->calculate($children[0]->getCalculatedValue($vars), $children[2]->getCalculatedValue($vars));
         } else if ($countChildren === 1) {
             //expression contains only one Operand
-            return $children[0]->getValue();
+            return $children[0]->getCalculatedValue($vars);
         } else if ($countChildren === 2) {
             //unary operator
             if (!($children[0] instanceof OperatorNode)) {
                 //throw
             }
-            return $children[0]->getOperator()->calculate($children[1]->getValue());
+            return $children[0]->getOperator()->calculate($children[1]->getCalculatedValue($vars));
         } else if ($countChildren === 0) {
             return null;
         } else {

@@ -91,7 +91,7 @@ class Mixin extends LeafBlock {
         }
     }
     
-    protected function compileRealCss(VariableScope $vars = null) {
+    protected function compileRealCss(VariableScope $vars) {
         $this->plugin->registerMixin($this);
         return [];
     }
@@ -102,13 +102,10 @@ class Mixin extends LeafBlock {
             return is_int($varname);
         });
         
-        
-        
         foreach ($this->locals as $index => $local) {
             if (!isset($renderScope[$index])) {
                 break;
             }
-            
             $renderScope[$local] = $renderScope[$index];
         }
         

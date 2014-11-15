@@ -58,9 +58,9 @@ abstract class Block {
     }
     
     /**
-     * @return array Array of compiled lines
+     * @return StringBuilder Array of compiled lines
      */
-    protected function compileRealCss(VariableScope $vars = null) {
+    protected function compileRealCss(VariableScope $vars) {
         return null;
     }
 
@@ -68,31 +68,27 @@ abstract class Block {
         
     }
     
-    public function toRealCss($as_array = false) {
-        $autoload_enabled = self::getRootObj()->getSettings()->get('system.internal_autoload', false);
+    /**
+     * Compiles CSS and returns it as a StringBuilder class
+     * @return StringBuilder Array of compiled lines
+     */
+    public function toRealCss(VariableScope $vars = null) {
+        $autoload_enabled = self::getRootObj()->getSettings()->get('system.internal_autoload', true);
         if ($autoload_enabled === true) {
             $this->getRoot()->getAutoload()->registerAutoload();
         }
         $this->cssRenderingStartedEvent($this);
         
+        if ($vars) {
+            self::getRootObj()->getVars()->appendScope($vars);
+        }
         /* @var $compiled StringBuilder */
-        $compiled = $this->compileRealCss();
+        $compiled = $this->compileRealCss(VariableScope::getInstantiatedScope($vars, self::getRootObj()->getVars())->createChildScope());
         if (!($compiled instanceof StringBuilder)) {
             return null;
         }
-
-        $result = false;
-        if ($as_array === false) {
-            $result = $compiled->join();
-        } else {
-            $result = $compiled;
-        }
-
+        
         $this->cssRenderingEndedEvent($this);
-        if ($autoload_enabled === true) {
-            $this->getRoot()->getAutoload()->restoreAutoload();
-        }
-        return $result;
+        return $compiled;
     }
-
 }

@@ -14,6 +14,7 @@ namespace MSSLib\EmbeddedClasses;
 
 use MSSLib\Essentials\MssClass;
 use MSSLib\Essentials\IMathSupport;
+use MSSLib\Essentials\VariableScope;
 
 /**
  * Class that represents a metric (with its' type) in both MSS and CSS. It is a rule parameter (MssClass).
@@ -58,12 +59,8 @@ class MetricClass extends MssClass implements IMathSupport
         return $this;
     }
     
-    public function toRealCss() {
+    public function toRealCss(VariableScope $vars) {
         return $this->getMetric() . $this->getUnit();
-    }
-    
-    public function __toString() {
-        return $this->toRealCss();
     }
     
     public static function isRightUnit($unit) {

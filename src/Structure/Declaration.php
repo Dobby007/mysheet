@@ -26,7 +26,8 @@ use MSSLib\Essentials\VariableScope;
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class Declaration {
-    use RootClassTrait, HandlerCallTrait;
+    use RootClassTrait,
+        HandlerCallTrait;
     
     /**
      * @var string
@@ -62,8 +63,9 @@ class Declaration {
     }
 
     public function setRuleValue($ruleValue) {
-        if (is_string($ruleValue))
+        if (is_string($ruleValue)) {
             $ruleValue = new RuleValue($ruleValue);
+        }
         
         if ($ruleValue instanceof RuleValue) {
             $this->ruleValue = $ruleValue;
@@ -96,17 +98,17 @@ class Declaration {
         }
     }
     
-    public function toRealCss(VariableScope $arguments = null) {
+    public function toRealCss(VariableScope $vars) {
         if (!$this->getRuleEnabled()) {
             return null;
         }
         
-        $result = $this->renderCssEvent($this, $arguments);
+        $result = $this->renderCssEvent($this, $vars);
         if ($result->handled()) {
             return $result->result();
         }
         
-        return $this->getRuleName() . ': ' . $this->getRuleValue()->getValue($arguments);
+        return $this->getRuleName() . ': ' . $this->getRuleValue()->getValue($vars);
     }
     
     public static function canBeDeclaration($string, &$matches = null) {

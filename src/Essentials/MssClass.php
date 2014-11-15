@@ -15,6 +15,7 @@ namespace MSSLib\Essentials;
 use MSSLib\MySheet;
 use MSSLib\Traits\RootClassTrait;
 use MSSLib\Error\ParseException;
+use MSSLib\Essentials\VariableScope;
 
 /**
  * Description of MssClass
@@ -26,13 +27,29 @@ abstract class MssClass
     use RootClassTrait;
 
     public function __toString() {
-        return $this->toRealCss();
+        return $this->toRealCss(self::getRootObj()->getVars());
     }
 
     /**
+     * Gets inner or current MssClass object depending on type of derivative class
+     * @param \MSSLib\Essentials\VariableScope $vars
+     * @return \MSSLib\Essentials\MssClass
+     */
+    public function getValue(VariableScope $vars) {
+        return $this;
+    }
+    
+    /**
+     * Compiles this instance of MssClass into MySheet Styles' string
      * @return string
      */
-    abstract public function toRealCss();
+    public function toMss(VariableScope $vars) {}
+    
+    /**
+     * Compiles this instance of MssClass into CSS string
+     * @return string
+     */
+    abstract public function toRealCss(VariableScope $vars);
 
     protected function parseNestedParam(&$string) {
         $result = null;

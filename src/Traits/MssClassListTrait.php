@@ -41,7 +41,6 @@ trait MssClassListTrait
             $param = $this->parseParam($param);
         }
         
-        
         if ($param instanceof MssClass) {
             if ($index === null) {
                 $this->params[] = $param;

@@ -44,11 +44,10 @@ abstract class NodeBlock extends Block {
     /**
      * @return array Array of compiled lines
      */
-    protected function compileRealCss(VariableScope $vars = null) {
+    protected function compileRealCss(VariableScope $vars) {
         $lines = new StringBuilder();
-//        var_dump(count($this->getChildrens()));
         foreach ($this->getChildren() as $child) {
-            $lines->addLines($child->compileRealCss());
+            $lines->addLines($child->compileRealCss($vars));
         }
         
         return $lines;

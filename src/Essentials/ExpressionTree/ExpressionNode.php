@@ -20,13 +20,15 @@ namespace MSSLib\Essentials\ExpressionTree;
 
 use Tree\Node\Node;
 use MSSLib\Helpers\ExpressionTreeHelper;
+use MSSLib\Essentials\VariableScope;
 
 /**
  * Description of OperatorNode
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class ExpressionNode extends Node {
+class ExpressionNode extends Node implements ICalculatedNode
+{
     
     public function __construct(array $children = []) {
         $this->setExpression($children);
@@ -50,7 +52,7 @@ class ExpressionNode extends Node {
         return $this->getChildren();
     }
     
-    public function getValue() {
-        return ExpressionTreeHelper::calculateExpression($this);
+    public function getCalculatedValue(VariableScope $vars = null) {
+        return ExpressionTreeHelper::calculateExpression($this, $vars);
     }
 }

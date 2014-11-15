@@ -13,6 +13,7 @@
 namespace MSSLib\EmbeddedClasses;
 
 use MSSLib\Essentials\MssClass;
+use MSSLib\Essentials\VariableScope;
 
 /**
  * Class that represents a string in rule value (RuleValue). It is a rule parameter (MssClass).
@@ -40,12 +41,8 @@ class StringClass extends MssClass {
         $this->text = $text;
     }
 
-    public function toRealCss() {
+    public function toRealCss(VariableScope $vars) {
         return $this->getQuotedText();
-    }
-    
-    public function __toString() {
-        return $this->toRealCss();
     }
         
     public static function parse(&$string) {

@@ -17,33 +17,18 @@
  */
 
 namespace MSSLib\Essentials\ExpressionTree;
-
-use Tree\Node\Node;
-use MSSLib\Essentials\MssClass;
 use MSSLib\Essentials\VariableScope;
+use MSSLib\Essentials\MssClass;
 
 /**
- * Description of OperatorNode
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class ParamNode extends Node implements ICalculatedNode
-{
-    public function setValue($value) {
-        if ($value instanceof MssClass) {
-            parent::setValue($value);
-        } else {
-            //throw
-        }
-    }
-    
-    public function getCalculatedValue(VariableScope $vars = null) {
-        /* @var $mssClassObject MssClass */
-        $mssClassObject = $this->getValue();
-        if ($mssClassObject instanceof MssClass) {
-            return $mssClassObject->getValue($vars);
-        } else {
-            //throw
-        }
-    }
+interface ICalculatedNode {
+    /**
+     * 
+     * @param VariableScope $vars
+     * @return MssClass Instance of MssClass that is the result of calculation
+     */
+    public function getCalculatedValue(VariableScope $vars = null);
 }

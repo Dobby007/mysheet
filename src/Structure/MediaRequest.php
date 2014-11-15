@@ -44,9 +44,9 @@ class MediaRequest extends NodeBlock {
     }
 
         
-    protected function compileRealCss(VariableScope $vars = null) {
+    protected function compileRealCss(VariableScope $vars) {
         $request = $this->getRequest();
-        $childrenLines = parent::compileRealCss();
+        $childrenLines = parent::compileRealCss($vars);
         if ($request) {
             Debugger::logString('MEDIA REQUEST COMPILATION: '. $request);
             $lines = new StringBuilder();

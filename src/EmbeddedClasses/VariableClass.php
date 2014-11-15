@@ -43,8 +43,7 @@ class VariableClass extends MssClass {
     }
 
         
-    public function toRealCss(VariableScope $vars = null) {
-        $vars = $this->getRoot()->getVars()->createScope($vars);
+    public function toRealCss(VariableScope $vars) {
         $varval = $vars[$this->getVarName()];
         
         return is_array($varval) ? implode(' ', $varval) : (string) $varval;

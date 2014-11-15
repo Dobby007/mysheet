@@ -33,7 +33,7 @@ class VariableScope implements \ArrayAccess {
     }
 
     public function getParentScope() {
-        return $this->parentScope;
+        return $this->parentScope ? $this->parentScope : $this->getRoot()->getVars();
     }
 
     public function setParentScope($parentScope) {
@@ -66,11 +66,7 @@ class VariableScope implements \ArrayAccess {
         return $this;
     }
     
-    public function get($name) {
-        if ($this->getParentScope() === null) {
-            $this->setParentScope($this->getRoot()->getVars());
-        }
-        
+    public function get($name) {        
         if (isset($this->map[$name])) {
             return $this->map[$name];
         }
@@ -82,8 +78,6 @@ class VariableScope implements \ArrayAccess {
         
         return null;
     }
-    
-    
     
     public function enableNumericVars($bool) {
         $this->numericVars = !!$bool;
@@ -153,16 +147,21 @@ class VariableScope implements \ArrayAccess {
         return $result;
     }
     
-    public static function newScope(VariableScope $scope = null) {
-        if ($scope)
-            return $scope;
-        
-        return new self();
+    public function createChildScope() {
+        $scope = new self();
+        return $scope->setParentScope($this);
     }
     
-    public function createScope(VariableScope $scope = null) {
-        $scope = self::newScope($scope);
-        return $scope;
+    public function ensureNewScope(VariableScope $scope = null) {
+        return $scope ? $scope->createChildScope() : $this->createChildScope();
     }
-
+    
+    public static function getInstantiatedScope(VariableScope $scope0 = null, VariableScope $_otherScopes = null) {
+        foreach (func_get_args() as $arg) {
+            if ($arg instanceof VariableScope) {
+                return $arg;
+            }
+        }
+        return null;
+    }
 }

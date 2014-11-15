@@ -39,7 +39,7 @@ class ImportDirective extends LeafBlock {
         return $this->importValue;
     }
         
-    protected function compileRealCss(VariableScope $vars = null) {
+    protected function compileRealCss(VariableScope $vars) {
         $value = $this->getValue();
         
         if ($value instanceof RuleValue) {
@@ -53,11 +53,11 @@ class ImportDirective extends LeafBlock {
                 $url = str_replace('..', '', $url->getText());
                 $resultDoc = $this->getRoot()->parseImportFile($url);
                 if ($resultDoc instanceof Block) {
-                    return $resultDoc->toRealCss(false, false);
+                    return $resultDoc->compileRealCss($vars);
                 }
                 
             } else {
-                return '@import ' . $value->toRealCss() . ';';
+                return '@import ' . $value->toRealCss($vars) . ';';
             }
         }
         
