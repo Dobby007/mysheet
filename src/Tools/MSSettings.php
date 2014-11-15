@@ -20,7 +20,7 @@ use MSSLib\Traits\MagicMethodsTrait;
  * Description of MSSettings
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
- * @property string[] mssClasss
+ * @property string[] mssClasses
  * @property string[] parserExtensions 
  * @method this setColor(array $colorOptions) Sets instructions for the lib on how to work with colors
  * @method array getColor() Gets options of color proccessing in the MySheet
@@ -50,7 +50,7 @@ class MSSettings
     public $language;
     public $system;
     public $dependencies;
-    private $_mssClasss;
+    private $_mssClasses;
     private $_parserExtensions;
     
     public function __construct(array $settings = []) {
@@ -169,10 +169,10 @@ class MSSettings
      * @param string|array $paramPriority
      * @return $this
      */
-    public function setMssClasss($paramPriority) {
+    public function setMssClasses($paramPriority) {
         $paramPriority = $this->convertPrioritySettingToArray($paramPriority);
         if (is_array($paramPriority)) {
-            $this->_mssClasss = $paramPriority;
+            $this->_mssClasses = $paramPriority;
         }
         return $this;
     }
@@ -181,8 +181,8 @@ class MSSettings
      * Gets a priority for parsing of rule parameters
      * @return array
      */
-    public function getMssClasss() {
-        return $this->_mssClasss;
+    public function getMssClasses() {
+        return $this->_mssClasses;
     }
     
     /**

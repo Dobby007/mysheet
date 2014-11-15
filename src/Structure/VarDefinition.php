@@ -20,6 +20,7 @@ use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Essentials\StringBuilder;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Tools\Debugger;
+use MSSLib\Essentials\MssClass;
 
 /**
  * Description of Ruleset
@@ -40,6 +41,10 @@ class VarDefinition extends LeafBlock {
         return $this->varName;
     }
 
+    /**
+     * Gets an 
+     * @return MssClass
+     */
     public function getVarExpression() {
         return $this->varExpression;
     }
@@ -49,13 +54,13 @@ class VarDefinition extends LeafBlock {
         return $this;
     }
 
-    public function setVarExpression($varExpression) {
+    public function setVarExpression(MssClass $varExpression) {
         $this->varExpression = $varExpression;
         return $this;
     }
         
     protected function compileRealCss(VariableScope $vars) {
-        Debugger::logString('DEFINE VAR: ' . $this->getVarName());
+        Debugger::logString('DEFINE VAR: ' . $this->getVarName() . ' = ' . $this->getVarExpression()->toRealCss($vars));
         $vars->set($this->getVarName(), $this->getVarExpression());
     }
 }

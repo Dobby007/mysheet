@@ -88,7 +88,12 @@ class MathExprClass extends MssClass {
                 $treeNode->addChild(new OperatorNode($operator));
                 $expression = substr($expression, 1);
             } else {
-                $param = (new self(null))->parseNestedParam($expression);
+                if (count($nodeChildren) > 0 && !(end($nodeChildren) instanceof OperatorNode)) {
+                    return $rootTreeNode;
+                }
+                
+                $expressionCopy = $expression;
+                $param = (new self(null))->parseNestedParam($expressionCopy);
                 if (!$param) {
                     if (
                         count($nodeChildren) > 1 && 
@@ -101,6 +106,7 @@ class MathExprClass extends MssClass {
                     $param instanceof MssClass && 
                     (count($nodeChildren) === 0 || end($nodeChildren) instanceof OperatorNode)
                 ) {
+                    $expression = $expressionCopy;
                     $treeNode->addChild(new ParamNode($param));
                 } else {
                     return false;
@@ -124,7 +130,7 @@ class MathExprClass extends MssClass {
         if (preg_match('/[' . implode('\\', $registeredOperators) . ']/', $string, $matches)) {
             $strCopy = $string;
             $result = self::parseIntoTree($strCopy);
-            if (is_object($result)) {
+            if ($result instanceof ExpressionNode && count($result->getChildren()) > 1) {
                 $string = $strCopy;
             } else {
                 return false;

@@ -18,13 +18,15 @@ use MSSLib\Essentials\FuncListManager;
 use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Traits\RootClassTrait;
 use MSSLib\Error\ParseException;
+use MSSLib\Helpers\MssClassHelper;
 
 /**
  * Class that represents rule value with its' rule parameters (MssClass)
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class RuleValue {
+class RuleValue
+{
     use RootClassTrait;
     
     private $params = array();
@@ -72,15 +74,7 @@ class RuleValue {
     }
 
     public function parseParam(&$value) {
-        $result = false;
-        
-        $this->getRoot()->getListManager()->getList('MssClass')->iterate(function($paramClass) use (&$value, &$result) {
-            $res = MssClass::tryParse($paramClass, $value);
-            if ($res instanceof MssClass) {
-                $result = $res;
-                FuncListManager::stopIteration();
-            }
-        });
+        $result = MssClassHelper::parseMssClass($value);
         
         if (!$result) {
             throw new ParseException(null, 'PARAM_NOT_PARSED');
@@ -89,7 +83,7 @@ class RuleValue {
         return $result;
     }
     
-    public function getValue(VariableScope $vars = null, $as_array = false) {
+    public function getValue(VariableScope $vars, $as_array = false) {
         //we use our own array_map clone here because of php strange behaviour: exceptions can't get out of this function
         $result = ArrayHelper::map(function(MssClass $item) use($vars) {
             return $item->toRealCss($vars);

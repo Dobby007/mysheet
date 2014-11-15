@@ -97,12 +97,12 @@ class MySheet
             $this->initPlugins();
             $this->initExtensions();
             $this->initOperators();
-            $this->getListManager()->getList('MssClass')->setOrder($this->getSettings()->mssClasss, function ($orderItem, $origItem) {
-                if (!is_string($orderItem) || !is_string($origItem)) {
+            $this->getListManager()->getList('MssClass')->setOrder($this->getSettings()->mssClasses, function ($orderedListItem, $mssClass) {
+                if (!is_string($orderedListItem) || !is_string($mssClass)) {
                     return;
                 }
-                $origItem = StringHelper::rtrimBySubstring(StringHelper::getClassName($origItem), 'Param');
-                return $origItem === ucfirst($orderItem);
+                $mssClass = StringHelper::getClassName($mssClass);
+                return $mssClass === ucfirst($orderedListItem) . 'Class';
             });
         } catch (\Exception $exc) {
             throw $exc;

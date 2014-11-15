@@ -134,7 +134,7 @@ class MetricClass extends MssClass implements IMathSupport
         $resultUnit = false;
         
         if ($obj1->getUnit() === $obj2->getUnit()) {
-            $resultMetric = $obj2->getMetric() + ($doSum ? 1 : -1) * $obj1->getMetric();
+            $resultMetric = $obj1->getMetric() + ($doSum ? 1 : -1) * $obj2->getMetric();
             $resultUnit = $obj2->getUnit();
         } else if ($obj2->getUnit() === '%') {
             $resultMetric = $obj1->getMetric() + ($doSum ? 1 : -1) * $obj1->getMetric() * $obj2->getFloatMetric();

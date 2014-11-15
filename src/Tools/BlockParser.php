@@ -158,7 +158,7 @@ class BlockParser implements IParser
             $curBlock = $curBlock->getParent();
         }
         Debugger::logString("\n\n-==LINES==-\n" . $curBlock . "\n===\n\n");
-        Debugger::logObjects("As Object:", $curBlock, "===\n");
+//        Debugger::logObjects("As Object:", $curBlock, "===\n");
         $this->sourceClosure = $curBlock;
     }
     

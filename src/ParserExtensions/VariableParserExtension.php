@@ -13,6 +13,7 @@
 namespace MSSLib\ParserExtensions;
 
 use MSSLib\Essentials\ParserExtension;
+use MSSLib\Helpers\MssClassHelper;
 use MSSLib\Structure\VarDefinition;
 use MSSLib\Error\ParseException;
 /**
@@ -29,7 +30,9 @@ class VariableParserExtension extends ParserExtension
             if (!preg_match('/([a-z_][a-z_0-9]*)\s*=\s*(.+)/i', substr($curLine->getLine(), 1), $matches)) {
                 throw new ParseException(null, 'BAD_DEFINITION');
             }
-            return new VarDefinition(null, $matches[1], $matches[2]);
+            
+            $mssClassInstance = MssClassHelper::parseMssClass($matches[2]);
+            return new VarDefinition(null, $matches[1], $mssClassInstance);
         }
 
 
