@@ -48,7 +48,7 @@ class FunctionClass extends MssClass {
 
     public function setArguments(array $arguments) {
         $arguments = array_map(function ($item) {
-            return $this->parseNestedParam($item);
+            return $this->parseNestedParam($item, false);
         }, $arguments);
         
         $this->arguments = $arguments;
@@ -66,10 +66,12 @@ class FunctionClass extends MssClass {
     }
 
     public function toRealCss(VariableScope $vars) {
-        return  $this->getName() . 
-                '(' . 
-                ArrayHelper::implode_objects(', ', $this->getArguments(), 'toRealCss', $vars) . 
-                ')';
+        try {
+            return $this->getValue($vars);
+        } catch (\MSSLib\Error\CompileException $ex) {
+            return  $this->getName() . 
+                    '(' . ArrayHelper::implode_objects(', ', $this->getArguments(), 'toRealCss', $vars) . ')';
+        }
     }
         
     public static function parse(&$string) {

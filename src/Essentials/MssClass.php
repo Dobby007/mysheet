@@ -16,6 +16,7 @@ use MSSLib\MySheet;
 use MSSLib\Traits\RootClassTrait;
 use MSSLib\Error\ParseException;
 use MSSLib\Essentials\VariableScope;
+use MSSLib\Helpers\MssClassHelper;
 
 /**
  * Description of MssClass
@@ -51,19 +52,10 @@ abstract class MssClass
      */
     abstract public function toRealCss(VariableScope $vars);
 
-    protected function parseNestedParam(&$string) {
-        $result = null;
-        $this->getRoot()->getListManager()->getList('MssClass')->iterate(function ($paramClass) use (&$string, &$result) {
-            if ($paramClass == get_class($this)) {
-                return;
-            }
-
-            $res = MssClass::tryParse($paramClass, $string);
-            if ($res instanceof MssClass) {
-                $result = $res;
-                FuncListManager::stopIteration();
-            }
-        });
+    protected function parseNestedParam(&$string, $filterThisClass = true) {
+        $result = MssClassHelper::parseMssClass($string, $filterThisClass ? function ($mssClass) {
+            return $mssClass !== get_class($this);
+        } : null);
 
         if (!$result) {
             throw new ParseException(null, 'PARAM_NOT_PARSED');

@@ -40,6 +40,7 @@ class MathModule extends FunctionModule
     
     public function unitless($value) {
         $value = $value->getValue($this->getVars());
+//        return null;
         return new MetricClass(-$value->getMetric(), null); 
     }
     

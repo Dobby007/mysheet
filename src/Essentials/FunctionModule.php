@@ -44,13 +44,18 @@ abstract class FunctionModule
     }
     
     /**
-     * 
+     * Returns scope of vars that was set by setVars method
      * @return VariableScope
      */
     public function getVars() {
         return $this->vars;
     }
 
+    /**
+     * Saves scope of vars for internal use
+     * @param VariableScope $vars
+     * @return $this
+     */
     public function setVars(VariableScope $vars) {
         $this->vars = $vars;
         return $this;

@@ -153,7 +153,7 @@ TEXT;
 $code8 = <<<TEXT
 selector
     width 5px + (50px + 3%) * 4px
-    height 4px / 70% + negate(negate(2px - 5px))
+    height unitless(4px / 70%) + unitless(abs(negate(2px - 5px)))
 TEXT;
 
 $result = $mysheet->parseCode($code8);
