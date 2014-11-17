@@ -57,8 +57,7 @@ class MySheet
     protected $settings;
     protected $plugins = array();
     
-
-
+    
     private function __construct() {
         $this->autoload = new Autoload();
     }
@@ -97,6 +96,8 @@ class MySheet
             $this->initPlugins();
             $this->initExtensions();
             $this->initOperators();
+            $this->initFunctionModules();
+            
             $this->getListManager()->getList('MssClass')->setOrder($this->getSettings()->mssClasses, function ($orderedListItem, $mssClass) {
                 if (!is_string($orderedListItem) || !is_string($mssClass)) {
                     return;
@@ -118,6 +119,16 @@ class MySheet
                 $this->registerPlugin($value);
             } else if (is_array($value)) {
                 $this->registerPlugin($key, $value);
+            }
+        }
+    }
+    
+    protected function initFunctionModules() {
+        $fmNs = 'MSSLib\\EmbeddedFunctions\\';
+        foreach ($this->getSettings()->functionModules as $functionModuleClass) {
+            $class = $fmNs . ucfirst($functionModuleClass) . 'Module';
+            if (class_exists($class)) {
+                $this->getListManager()->getList('FunctionModule')->addFunctional(new $class);
             }
         }
     }

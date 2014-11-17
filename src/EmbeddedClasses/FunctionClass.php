@@ -15,6 +15,7 @@ namespace MSSLib\EmbeddedClasses;
 use MSSLib\Essentials\MssClass;
 use MSSLib\Helpers\StringHelper;
 use MSSLib\Helpers\ArrayHelper;
+use MSSLib\Helpers\FunctionModuleHelper;
 use MSSLib\Essentials\VariableScope;
 
 /**
@@ -41,7 +42,7 @@ class FunctionClass extends MssClass {
     }
 
     public function setName($name) {
-        $this->name = $name;
+        $this->name = trim($name);
         return $this;
     }
 
@@ -52,6 +53,16 @@ class FunctionClass extends MssClass {
         
         $this->arguments = $arguments;
         return $this;
+    }
+
+    public function getValue(VariableScope $vars) {
+        $module = FunctionModuleHelper::findModule($this->getName(), $this->getArguments());
+        if ($module=== false) {
+            throw new \MSSLib\Error\CompileException(null, 'FUNCTION_NOT_FOUND');
+        }
+        
+        $module->setVars($vars);
+        return call_user_func_array([$module, $this->getName()], $this->getArguments());
     }
 
     public function toRealCss(VariableScope $vars) {

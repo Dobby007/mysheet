@@ -57,7 +57,7 @@ $code1 = <<<TEXT
         padding 0
         margin 0
         gradient as
-        \$varname = mememe
+        \$varname = 5px + 50%
         html.ie6 & .title
             font-size 24px
             color red
@@ -153,10 +153,10 @@ TEXT;
 $code8 = <<<TEXT
 selector
     width 5px + (50px + 3%) * 4px
-    height 2em / 50%
+    height 4px / 70% + negate(negate(2px - 5px))
 TEXT;
 
-$result = $mysheet->parseCode($code1);
+$result = $mysheet->parseCode($code8);
 //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
 
 //var_dump($result);

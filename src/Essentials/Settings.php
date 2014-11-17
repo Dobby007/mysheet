@@ -17,10 +17,8 @@ namespace MSSLib\Essentials;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-abstract class Settings {
-    
-    
-    
+abstract class Settings
+{
     
     public function __get($name) {
         $method_name = 'get' . ucfirst($name);
@@ -40,20 +38,4 @@ abstract class Settings {
             throw new Exception('Undefined property: $' . $name);
         }
     }
-    
-    
-
-    /*
-    public function __call($name, $arguments) {
-        $method_prefix = substr($name, 0, 3);
-        if ($method_prefix === 'get') {
-            $property = lcfirst(substr($name, 3));
-            return $this->$property;
-        } else if ($method_prefix === 'set') {
-            $property = lcfirst(substr($name, 3));
-            $this->$property = reset($arguments);
-            return $this;
-        }
-    }
-    */
 }

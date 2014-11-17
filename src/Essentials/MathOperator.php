@@ -49,7 +49,7 @@ abstract class MathOperator
         $getFuncName = get_class($this) . '::getCalculationFunctions';
         $calcFuncs = call_user_func($getFuncName, $obj1, $obj2);
         $result = null;
-//        \MSSLib\Tools\Debugger::logObjects(get_class($this), $obj1, $obj2);
+        \MSSLib\Tools\Debugger::logObjects(get_class($this), $obj1, $obj2);
         foreach ($calcFuncs as $calcFunc) {
             $result = call_user_func_array($calcFunc, func_get_args());
         }

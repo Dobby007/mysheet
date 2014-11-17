@@ -5,6 +5,7 @@ use MSSLib\MySheet;
 return [
     'mssClasses' => 'mathExpr commaSequence string variable color function metric nonQuotedString',
     'parserExtensions' => 'import media variable ruleset',
+    'functionModules' => 'math',
     'color' => [
         'lib' => [
             'class' => '\MSSLib\Essentials\ColorLib\MrColorLib',

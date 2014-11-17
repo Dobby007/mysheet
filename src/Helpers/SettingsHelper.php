@@ -38,5 +38,11 @@ class SettingsHelper {
         return self::createObjectWithSettings($classname, $settings);
     }
     
-    
+    public static function convertPriorityStringToArray($prioritySetting) {
+        if (is_string($prioritySetting)) {
+            $prioritySetting = preg_split ('/\s*,?\s+/', $prioritySetting);
+        }
+        return $prioritySetting;
+        
+    }
 }

@@ -28,7 +28,7 @@ class MetricClass extends MssClass implements IMathSupport
     protected $metric;
     protected $unit;
     
-    public function __construct($metric, $unit) {
+    public function __construct($metric, $unit = self::DEFAULT_UNIT) {
         $this->setMetric($metric);
         $this->setUnit($unit);
     }
@@ -44,6 +44,10 @@ class MetricClass extends MssClass implements IMathSupport
     public function getUnit() {
         return $this->unit;
     }
+    
+    public function isUnitSet() {
+        return !empty($this->unit);
+    }
 
     public function setMetric($metric) {
         $this->metric = floatval($metric);
@@ -53,8 +57,6 @@ class MetricClass extends MssClass implements IMathSupport
     public function setUnit($unit) {
         if (self::isRightUnit($unit)) {
             $this->unit = $unit;
-        } else {
-            $this->unit = self::DEFAULT_UNIT;
         }
         return $this;
     }
@@ -91,6 +93,9 @@ class MetricClass extends MssClass implements IMathSupport
             if ($obj1->getUnit() === $obj2->getUnit()) {
                 $resultMetric = $obj2->getMetric() * $obj1->getMetric();
                 $resultUnit = $obj2->getUnit();
+            } else if (!$obj1->isUnitSet() || !$obj2->isUnitSet()) {
+                $resultMetric = $obj1->getMetric() * $obj2->getMetric();
+                $resultUnit = $obj1->isUnitSet() ? $obj1->getUnit() : $obj2->getUnit();
             } else if ($obj2->getUnit() === '%') {
                 $resultMetric = $obj1->getMetric() * ($obj1->getMetric() * $obj2->getFloatMetric());
                 $resultUnit = $obj1->getUnit();
@@ -109,6 +114,9 @@ class MetricClass extends MssClass implements IMathSupport
             if ($obj1->getUnit() === $obj2->getUnit()) {
                 $resultMetric = $obj2->getMetric() / $obj1->getMetric();
                 $resultUnit = $obj2->getUnit();
+            } else if (!$obj1->isUnitSet() || !$obj2->isUnitSet()) {
+                $resultMetric = $obj1->getMetric() / $obj2->getMetric();
+                $resultUnit = $obj1->isUnitSet() ? $obj1->getUnit() : $obj2->getUnit();
             } else if ($obj2->getUnit() === '%') {
                 $resultMetric = $obj1->getMetric() / ($obj1->getMetric() * $obj2->getFloatMetric());
                 $resultUnit = $obj1->getUnit();
@@ -136,6 +144,9 @@ class MetricClass extends MssClass implements IMathSupport
         if ($obj1->getUnit() === $obj2->getUnit()) {
             $resultMetric = $obj1->getMetric() + ($doSum ? 1 : -1) * $obj2->getMetric();
             $resultUnit = $obj2->getUnit();
+        } else if (!$obj1->isUnitSet() || !$obj2->isUnitSet()) {
+            $resultMetric = $obj1->getMetric() + ($doSum ? 1 : -1) * $obj2->getMetric();
+            $resultUnit = $obj1->isUnitSet() ? $obj1->getUnit() : $obj2->getUnit();
         } else if ($obj2->getUnit() === '%') {
             $resultMetric = $obj1->getMetric() + ($doSum ? 1 : -1) * $obj1->getMetric() * $obj2->getFloatMetric();
             $resultUnit = $obj1->getUnit();

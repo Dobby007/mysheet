@@ -15,6 +15,7 @@ namespace MSSLib\Tools;
 use MSSLib as MS;
 use MSSLib\Traits\MagicPropsTrait;
 use MSSLib\Traits\MagicMethodsTrait;
+use MSSLib\Helpers\SettingsHelper;
 
 /**
  * Description of MSSettings
@@ -52,6 +53,7 @@ class MSSettings
     public $dependencies;
     private $_mssClasses;
     private $_parserExtensions;
+    private $_functionModules;
     
     public function __construct(array $settings = []) {
         $this->load($settings);
@@ -155,14 +157,6 @@ class MSSettings
         }
         return true;
     }
-    
-    protected function convertPrioritySettingToArray($prioritySetting) {
-        if (is_string($prioritySetting)) {
-            $prioritySetting = preg_split ('/\s*,?\s+/', $prioritySetting);
-        }
-        return $prioritySetting;
-        
-    }
 
     /**
      * Sets a priority for parsing of rule parameters
@@ -170,7 +164,7 @@ class MSSettings
      * @return $this
      */
     public function setMssClasses($paramPriority) {
-        $paramPriority = $this->convertPrioritySettingToArray($paramPriority);
+        $paramPriority = SettingsHelper::convertPriorityStringToArray($paramPriority);
         if (is_array($paramPriority)) {
             $this->_mssClasses = $paramPriority;
         }
@@ -191,13 +185,13 @@ class MSSettings
      * @return $this
      */
     public function setParserExtensions($parserExtensions) {
-        $parserExtensions = $this->convertPrioritySettingToArray($parserExtensions);
+        $parserExtensions = SettingsHelper::convertPriorityStringToArray($parserExtensions);
         if (is_array($parserExtensions)) {
             $this->_parserExtensions = $parserExtensions;
         }
         return $this;
     }
-
+    
     /**
      * Gets a priority for parser extensions
      * @return array
@@ -205,5 +199,29 @@ class MSSettings
     public function getParserExtensions() {
         return $this->_parserExtensions;
     }
+    
+    /**
+     * Gets a priority for functions' modules
+     * @return array
+     */
+    function getFunctionModules() {
+        return $this->_functionModules;
+    }
+
+        
+    /**
+     * Sets a priority for functions' modules
+     * @param string|array $functionModules
+     * @return $this
+     */
+    function setFunctionModules($functionModules) {
+        $functionModules = SettingsHelper::convertPriorityStringToArray($functionModules);
+        if (is_array($functionModules)) {
+            $this->_functionModules = $functionModules;
+        }   
+        return $this;
+    }
+
+    
     
 }

@@ -35,6 +35,14 @@ class MathExprClass extends MssClass {
         }
     }
 
+    public function getValue(VariableScope $vars) {
+        $node = $this->getExpressionTree();
+        if ($node) {
+            return $node->getCalculatedValue($vars);
+        }
+        return null;
+    }
+    
     /**
      * 
      * @return ExpressionNode
@@ -54,9 +62,9 @@ class MathExprClass extends MssClass {
     }
     
     public function toRealCss(VariableScope $vars) {
-        $node = $this->getExpressionTree();
-        if ($node) {
-            return $node->getCalculatedValue($vars);
+        $calculatedValue = $this->getValue($vars);
+        if ($calculatedValue) {
+            return $calculatedValue->toRealCss($vars);
         }
         return null;
     }
