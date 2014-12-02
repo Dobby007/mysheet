@@ -54,13 +54,11 @@ class VariableScope implements \ArrayAccess {
     public function set($name, $value) {
         if (is_null($name)) {
             $this->map[] = $value;
-        } else if (self::canBeVariable($name)) {
+        } else {
             if (is_int($name) && !$this->numericVarsEnabled())
                 return false;
                 
             $this->map[$name] = $value;
-        } else {
-            throw new ParseException(null, 'BAD_VARIABLE_NAME');
         }
         
         return $this;

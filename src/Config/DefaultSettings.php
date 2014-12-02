@@ -3,7 +3,7 @@ use MSSLib as MSN;
 use MSSLib\MySheet;
 
 return [
-    'mssClasses' => 'mathExpr commaSequence string variable color function metric nonQuotedString',
+    'mssClasses' => 'sequence mathExpr string variable color function metric nonQuotedString',
     'parserExtensions' => 'import media variable ruleset',
     'functionModules' => 'math',
     'color' => [

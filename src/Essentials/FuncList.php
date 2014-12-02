@@ -64,7 +64,10 @@ class FuncList {
         $this->ensureEnabledItems();
         try {
             foreach ($this->enabled_items as $functional) {
-                call_user_func($callback, $functional);
+                $call_result = call_user_func($callback, $functional);
+                if (!is_null($call_result)) {
+                    return $call_result;
+                }
             }
         } catch (StopException $exc) { 
             return $exc->getResult();

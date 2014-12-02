@@ -10,6 +10,8 @@ use MSSLib\Tools\MSSettings;
 
 MySheet::setDebugMode(true);
 
+
+
 $mysheet = MySheet::Instance();
 
 $mysheet->getAutoload()->registerAutoload();
@@ -46,7 +48,7 @@ $code1 = <<<TEXT
         border-color #f3f
         border-bottom-color hsla(350, 80%, 80%, 1)
         background-color red
-        font-size 36px + 50% * 2
+        font-size 36px
         .sort 
             color sdfsd
             .underline
@@ -151,13 +153,18 @@ $code7 = <<<TEXT
 TEXT;
 
 $code8 = <<<TEXT
+
 selector
     width 5px + (50px + 3%) * 4px
-    height unitless(4px / 70%) + unitless(abs(negate(2px - 5px)))
+    max-width 5px*4-(4*3)+2
+    height unitless((4px/70%))+ unitless(abs(negate(2px - 5px)))
+    image url(l.gif, c.jpg)
+    font italic/glamour
 TEXT;
 
 $result = $mysheet->parseCode($code8);
 //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
+
 
 //var_dump($result);
 

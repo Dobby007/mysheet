@@ -166,10 +166,18 @@ class MySheet
     
     protected function initOperators() {
         $availableOperators = require(self::WORKDIR . DS . 'Etc' . DS . 'Includes' . DS . 'OperatorsPrecedence' . EXT);
+        $this->processOperatorsGroup($availableOperators);
+    }
+    
+    private function processOperatorsGroup($operatorsGroup) {
         $operatorNs = 'MSSLib\\Operators\\';
-        foreach ($availableOperators as $operator) {
-            $class = $operatorNs . ucfirst($operator) . 'Operator';
-            $this->getListManager()->getList('Operator')->addFunctional($class);
+        foreach ($operatorsGroup as $item) {
+            if (is_string($item)) {
+                $class = $operatorNs . ucfirst($item) . 'Operator';
+                $this->getListManager()->getList('Operator')->addFunctional($class);
+            } else if (is_array($item)) {
+                $this->processOperatorsGroup($item);
+            }
         }
     }
 

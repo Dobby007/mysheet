@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'multiply', 'divide', 'plus', 'minus'
+    ['multiply', 'divide'], ['plus', 'minus']
 ];

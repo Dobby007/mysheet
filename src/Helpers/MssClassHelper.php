@@ -31,19 +31,32 @@ class MssClassHelper
 {
     use RootClassTrait;
     
-    public static function parseMssClass(&$inputString, callable $filterFunction = null) {
-        if (empty($filterFunction)) {
-            $filterFunction = function () { return true; };
+    public static function parseMssClass(&$inputString, $filter = null, $ignoreFilter = false) {
+        if (empty($filter)) {
+            $filter = function () { return true; };
         }
-            
-        return self::getRootObj()->getListManager()->getList('MssClass')->iterate(function($paramClass) use (&$inputString, $filterFunction) {
-            if (!$filterFunction($paramClass)) {
+        
+        if (is_array($filter)) {
+            $mssClasses = [];
+            foreach ($filter as $mssClass) {
+                if (!class_exists($mssClass, false)) {
+                    $mssClasses['MSSLib\\EmbeddedClasses\\' . ucfirst($mssClass) . 'Class'] = true;
+                }
+            }
+            $filter = function ($mssClass) use ($mssClasses, $ignoreFilter) {
+                $issetResult = isset($mssClasses[$mssClass]);
+                return $ignoreFilter ? !$issetResult : $issetResult;
+            };
+        }
+        
+        return self::getRootObj()->getListManager()->getList('MssClass')->iterate(function($mssClass) use (&$inputString, $filter) {
+            if (!$filter($mssClass)) {
                 return;
             }
             
-            $res = MssClass::tryParse($paramClass, $inputString);
+            $res = MssClass::tryParse($mssClass, $inputString);
             if ($res instanceof MssClass) {
-                FuncListManager::stopIteration($res);
+                return $res;
             }
         });
     }

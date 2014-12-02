@@ -12,19 +12,24 @@ use MSSLib\Tools\Debugger;
  */
 class Autoload
 {
+    static $sum;
     
     public function autoload($class) {
         Debugger::logString("Trying to load: ". $class);
+        $start = microtime(true);
         if (substr($class, 0, strlen(MSSNS) + 1) === MSSNS . '\\') {
             $class = substr($class, strlen(MSSNS) + 1);
             $file = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $class);
             $filePath = MSN\WORKDIR . DIRECTORY_SEPARATOR . $file . MSN\EXT;
-            if (!file_exists($filePath)) {
+            $includeResult = (@include_once $filePath) or false;
+            if (!$includeResult) {
                 throw new \Exception('Class not found: ' . $class);
-            } else {
-                include_once $filePath;
             }
+            
+            self::$sum += microtime(true) - $start;
         }
+//        var_dump(self::$sum);
+        
     }
     
     public function restoreAutoload() {

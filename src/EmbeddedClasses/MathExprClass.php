@@ -19,6 +19,7 @@ use MSSLib\Essentials\ExpressionTree\OperatorNode;
 use MSSLib\Essentials\ExpressionTree\ParamNode;
 use MSSLib\Helpers\ExpressionTreeHelper;
 use MSSLib\Essentials\VariableScope;
+use MSSLib\Helpers\MssClassHelper;
 
 /**
  *
@@ -26,6 +27,7 @@ use MSSLib\Essentials\VariableScope;
  */
 class MathExprClass extends MssClass {
     protected $expressionTree;
+    protected static $registeredOperators = null;
     
     public function __construct($expression) {
         if (is_string($expression)) {
@@ -78,6 +80,7 @@ class MathExprClass extends MssClass {
         $expression = ltrim($expression);
         while (strlen($expression) > 0) {
             $nodeChildren = $treeNode->getChildren();
+            $expressionCopy = $expression;
             /** @todo Parse only strings with preceeding open bracket */
             $subExpression = StringHelper::parseEnclosedString($expression);
             if (strlen($subExpression) > 0) {
@@ -89,19 +92,18 @@ class MathExprClass extends MssClass {
                 } else {
                     return false;
                 }
-            } else if ($operator = \MSSLib\Helpers\OperatorHelper::parseOperator($expression)) {
+            } else if (in_array($expressionCopy[0], self::$registeredOperators, true) && ($operator = \MSSLib\Helpers\OperatorHelper::parseOperator($expressionCopy))) {
                 if (count($nodeChildren) === 0 || end($nodeChildren) instanceof OperatorNode) {
                     return false;
                 }
                 $treeNode->addChild(new OperatorNode($operator));
-                $expression = substr($expression, 1);
+                $expression = $expressionCopy;
             } else {
                 if (count($nodeChildren) > 0 && !(end($nodeChildren) instanceof OperatorNode)) {
                     return $rootTreeNode;
                 }
                 
-                $expressionCopy = $expression;
-                $param = (new self(null))->parseNestedParam($expressionCopy);
+                $param = MssClassHelper::parseMssClass($expressionCopy, array('mathExpr', 'sequence'), true);
                 if (!$param) {
                     if (
                         count($nodeChildren) > 1 && 
@@ -127,18 +129,22 @@ class MathExprClass extends MssClass {
     }
        
     public static function parse(&$string) {
-        static $registeredOperators = null;
-        if ($registeredOperators === null) {
-            $registeredOperators = self::getRootObj()->getListManager()->getList('Operator')->map(function ($operatorClass) {
+        
+        if (self::$registeredOperators === null) {
+            self::$registeredOperators = self::getRootObj()->getListManager()->getList('Operator')->map(function ($operatorClass) {
                 return $operatorClass::operatorSymbol();
             });
         }
         
-        //it's very likely that string contains mathematical expression if it contains operators
-        if (preg_match('/[' . implode('\\', $registeredOperators) . ']/', $string, $matches)) {
+        // it's very likely that string contains mathematical expression if it contains operators
+        // also one-operand expression is also valid MathExpr
+        if (
+                $string[0] === '(' || 
+                preg_match('/[' . implode('\\', self::$registeredOperators) . ']/', $string, $matches)
+        ) {
             $strCopy = $string;
             $result = self::parseIntoTree($strCopy);
-            if ($result instanceof ExpressionNode && count($result->getChildren()) > 1) {
+            if ($result instanceof ExpressionNode && count($result->getChildren()) > 0) {
                 $string = $strCopy;
             } else {
                 return false;

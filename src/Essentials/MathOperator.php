@@ -33,7 +33,7 @@ abstract class MathOperator
     
     function __construct() {
         if (!self::$operatorsPrecedence) {
-            self::$operatorsPrecedence = array_reverse(require(MSN\WORKDIR . 'Etc' . MSN\DS  . 'Includes' . MSN\DS . 'OperatorsPrecedence' . MSN\EXT));
+            self::$operatorsPrecedence = self::buildPrecedenceMap(require(MSN\WORKDIR . 'Etc' . MSN\DS  . 'Includes' . MSN\DS . 'OperatorsPrecedence' . MSN\EXT));
         }
     }
     
@@ -65,9 +65,8 @@ abstract class MathOperator
      */
     public function getPriority() {
         $operatorName = self::getOperatorNameByClassName(get_class($this));
-        if ($operatorName) {
-            $priority = array_search($operatorName, self::$operatorsPrecedence, true);
-            return $priority;
+        if ($operatorName && isset(self::$operatorsPrecedence[$operatorName])) {
+            return self::$operatorsPrecedence[$operatorName];
         }
         return false;
     }
@@ -152,5 +151,22 @@ abstract class MathOperator
      */
     public static function operatorSymbol() {
         
+    }
+    
+    private static function buildPrecedenceMap(array $operatorsPrecedence) {
+        $precedenceMap = [];
+        self::processPrecedenceGroup($operatorsPrecedence, $precedenceMap);
+        return $precedenceMap;
+    }
+    
+    private static function processPrecedenceGroup(array $group, array &$precedenceMap, $precedenceValue = false) {
+        $group = array_reverse($group);
+        foreach ($group as $index => $item) {
+            if (is_string($item)) {
+                $precedenceMap[$item] = $precedenceValue === false ? $index : $precedenceValue;
+            } else if (is_array($item)) {
+                self::processPrecedenceGroup($item, $precedenceMap, $index);
+            }
+        }
     }
 }

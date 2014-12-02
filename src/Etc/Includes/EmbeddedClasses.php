@@ -1,3 +1,3 @@
 <?php
 
-return ['mathExpr', 'commaSequence', 'variable', 'string', 'color', 'metric', 'nonQuotedString', 'function'];
+return ['mathExpr', 'sequence', 'variable', 'string', 'color', 'metric', 'nonQuotedString', 'function'];

@@ -17,6 +17,7 @@ use MSSLib\Helpers\StringHelper;
 use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Helpers\FunctionModuleHelper;
 use MSSLib\Essentials\VariableScope;
+use MSSLib\Helpers\MssClassHelper;
 
 /**
  * Internal class that allows using functions in rule values. It is a rule parameter (MssClass).
@@ -47,9 +48,26 @@ class FunctionClass extends MssClass {
     }
 
     public function setArguments(array $arguments) {
-        $arguments = array_map(function ($item) {
-            return $this->parseNestedParam($item, false);
-        }, $arguments);
+        switch ($this->getName()) {
+            case 'url':
+                $result = count($arguments) > 0 ?
+                        MssClassHelper::parseMssClass($arguments[0], array('string', 'nonQuotedString')) : false;
+                
+                if ($result instanceof MssClass) {
+                    $arguments = [$result];
+                } else {
+                    $arguments = [];
+                }
+                break;
+            default:
+                $arguments = array_map(function ($item) {
+                    if ($item instanceof MssClass) {
+                        return $item;
+                    }
+                    return MssClassHelper::parseMssClass($item, array('sequence'), true);
+                }, $arguments);
+                
+        }
         
         $this->arguments = $arguments;
         return $this;

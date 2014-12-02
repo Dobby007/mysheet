@@ -42,16 +42,19 @@ class VariableClass extends MssClass {
         }
     }
 
+    public function getValue(VariableScope $vars) {
+        $varValue = $vars[$this->getVarName()];
+        return $varValue;
+    }
         
     public function toRealCss(VariableScope $vars) {
-        $varval = $vars[$this->getVarName()];
-        
-        return is_array($varval) ? implode(' ', $varval) : (string) $varval;
+        $varValue = $this->getValue($vars);
+        return is_array($varValue) ? implode(' ', $varValue) : (string)$varValue;
     }
 
     
     public static function parse(&$string) {
-        if (preg_match('/^\$([\S]+)/i', $string, $matches)) {
+        if (preg_match('/^\$([a-z0-9]+)/i', $string, $matches)) {
             parent::trimStringBy($string, strlen($matches[0]));
             return new self($matches[1]);
         }

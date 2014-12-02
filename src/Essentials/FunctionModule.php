@@ -29,7 +29,7 @@ abstract class FunctionModule
 {
     private $vars;
     
-    public static function __call($name, $arguments) {
+    public function __call($name, $arguments) {
         if (self::hasDeclaredFunction($name, $arguments)) {
             call_user_func_array(__CLASS__ . '::' . $name, $arguments);
         }

@@ -30,7 +30,7 @@ abstract class OperatorHelper
         return self::getRootObj()->getListManager()->getList('Operator')->iterate(function($operatorClass) use (&$string, &$result) {
             $result = MathOperator::tryParse($operatorClass, $string);
             if ($result instanceof MathOperator) {
-                FuncListManager::stopIteration($result);
+                return $result;
             }
         });
     }

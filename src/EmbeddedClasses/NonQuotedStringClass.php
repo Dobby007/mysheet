@@ -37,19 +37,14 @@ class NonQuotedStringClass extends MssClass {
     public function setText($text) {
         $this->text = $text;
     }
-
         
     public function toRealCss(VariableScope $vars) {
         return $this->getText();
     }
-    
-    public static function isRightUnit($unit) {
-        return true;
-    }
         
     public static function parse(&$string) {
 //            var_dump($string);
-        if (preg_match('/^(\S+)/', $string, $matches)) {
+        if (preg_match('/^(\S+)/i', $string, $matches)) {
             parent::trimStringBy($string, strlen($matches[0]));
             return new self($matches[1]);
         }

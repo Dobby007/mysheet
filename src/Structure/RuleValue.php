@@ -55,7 +55,6 @@ class RuleValue
             $param = $this->parseParam($param);
         }
         
-        
         if ($param instanceof MssClass) {
             if ($index === null) {
                 $this->params[] = $param;
@@ -75,11 +74,9 @@ class RuleValue
 
     public function parseParam(&$value) {
         $result = MssClassHelper::parseMssClass($value);
-        
         if (!$result) {
             throw new ParseException(null, 'PARAM_NOT_PARSED');
         }
-        
         return $result;
     }
     
@@ -88,7 +85,7 @@ class RuleValue
         $result = ArrayHelper::map(function(MssClass $item) use($vars) {
             return $item->toRealCss($vars);
         }, $this->params);
-        
+
         return $as_array ? $result : implode(' ', $result);
     }
 
@@ -99,7 +96,6 @@ class RuleValue
             //clean rule value from garbage
             preg_match_all('/([^\s]+)(?:[\s;]+$|\s|$)/iU', $value, $matches, PREG_PATTERN_ORDER);
             $value = implode(' ', $matches[1]);
-            
             
             while (is_string($value) && strlen($value) > 0) {
                 $this->addParam($this->parseParam($value));

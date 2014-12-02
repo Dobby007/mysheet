@@ -41,7 +41,7 @@ abstract class FunctionModuleHelper
     public static function findModule($functionName, $arguments) {
         return self::getRootObj()->getListManager()->getList('FunctionModule')->iterate(function($functionModule) use ($functionName, $arguments) {
             if ($functionModule->hasDeclaredFunction($functionName, $arguments)) {
-                FuncListManager::stopIteration($functionModule);
+                return $functionModule;
             }
         });
     }

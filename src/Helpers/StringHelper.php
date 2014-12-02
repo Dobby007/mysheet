@@ -19,20 +19,20 @@ namespace MSSLib\Helpers;
  */
 abstract class StringHelper
 {
+    protected static $enclosedCharMap = [
+        '"' => ['closeAt' => '"', 'wait' => true],
+        '(' => ['closeAt' => ')', 'wait' => false],
+        '[' => ['closeAt' => ']', 'wait' => false],
+        '{' => ['closeAt' => '}', 'wait' => false],
+        "'" => ['closeAt' => "'", 'wait' => true]
+    ];
+    
     public static function parseStringUntil(&$input, $substr) {
         $text = $input;
         $textLen = strlen($text);
-        $i = 0;
+        $i = strpos($input, $substr);
         
-        while ($i < $textLen) {
-            if ($text[$i] === $substr) {
-                break;
-            } else {
-                $i++;
-            }
-        }
-        
-        if ($i < $textLen) {
+        if ($i !== false) {
             $input = substr($input, $i);
             return substr($text, 0, $i);
         } else {
@@ -49,6 +49,11 @@ abstract class StringHelper
         }
         
         $args_offset = strlen($funcName);
+        $funcName = trim($funcName);
+        if (!preg_match('/^[a-z\-_][[a-z0-9\-_]*$/i', $funcName)) {
+            return false;
+        }
+        
         $enclosedWithBrackets = StringHelper::parseEnclosedString($text);
         if ($enclosedWithBrackets) {
             $argString = ltrim(substr($enclosedWithBrackets, 1, -1));
@@ -57,7 +62,7 @@ abstract class StringHelper
         if (!empty($arguments) && !empty($funcName)) {
             $input = substr($input, $args_offset + strlen($enclosedWithBrackets));
             return [
-                'name' => trim($funcName),
+                'name' => $funcName,
                 'arguments' => $arguments
             ];
         }
@@ -101,31 +106,28 @@ abstract class StringHelper
     }
     
     public static function parseEnclosedString(&$string) {
-        $charMap = self::getEnclosedCharMap();
+        $charMap = self::$enclosedCharMap;
         $stringCopy = $string;
         
         if (!isset($charMap[substr($string, 0, 1)])) {
             return false;
         }
         
-//        var_dump('parse enclosed string: '. $string);
-        
         $len = strlen($string);
         $charQueue = new \SplStack();
+        $topCharInQueue = null;
         
         for ($i = 0; $i < $len; $i ++) {
             $char = $string[$i];
-            $enclosedChar = isset($charMap[$char]) ? $charMap[$char] : false;
-            
             if (!$charQueue->isEmpty()) {
-                $top = $charQueue->top();
-                if ($top['closeAt'] === $char) {
+                if ($topCharInQueue['closeAt'] === $char) {
                     $charQueue->pop();
-                } else if ($top['wait'] === false && $enclosedChar) {
-                    $charQueue->push($enclosedChar);
+                } else if ($topCharInQueue['wait'] === false && isset($charMap[$char])) {
+                    $charQueue->push($charMap[$char]);
                 }
-            } else if ($enclosedChar) {
-                $charQueue->push($enclosedChar);
+            } else if (isset($charMap[$char])) {
+                $topCharInQueue = $charMap[$char];
+                $charQueue->push($charMap[$char]);
             } else {
                 break;
             }
@@ -139,11 +141,15 @@ abstract class StringHelper
         return false;
     }
     
-    public static function parseSplittedString(&$string, $delimiter, $stopAtSpace = true) {
+    public static function parseSplittedString(&$string, $delimiters, $stopAtSpace = true, &$metDelim = null) {
         $splittedList = [];
         $len = strlen($string);
         $offset = 0;
         $i = 0;
+        
+        if (is_string($delimiters)) {
+            $delimiters = [$delimiters];
+        }
         
         while (true) {
             if ($i >= $len) {
@@ -152,7 +158,7 @@ abstract class StringHelper
             }
             
             $char = $string[$i];
-            if (self::getEnclosedChar($char)) {
+            if (isset(self::$enclosedCharMap[$char])) {
                 $possibleEnclosed = substr($string, $i);
                 $enclosedPart = self::parseEnclosedString($possibleEnclosed);
 
@@ -160,16 +166,20 @@ abstract class StringHelper
                     $i += strlen($enclosedPart);
                     continue;
                 }
-            } else if ( $char === $delimiter || ($stopAtSpace === true && ctype_space($char)) ) {
+            } else if (
+                    ($metDelim && $metDelim === $char) || 
+                    (!$metDelim && in_array($char, $delimiters)) || 
+                    ($stopAtSpace === true && ctype_space($char)) 
+            ) {
                 $splittedList[] = substr($string, $offset, $i - $offset);
-                
-                $i += self::countLeftSpaces(substr($string, $i));
-                if ($i >= $len || $string[$i] !== $delimiter) {
+                $metDelim = $char;
+                $i += self::countPrecSpaces(substr($string, $i));
+                if ($i >= $len || !in_array($char, $delimiters)) {
                     break;
                 } else {
                     $i++;
                 }
-                $i += self::countLeftSpaces(substr($string, $i));
+                $i += self::countPrecSpaces(substr($string, $i));
                 $offset = $i;
                 continue;
             } else {
@@ -183,27 +193,18 @@ abstract class StringHelper
     }
     
     public static function getEnclosedCharMap() {
-        static $charMap = [
-            '"' => ['closeAt' => '"', 'wait' => true],
-            '(' => ['closeAt' => ')', 'wait' => false],
-            '[' => ['closeAt' => ']', 'wait' => false],
-            '{' => ['closeAt' => '}', 'wait' => false],
-            "'" => ['closeAt' => "'", 'wait' => true]
-        ];
-        return $charMap;
+        return self::$enclosedCharMap;
     }
 
     public static function getEnclosedChar($char) {
-        $charMap = self::getEnclosedCharMap();
-        
-        if (isset($charMap[$char])) {
-            return $charMap[$char];
+        if (isset(self::$enclosedCharMap[$char])) {
+            return self::$enclosedCharMap[$char];
         }
         
         return false;
     }
     
-    public static function countLeftSpaces($string) {
+    public static function countPrecSpaces($string) {
         $len = strlen($string);
         $i = 0;
         $count = 0;

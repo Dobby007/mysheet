@@ -16,7 +16,6 @@ use MSSLib\Essentials\MssClass;
 use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Helpers\StringHelper;
 use MSSLib\Essentials\VariableScope;
-use MSSLib\Traits\MssClassListTrait;
 use MSSLib\Essentials\DelimitedString;
 
 /**
@@ -25,13 +24,13 @@ use MSSLib\Essentials\DelimitedString;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class CommaSequenceClass extends MssClass {
-    use MssClassListTrait;
-    
+class SequenceClass extends MssClass {
     protected $delimitedString;
+    protected $delimiter;
     
-    public function __construct(array $list) {
+    public function __construct(array $list, $delimiter) {
         $this->setItemList($list);
+        $this->setDelimiter($delimiter);
     }
 
     /**
@@ -47,36 +46,52 @@ class CommaSequenceClass extends MssClass {
         $this->delimitedString = new DelimitedString($list, function ($item) {
             return $this->parseNestedParam($item);
         });
+        return $this;
+    }
+    
+    public function getDelimiter() {
+        return $this->delimiter;
+    }
+
+    public function setDelimiter($delimiter) {
+        $this->delimiter = $delimiter;
+        return $this;
     }
     
     public function toRealCss(VariableScope $vars) {
-        return ArrayHelper::implode_objects(', ', $this->getDelimitedString()->getList(), 'toRealCss', $vars);
+        return ArrayHelper::implode_objects($this->getDelimiter(), $this->getDelimitedString()->getList(), 'toRealCss', $vars);
     }
     
     public function __toString() {
         return $this->toRealCss();
     }
     
-    protected static function splitCommaList(&$string) {
+    protected static function splitIntoList(&$string, &$metDelimiter) {
         $stringCopy = $string;
-        $commaList = StringHelper::parseSplittedString($stringCopy, ',');
+        $list = StringHelper::parseSplittedString($stringCopy, [',', '/'], true, $metDelimiter);
         
-        
-        if (count($commaList) > 1) {
+        if (count($list) > 1) {
 //            var_dump('Source String: ', $string, 'Comma List: ', $commaList);
             $string = $stringCopy;
-            return $commaList;
+            return $list;
         }
-        
-        
         
         return false;
     }
     
     public static function parse(&$string) {
-        $commaList = self::splitCommaList($string);
-        if (is_array($commaList)) {
-            return new self($commaList);
+        //if it is a MathExpr we should skip and move on
+        if (in_array($string[0], ['(', ')'])) {
+            return false;
+        }
+        
+        if (strpos($string, ',') === false && strpos($string, '/') === false) {
+            return false;
+        }
+        
+        $list = self::splitIntoList($string, $metDelimiter);
+        if (is_array($list)) {
+            return new self($list, $metDelimiter);
         }
         return false;
     }

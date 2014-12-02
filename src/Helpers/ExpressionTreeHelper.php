@@ -32,24 +32,36 @@ class ExpressionTreeHelper
 {
     public static function normalizeTree(ExpressionNode $node) {
         $children = $node->getChildren();
+        $countChildren = count($children);
         $needRestructuring = count($children) > 3;
         $operationsPrecedence = new \SplPriorityQueue();
         
+        if (count($children) === 1) {
+            // we can return child node only if it is ExpressionNode or parent of processed node is ExpressionNode
+            // because the output root node must always be an instance of ExpressionNode
+            if ($children[0] instanceof ExpressionNode || $node->getParent() instanceof ExpressionNode) {
+                return self::normalizeTree($children[0]->setParent(null));
+            }
+        }
+        
         foreach ($children as $key => $child) {
             if ($needRestructuring && $child instanceof OperatorNode) {
-                $operationsPrecedence->insert([$key, $child], $child->getOperatorPriority());
+                $operationsPrecedence->insert($child, [$child->getOperatorPriority(), $countChildren - $key]);
             } else if ($child instanceof ExpressionNode) {
                 self::normalizeTree($child);
             }
         }
         
+        // save children to keep indexes
         while (!$operationsPrecedence->isEmpty() && count($children) > 3) {
-            $operation = $operationsPrecedence->extract();
-            $index = $operation[0];
-            $operator = $operation[1];
+            $operator = $operationsPrecedence->extract();
+            $index = array_search($operator, $children);
             if ($index > 0) {
                 $extractedChildrenPart = array_slice($children, $index - 1, 3);
                 array_splice($children, $index - 1, 3, [(new ExpressionNode($extractedChildrenPart))]);
+            } else {
+                $extractedChildrenPart = array_slice($children, $index, 2);
+                array_splice($children, $index, 2, [(new ExpressionNode($extractedChildrenPart))]);
             }
         }
         

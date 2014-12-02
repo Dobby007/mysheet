@@ -62,6 +62,7 @@ class RulesetParserExtension extends ParserExtension
                 $ruleset->addDeclarations($curLine->getLine());
             } catch (\MSSLib\Error\ParseException $exc) {
                 $context->prevLine();
+                throw $exc;
                 break;
             }
         } while ($context->getCurrentLineIndex() < $lastLine && $curLine = $context->nextLine());    

@@ -115,6 +115,7 @@ class SourceClosure {
     }
     
     public function setLine($index, $line) {
+        // TODO: WTF????
         if (($line instanceof SourceLine)) {
             $line = new SourceLine($line);
         }

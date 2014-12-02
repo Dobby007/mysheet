@@ -66,12 +66,11 @@ class MetricClass extends MssClass implements IMathSupport
     }
     
     public static function isRightUnit($unit) {
-        return ctype_alpha($unit) && strlen($unit) <= 3;
+        return ($unit === '%' || ctype_alpha($unit)) && strlen($unit) <= 3;
     }
         
     public static function parse(&$string) {
-//            var_dump($string);
-        if (preg_match('/^(-?(?:\d*\.)?\d+)(\S+)?/i', $string, $matches)) {
+        if (preg_match('/^(-?(?:\d*\.)?\d+)([a-z%]+)?/i', $string, $matches)) {
             parent::trimStringBy($string, strlen($matches[0]));
             return new self($matches[1], empty($matches[2]) ? '' : $matches[2]);
         }
@@ -82,6 +81,7 @@ class MetricClass extends MssClass implements IMathSupport
         \MSSLib\Operators\PlusOperator::registerCalculationFunction(get_class(), get_class(), function (MetricClass $obj1, MetricClass $obj2) {
             return self::sumTwoMetrics($obj1, $obj2, true);
         });
+        
         \MSSLib\Operators\MinusOperator::registerCalculationFunction(get_class(), get_class(), function (MetricClass $obj1, MetricClass $obj2) {
             return self::sumTwoMetrics($obj1, $obj2, false);
         });

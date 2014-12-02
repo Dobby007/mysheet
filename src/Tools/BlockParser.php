@@ -54,14 +54,21 @@ class BlockParser implements IParser
     public function comeon() {
         $this->doc = new Document();
         $this->curBlock = $this->doc;
-
+        $start_time = microtime(true);
         $this->divideIntoLines();
+        $end_time = microtime(true);
+        echo "\nElapsed time 1:" . ($end_time - $start_time);
+        
+        $start_time = microtime(true);
         $context = new ParserContext($this, $this->sourceClosure);
         $parsedBlocks = $this->parseContext($context);
         foreach ($parsedBlocks as $parsedBlock) {
             $this->doc->addChild($parsedBlock);
         }
-        Debugger::logObjects("Dcoument", $this->doc, "\n");
+        $end_time = microtime(true);
+        echo "\nElapsed time 2:" . ($end_time - $start_time);
+        
+        Debugger::logObjects("Document", $this->doc, "\n");
         return $this->doc;
     }
 

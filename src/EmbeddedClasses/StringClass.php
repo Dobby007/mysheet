@@ -46,6 +46,9 @@ class StringClass extends MssClass {
     }
         
     public static function parse(&$string) {
+        if ($string[0] !== '"' && $string[0] !== '\'') {
+            return false;
+        }
         //TODO: consider that the string might have escaped double qoutes
         if (preg_match('/^(?|"(.*)"|\'(.*)\')/', $string, $matches)) {
             parent::trimStringBy($string, strlen($matches[0]));
