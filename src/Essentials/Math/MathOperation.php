@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-namespace MSSLib\Essentials;
+namespace MSSLib\Essentials\Math;
 
 /**
  * Description of MathOperation

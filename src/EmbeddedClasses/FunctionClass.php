@@ -73,23 +73,31 @@ class FunctionClass extends MssClass {
         return $this;
     }
 
-    public function getValue(VariableScope $vars) {
+    protected function getModuleForFunction() {
         $module = FunctionModuleHelper::findModule($this->getName(), $this->getArguments());
+        if ($module !== false) {
+            $module->setVars($vars);
+        }
+        return $module;
+    }
+    
+    public function getValue(VariableScope $vars) {
+        $module = $this->getModuleForFunction();
         if ($module=== false) {
             throw new \MSSLib\Error\CompileException(null, 'FUNCTION_NOT_FOUND');
         }
         
-        $module->setVars($vars);
         return call_user_func_array([$module, $this->getName()], $this->getArguments());
     }
 
     public function toRealCss(VariableScope $vars) {
-        try {
-            return $this->getValue($vars);
-        } catch (\MSSLib\Error\CompileException $ex) {
+        $module = $this->getModuleForFunction();
+        if ($module=== false) {
             return  $this->getName() . 
                     '(' . ArrayHelper::implode_objects(', ', $this->getArguments(), 'toRealCss', $vars) . ')';
         }
+        
+        return call_user_func_array([$module, $this->getName()], $this->getArguments());
     }
         
     public static function parse(&$string) {

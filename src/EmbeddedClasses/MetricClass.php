@@ -13,7 +13,7 @@
 namespace MSSLib\EmbeddedClasses;
 
 use MSSLib\Essentials\MssClass;
-use MSSLib\Essentials\IMathSupport;
+use MSSLib\Essentials\Math\IMathSupport;
 use MSSLib\Essentials\VariableScope;
 
 /**
@@ -125,7 +125,13 @@ class MetricClass extends MssClass implements IMathSupport
             return $resultMetric === false ? null : new self($resultMetric, $resultUnit);
         });
         
+        \MSSLib\Operators\UnaryMinusOperator::registerCalculationFunction(get_class(), null, function (MetricClass $obj) {
+            return new self(-$obj->getMetric(), $obj->getUnit());
+        });
         
+        \MSSLib\Operators\UnaryPlusOperator::registerCalculationFunction(get_class(), null, function (MetricClass $obj) {
+            return new self($obj->getMetric(), $obj->getUnit());
+        });
         
         return true;
     }

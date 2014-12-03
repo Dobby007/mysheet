@@ -79,9 +79,8 @@ abstract class MssClass
     }
 
     public static function tryParse($paramClass, &$string) {
-        $callable = $paramClass . '::' . 'parse';
         $string = ltrim($string);
-        if (class_exists($paramClass) && is_callable($callable)) {
+        if (class_exists($paramClass) && method_exists($paramClass, 'parse')) {
             return $paramClass::parse($string);
         }
 

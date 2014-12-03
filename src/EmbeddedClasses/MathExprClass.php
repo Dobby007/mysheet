@@ -17,6 +17,7 @@ use MSSLib\Helpers\StringHelper;
 use MSSLib\Essentials\ExpressionTree\ExpressionNode;
 use MSSLib\Essentials\ExpressionTree\OperatorNode;
 use MSSLib\Essentials\ExpressionTree\ParamNode;
+use MSSLib\Essentials\Math\UnaryOperator;
 use MSSLib\Helpers\ExpressionTreeHelper;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Helpers\MssClassHelper;
@@ -78,6 +79,7 @@ class MathExprClass extends MssClass {
     protected static function parseIntoTree(&$expression, $needNormalization = true) {
         $rootTreeNode = $treeNode = new ExpressionNode();
         $expression = ltrim($expression);
+        $hasSpaceDelimiter = false;
         while (strlen($expression) > 0) {
             $nodeChildren = $treeNode->getChildren();
             $expressionCopy = $expression;
@@ -93,8 +95,20 @@ class MathExprClass extends MssClass {
                     return false;
                 }
             } else if (in_array($expressionCopy[0], self::$registeredOperators, true) && ($operator = \MSSLib\Helpers\OperatorHelper::parseOperator($expressionCopy))) {
-                if (count($nodeChildren) === 0 || end($nodeChildren) instanceof OperatorNode) {
+                $lastItem = end($nodeChildren);
+                if (
+                        (count($nodeChildren) === 0 || $lastItem instanceof OperatorNode) &&
+                        !($operator instanceof UnaryOperator)
+                ) {
                     return false;
+                }
+
+                if (
+                        $hasSpaceDelimiter &&
+                        ($lastItem instanceof ExpressionNode || $lastItem instanceof ParamNode) &&
+                        $operator instanceof UnaryOperator
+                ) {
+                    return $rootTreeNode;
                 }
                 $treeNode->addChild(new OperatorNode($operator));
                 $expression = $expressionCopy;
@@ -122,6 +136,7 @@ class MathExprClass extends MssClass {
                     return false;
                 }
             }
+            $hasSpaceDelimiter = ctype_space(substr($expression, 0, 1));
             $expression = ltrim($expression);
         }
         
@@ -132,7 +147,7 @@ class MathExprClass extends MssClass {
         
         if (self::$registeredOperators === null) {
             self::$registeredOperators = self::getRootObj()->getListManager()->getList('Operator')->map(function ($operatorClass) {
-                return $operatorClass::operatorSymbol();
+                return $operatorClass::getOperatorSymbol();
             });
         }
         
@@ -144,8 +159,19 @@ class MathExprClass extends MssClass {
         ) {
             $strCopy = $string;
             $result = self::parseIntoTree($strCopy);
-            if ($result instanceof ExpressionNode && count($result->getChildren()) > 0) {
-                $string = $strCopy;
+            if ($result instanceof ExpressionNode) {
+                $children = $result->getChildren();
+                // here goes a thing that I contrived in one late evening
+                // the thing consists in returning the parsed MssClass even if processed string is not a real mathematic expression with operators (e.g. url(/images/scissors.png))
+                // so we don't need to parse it again
+                if (count($children) === 1 && $children[0] instanceof ParamNode) {
+                    $string = $strCopy;
+                    return $children[0]->getValue();
+                } else if (count($children) > 1) {
+                    $string = $strCopy;
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }

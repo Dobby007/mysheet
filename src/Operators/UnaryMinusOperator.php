@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2014 dobby007.
+ * Copyright 2014 dobby007 (Alexander Gilevich, alegil91@gmail.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,25 @@
  * limitations under the License.
  */
 
-namespace MSSLib\Essentials;
+namespace MSSLib\Operators;
+
+use MSSLib\Essentials\Math\UnaryOperator;
 
 /**
+ * Description of PlusOperator
  *
- * @author dobby007
+ * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-interface IMathSupport {
-    /**
-     * Registers supported arithmetical operations for current class
-     */
-    static function registerOperations();
+class UnaryMinusOperator extends UnaryOperator
+{
+    protected static $operatorName = 'unaryMinus';
+    protected static $operatorSymbol = '-';
+    
+    
+    public static function parse(&$string) {
+        if (self::canBeUnaryOperator($string)) {
+            $string = substr($string, 1);
+            return new self();
+        }
+    }
 }

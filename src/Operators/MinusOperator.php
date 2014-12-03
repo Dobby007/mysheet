@@ -18,7 +18,7 @@
 
 namespace MSSLib\Operators;
 
-use MSSLib\Essentials\MathOperator;
+use MSSLib\Essentials\Math\MathOperator;
 
 /**
  * Description of PlusOperator
@@ -27,12 +27,11 @@ use MSSLib\Essentials\MathOperator;
  */
 class MinusOperator extends MathOperator
 {
-    public static function operatorSymbol() {
-        return '-';
-    }
+    protected static $operatorName = 'minus';
+    protected static $operatorSymbol = '-';
     
     public static function parse(&$string) {
-        if (substr($string, 0, 1) === self::operatorSymbol()) {
+        if (substr($string, 0, 1) === self::getOperatorSymbol()) {
             $string = substr($string, 1);
             return new self();
         }

@@ -162,7 +162,7 @@ selector
     font italic/glamour
 TEXT;
 
-$result = $mysheet->parseCode($code8);
+$result = $mysheet->parseCode($code7);
 //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
 
 

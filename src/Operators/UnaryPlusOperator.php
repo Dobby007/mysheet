@@ -18,21 +18,21 @@
 
 namespace MSSLib\Operators;
 
-use MSSLib\Essentials\Math\MathOperator;
+use MSSLib\Essentials\Math\UnaryOperator;
 
 /**
  * Description of PlusOperator
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class PlusOperator extends MathOperator
+class UnaryPlusOperator extends UnaryOperator
 {
-    protected static $operatorName = 'plus';
+    protected static $operatorName = 'unaryPlus';
     protected static $operatorSymbol = '+';
     
     
     public static function parse(&$string) {
-        if (substr($string, 0, 1) === self::getOperatorSymbol()) {
+        if (substr($string, 0, 1) === self::getOperatorSymbol() && !ctype_space(substr($string, 1, 1))) {
             $string = substr($string, 1);
             return new self();
         }

@@ -36,7 +36,7 @@ class OperatorNode extends Node {
     
     /**
      * Gets MathOperator object
-     * @return \MSSLib\Essentials\MathOperator
+     * @return \MSSLib\Essentials\Math\MathOperator
      */
     public function getOperator() {
         return $this->getValue();
@@ -46,7 +46,7 @@ class OperatorNode extends Node {
      * Sets MathOperator object
      * @return $this
      */
-    public function setOperator(\MSSLib\Essentials\MathOperator $operator) {
+    public function setOperator(\MSSLib\Essentials\Math\MathOperator $operator) {
         $this->setValue($operator);
         return $this;
     }

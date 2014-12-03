@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2014 dobby007 (Alexander Gilevich, alegil91@gmail.com).
+ * Copyright 2014 dobby007.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,15 @@
  * limitations under the License.
  */
 
-namespace MSSLib\Operators;
-
-use MSSLib\Essentials\Math\MathOperator;
+namespace MSSLib\Essentials\Math;
 
 /**
- * Description of PlusOperator
  *
- * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
+ * @author dobby007
  */
-class PlusOperator extends MathOperator
-{
-    protected static $operatorName = 'plus';
-    protected static $operatorSymbol = '+';
-    
-    
-    public static function parse(&$string) {
-        if (substr($string, 0, 1) === self::getOperatorSymbol()) {
-            $string = substr($string, 1);
-            return new self();
-        }
-    }
+interface IMathSupport {
+    /**
+     * Registers supported arithmetical operations for current class
+     */
+    static function registerOperations();
 }

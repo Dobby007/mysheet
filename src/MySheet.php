@@ -158,7 +158,7 @@ class MySheet
             $this->getListManager()->getList('MssClass')->addFunctional($class);
             
             $implementedInterfaces = class_implements($class);
-            if (isset($implementedInterfaces['MSSLib\Essentials\IMathSupport'])) {
+            if (isset($implementedInterfaces['MSSLib\Essentials\Math\IMathSupport'])) {
                 $class::registerOperations();
             }
         }

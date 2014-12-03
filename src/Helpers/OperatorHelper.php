@@ -13,7 +13,7 @@
 namespace MSSLib\Helpers;
 
 use MSSLib\MySheet;
-use MSSLib\Essentials\MathOperator;
+use MSSLib\Essentials\Math\MathOperator;
 use MSSLib\Essentials\FuncListManager;
 use MSSLib\Traits\RootClassTrait;
 
@@ -28,7 +28,7 @@ abstract class OperatorHelper
     
     public static function parseOperator(&$string) {
         return self::getRootObj()->getListManager()->getList('Operator')->iterate(function($operatorClass) use (&$string, &$result) {
-            $result = MathOperator::tryParse($operatorClass, $string);
+            $result = $operatorClass::parse($string);
             if ($result instanceof MathOperator) {
                 return $result;
             }

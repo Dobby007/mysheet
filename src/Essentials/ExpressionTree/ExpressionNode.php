@@ -40,7 +40,6 @@ class ExpressionNode extends Node implements ICalculatedNode
         } else if ($value instanceof Node) {
             $this->setChildren($value->getChildren());
         }
-        
         return $this;
     }
     

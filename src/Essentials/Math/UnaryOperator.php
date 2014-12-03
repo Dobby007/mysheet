@@ -16,25 +16,22 @@
  * limitations under the License.
  */
 
-namespace MSSLib\Operators;
+namespace MSSLib\Essentials\Math;
 
-use MSSLib\Essentials\Math\MathOperator;
+use MSSLib as MSN;
+use MSSLib\MySheet;
+use MSSLib\Essentials\Math\MathOperation;
 
 /**
- * Description of PlusOperator
+ * Description of MathOperator
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class PlusOperator extends MathOperator
+abstract class UnaryOperator extends MathOperator
 {
-    protected static $operatorName = 'plus';
-    protected static $operatorSymbol = '+';
-    
-    
-    public static function parse(&$string) {
-        if (substr($string, 0, 1) === self::getOperatorSymbol()) {
-            $string = substr($string, 1);
-            return new self();
-        }
+    public static function canBeUnaryOperator($string) {
+        return substr($string, 0, 1) === self::getOperatorSymbol() && 
+               !ctype_space(substr($string, 1, 1)) &&
+               substr($string, 0, 8) !== '-webkit-';
     }
 }

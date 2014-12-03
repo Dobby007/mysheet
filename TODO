@@ -3,6 +3,6 @@ Features that are marked with dash symbol are not yet implemented.
 On the other hand, features marked with asterisk are already implemented.
 
 [-] Implement support of unary operators
-[-] Make so that arithmetic expression was recognized correctly when operators are not separated by spaces
+[+] Make so that arithmetic expression was recognized correctly when operators are not separated by spaces
 [-] Enhance support of plugins: make so that plugins can register it's own MssClass and ParserExtension in user defined precedence
 [-] BUG: Not correct MathExpression makes whole library to fail

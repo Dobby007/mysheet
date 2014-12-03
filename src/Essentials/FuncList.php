@@ -30,7 +30,7 @@ class FuncList {
     }
     
     public function setOrder(array $order, callable $equalityCheck = null) {
-        if (!is_callable($equalityCheck)) {
+        if (is_null($equalityCheck)) {
             $equalityCheck = function ($a, $b) {
                 return $a === $b;
             };
@@ -48,7 +48,7 @@ class FuncList {
     }
     
     public function sortWith(callable $callback = null) {
-        if (!is_callable($callback)) {
+        if (is_null($callback)) {
             $callback = function($a, $b) {
                 if ($a[0] === $b[0])
                     return 0;

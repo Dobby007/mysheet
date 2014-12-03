@@ -22,6 +22,7 @@ use MSSLib\Essentials\ExpressionTree\ExpressionNode;
 use MSSLib\Essentials\ExpressionTree\OperatorNode;
 use MSSLib\Essentials\ExpressionTree\ParamNode;
 use MSSLib\Essentials\VariableScope;
+use MSSLib\Essentials\Math\UnaryOperator;
 
 /**
  * Description of ExpressionTreeHelper
@@ -54,9 +55,10 @@ class ExpressionTreeHelper
         
         // save children to keep indexes
         while (!$operationsPrecedence->isEmpty() && count($children) > 3) {
+            /* @var $operator OperatorNode */
             $operator = $operationsPrecedence->extract();
             $index = array_search($operator, $children);
-            if ($index > 0) {
+            if ($index > 0 && !($operator->getValue() instanceof UnaryOperator)) {
                 $extractedChildrenPart = array_slice($children, $index - 1, 3);
                 array_splice($children, $index - 1, 3, [(new ExpressionNode($extractedChildrenPart))]);
             } else {
