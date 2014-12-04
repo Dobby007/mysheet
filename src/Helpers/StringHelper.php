@@ -172,7 +172,9 @@ abstract class StringHelper
                     ($stopAtSpace === true && ctype_space($char)) 
             ) {
                 $splittedList[] = substr($string, $offset, $i - $offset);
-                $metDelim = $char;
+                if (!$metDelim) {
+                    $metDelim = $char;
+                }
                 $i += self::countPrecSpaces(substr($string, $i));
                 if ($i >= $len || !in_array($char, $delimiters)) {
                     break;
@@ -265,6 +267,24 @@ abstract class StringHelper
         if ($char === ' ' || $char === "\t")
             return true;
 
+        return false;
+    }
+    
+    /**
+     * 
+     * @param string $string
+     * @param mixed $prefixes
+     */
+    public static function stringStartsWith($string, $prefixes) {
+        if (is_string($prefixes)) {
+            return substr($string, 0, strlen($prefixes)) === $prefixes;
+        } else if (is_array($prefixes)) {
+            foreach ($prefixes as $prefix) {
+                if (substr($string, 0, strlen($prefix)) === $prefix) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 

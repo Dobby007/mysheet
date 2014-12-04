@@ -158,11 +158,11 @@ selector
     width 5px + (50px + 3%) * 4px
     max-width 5px*4-(4*3)+2
     height unitless((4px/70%))+ unitless(abs(negate(2px - 5px)))
-    image url(l.gif, c.jpg)
-    font italic/glamour
+    image url()
+    font italic/glamour -1
 TEXT;
 
-$result = $mysheet->parseCode($code7);
+$result = $mysheet->parseCode($code8);
 //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
 
 

@@ -31,6 +31,10 @@ abstract class MssClass
         return $this->toRealCss(self::getRootObj()->getVars());
     }
 
+    public function getShortDescription() {
+        return get_class($this);
+    }
+    
     /**
      * Gets inner or current MssClass object depending on type of derivative class
      * @param \MSSLib\Essentials\VariableScope $vars

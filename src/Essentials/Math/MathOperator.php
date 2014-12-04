@@ -21,6 +21,7 @@ namespace MSSLib\Essentials\Math;
 use MSSLib as MSN;
 use MSSLib\MySheet;
 use MSSLib\Essentials\Math\MathOperation;
+use MSSLib\Essentials\MssClass;
 
 /**
  * Description of MathOperator
@@ -42,8 +43,8 @@ abstract class MathOperator
     
     /**
      * Calculates two operands
-     * @param mixed $obj1
-     * @param mixed $obj2
+     * @param MssClass $obj1
+     * @param MssClass|null $obj2
      * @return mixed Result of calculation
      * @throws \MSSLib\Error\CompileException
      */
@@ -58,7 +59,11 @@ abstract class MathOperator
         }
         \MSSLib\Tools\Debugger::logObjects($obj1, get_class($this), $obj2);
         
-        throw new \MSSLib\Error\CompileException(null, 'UNSUPPORTED_OPERATION', [static::getOperatorName()]);
+        if ($this instanceof UnaryOperator) {
+            throw new \MSSLib\Error\CompileException(null, 'UNSUPPORTED_UNARY_OPERATION', [static::getOperatorSymbol(), $obj1->getShortDescription()]);
+        } else {
+            throw new \MSSLib\Error\CompileException(null, 'UNSUPPORTED_BINARY_OPERATION', [static::getOperatorSymbol(), $obj1->getShortDescription(), $obj2->getShortDescription()]);
+        }
     }
     
     /**

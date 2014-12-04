@@ -33,6 +33,10 @@ class MetricClass extends MssClass implements IMathSupport
         $this->setUnit($unit);
     }
     
+    public function getShortDescription() {
+        return 'Metric(' . $this->getMetric() . ($this->isUnitSet() ? ', ' . $this->getUnit() : '') . ')';
+    }
+    
     public function getMetric() {
         return $this->metric;
     }

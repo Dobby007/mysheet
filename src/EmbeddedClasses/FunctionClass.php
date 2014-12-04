@@ -73,7 +73,7 @@ class FunctionClass extends MssClass {
         return $this;
     }
 
-    protected function getModuleForFunction() {
+    protected function getModuleForFunction(VariableScope $vars) {
         $module = FunctionModuleHelper::findModule($this->getName(), $this->getArguments());
         if ($module !== false) {
             $module->setVars($vars);
@@ -82,16 +82,16 @@ class FunctionClass extends MssClass {
     }
     
     public function getValue(VariableScope $vars) {
-        $module = $this->getModuleForFunction();
+        $module = $this->getModuleForFunction($vars);
         if ($module=== false) {
-            throw new \MSSLib\Error\CompileException(null, 'FUNCTION_NOT_FOUND');
+            throw new \MSSLib\Error\CompileException(null, 'FUNCTION_NOT_FOUND', [$this->getName()]);
         }
         
         return call_user_func_array([$module, $this->getName()], $this->getArguments());
     }
 
     public function toRealCss(VariableScope $vars) {
-        $module = $this->getModuleForFunction();
+        $module = $this->getModuleForFunction($vars);
         if ($module=== false) {
             return  $this->getName() . 
                     '(' . ArrayHelper::implode_objects(', ', $this->getArguments(), 'toRealCss', $vars) . ')';

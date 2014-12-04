@@ -46,7 +46,8 @@ class StringClass extends MssClass {
     }
         
     public static function parse(&$string) {
-        if ($string[0] !== '"' && $string[0] !== '\'') {
+        $startChar = substr($string, 0, 1);
+        if ($startChar !== '"' && $startChar !== '\'') {
             return false;
         }
         //TODO: consider that the string might have escaped double qoutes

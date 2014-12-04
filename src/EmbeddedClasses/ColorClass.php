@@ -41,6 +41,10 @@ class ColorClass extends MssClass
         $this->setColor($color);
     }
     
+    public function getShortDescription() {
+        return 'Color(' . $this->getType() . ', ' . self::colorToString($this->getType(), $this->getColor()) . ')';
+    }
+    
     /**
      * 
      * @return \MySheet\Essentials\ColorLib

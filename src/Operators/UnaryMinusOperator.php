@@ -19,6 +19,7 @@
 namespace MSSLib\Operators;
 
 use MSSLib\Essentials\Math\UnaryOperator;
+use MSSLib\Helpers\StringHelper;
 
 /**
  * Description of PlusOperator
@@ -29,10 +30,12 @@ class UnaryMinusOperator extends UnaryOperator
 {
     protected static $operatorName = 'unaryMinus';
     protected static $operatorSymbol = '-';
+    protected static $binaryAnalog = 'minus';
     
+    protected static $browserPrefixes = array('-webkit-', '-moz-', '-o-', '-ms-');
     
     public static function parse(&$string) {
-        if (self::canBeUnaryOperator($string)) {
+        if (self::canBeUnaryOperator($string) && !StringHelper::stringStartsWith($string, self::$browserPrefixes)) {
             $string = substr($string, 1);
             return new self();
         }

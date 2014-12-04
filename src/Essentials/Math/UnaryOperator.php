@@ -29,9 +29,30 @@ use MSSLib\Essentials\Math\MathOperation;
  */
 abstract class UnaryOperator extends MathOperator
 {
+    protected static $binaryAnalog = null;
+    
+    public static function hasBinaryAnalog() {
+        return !empty(static::$binaryAnalog);
+    }
+    
+    public static function getBinaryAnalogClass() {
+        if (!class_exists(static::$binaryAnalog)) {
+            return '\\MSSLib\\Operators\\' . ucfirst(static::$binaryAnalog) . 'Operator';
+        } else {
+            return static::$binaryAnalog;
+        }
+    }
+    
+    public function toBinaryAnalog() {
+        if (self::hasBinaryAnalog()) {
+            $class = self::getBinaryAnalogClass();
+            return new $class();
+        }
+        return false;
+    }
+    
     public static function canBeUnaryOperator($string) {
         return substr($string, 0, 1) === self::getOperatorSymbol() && 
-               !ctype_space(substr($string, 1, 1)) &&
-               substr($string, 0, 8) !== '-webkit-';
+               !ctype_space(substr($string, 1, 1));
     }
 }

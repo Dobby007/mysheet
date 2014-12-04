@@ -94,7 +94,7 @@ class MathExprClass extends MssClass {
                 } else {
                     return false;
                 }
-            } else if (in_array($expressionCopy[0], self::$registeredOperators, true) && ($operator = \MSSLib\Helpers\OperatorHelper::parseOperator($expressionCopy))) {
+            } else if (StringHelper::stringStartsWith($expressionCopy, self::$registeredOperators) && ($operator = \MSSLib\Helpers\OperatorHelper::parseOperator($expressionCopy))) {
                 $lastItem = end($nodeChildren);
                 if (
                         (count($nodeChildren) === 0 || $lastItem instanceof OperatorNode) &&
@@ -104,11 +104,14 @@ class MathExprClass extends MssClass {
                 }
 
                 if (
-                        $hasSpaceDelimiter &&
                         ($lastItem instanceof ExpressionNode || $lastItem instanceof ParamNode) &&
                         $operator instanceof UnaryOperator
                 ) {
-                    return $rootTreeNode;
+                    if (!$hasSpaceDelimiter && $operator->hasBinaryAnalog()) {
+                        $operator = $operator->toBinaryAnalog();
+                    } else {
+                        return $rootTreeNode;
+                    }
                 }
                 $treeNode->addChild(new OperatorNode($operator));
                 $expression = $expressionCopy;

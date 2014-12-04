@@ -29,6 +29,7 @@ class UnaryPlusOperator extends UnaryOperator
 {
     protected static $operatorName = 'unaryPlus';
     protected static $operatorSymbol = '+';
+    protected static $binaryAnalog = 'plus';
     
     
     public static function parse(&$string) {
