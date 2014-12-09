@@ -29,22 +29,22 @@ class FuncList {
         $this->available_items[] = $func;
     }
     
-    public function setOrder(array $order, callable $equalityCheck = null) {
-        if (is_null($equalityCheck)) {
-            $equalityCheck = function ($a, $b) {
-                return $a === $b;
-            };
-        }
+    public function setOrder(array $order, callable $equalityCheck = null, callable $mapCallback = null) {
+        $available_items = array_map(function ($funcItem) use ($mapCallback) {
+            return [$mapCallback !== null ? $mapCallback($funcItem) : $funcItem, $funcItem];
+        }, $this->available_items);
         
         foreach ($order as $orderedFunc) {
-            foreach ($this->available_items as $avail_func) {
-                if ($equalityCheck($orderedFunc, $avail_func)) {
-                    $this->enabled_items[] = $avail_func;
+            foreach ($available_items as $availFunc) {
+                if (
+                        ($equalityCheck === null && $orderedFunc === $availFunc[0]) || 
+                        ($equalityCheck !== null && $equalityCheck($orderedFunc, $availFunc[0])) 
+                ) {
+                    $this->enabled_items[] = $availFunc[1];
                     break;
                 }
             }
         }
-//        var_dump($this->available_items, $this->enabled_items);
     }
     
     public function sortWith(callable $callback = null) {

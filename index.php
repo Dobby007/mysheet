@@ -38,7 +38,7 @@ $code1 = <<<TEXT
    
 @mixin border-radius (left right )
     -webkit-border-radius \$left \$right
-    -moz-border-radius 3px
+    -moz-border-radius \$arguments
     border-radius \$arguments \$left \$right \$left \$right
     
 @media screen and width >= 1024px {
@@ -54,6 +54,7 @@ $code1 = <<<TEXT
             .underline
                 text-decoration underline ;
                 border-bottom :    1px           solid     gray  ;
+                border-radius 4px
     
     body:any(:hover, :active) {
         padding 0
@@ -160,9 +161,10 @@ selector
     height unitless((4px/70%))+ unitless(abs(negate(2px - 5px)))
     image url()
     font italic/glamour -1
+    expression (4+3
 TEXT;
 
-$result = $mysheet->parseCode($code8);
+$result = $mysheet->parseCode($code1);
 //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
 
 

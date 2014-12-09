@@ -57,7 +57,7 @@ abstract class MathOperator
                 return $result;
             }
         }
-        \MSSLib\Tools\Debugger::logObjects($obj1, get_class($this), $obj2);
+//        \MSSLib\Tools\Debugger::logObjects($obj1, get_class($this), $obj2);
         
         if ($this instanceof UnaryOperator) {
             throw new \MSSLib\Error\CompileException(null, 'UNSUPPORTED_UNARY_OPERATION', [static::getOperatorSymbol(), $obj1->getShortDescription()]);

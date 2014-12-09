@@ -16,7 +16,7 @@ use MSSLib\MySheet;
 use MSSLib\Essentials\Math\MathOperator;
 use MSSLib\Essentials\FuncListManager;
 use MSSLib\Traits\RootClassTrait;
-
+use MSSLib\Essentials\TypeClassReference;
 /**
  * Class that helps to work with operators
  *
@@ -27,7 +27,8 @@ abstract class OperatorHelper
     use RootClassTrait;
     
     public static function parseOperator(&$string) {
-        return self::getRootObj()->getListManager()->getList('Operator')->iterate(function($operatorClass) use (&$string, &$result) {
+        return self::getRootObj()->getListManager()->getList('Operator')->iterate(function(TypeClassReference $operatorClassRef) use (&$string, &$result) {
+            $operatorClass = $operatorClassRef->getFullClass();
             $result = $operatorClass::parse($string);
             if ($result instanceof MathOperator) {
                 return $result;

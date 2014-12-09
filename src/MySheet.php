@@ -32,6 +32,7 @@ use MSSLib\Essentials\VariableScope;
 use MSSLib\Helpers\StringHelper;
 use MSSLib\Tools\I18N;
 use MSSLib\Error\InputException;
+use MSSLib\Essentials\TypeClassReference;
 
 /**
  * Description of MySheet
@@ -93,18 +94,12 @@ class MySheet
             });
             $this->flm = new FuncListManager();
             $this->initMssClasses();
-            $this->initPlugins();
             $this->initExtensions();
             $this->initOperators();
             $this->initFunctionModules();
+            $this->initPlugins();
             
-            $this->getListManager()->getList('MssClass')->setOrder($this->getSettings()->mssClasses, function ($orderedListItem, $mssClass) {
-                if (!is_string($orderedListItem) || !is_string($mssClass)) {
-                    return;
-                }
-                $mssClass = StringHelper::getClassName($mssClass);
-                return $mssClass === ucfirst($orderedListItem) . 'Class';
-            });
+            $this->setRightOrder();
         } catch (\Exception $exc) {
             throw $exc;
         }
@@ -152,16 +147,26 @@ class MySheet
 
     protected function initMssClasses() {
         $availableParams = require(self::WORKDIR . DS . 'Etc' . DS . 'Includes' . DS . 'EmbeddedClasses' . EXT);
-        $mssClassNs = 'MSSLib\\EmbeddedClasses\\';
         foreach ($availableParams as $paramClass) {
-            $class = $mssClassNs . ucfirst($paramClass) . 'Class';
-            $this->getListManager()->getList('MssClass')->addFunctional($class);
-            
-            $implementedInterfaces = class_implements($class);
-            if (isset($implementedInterfaces['MSSLib\Essentials\Math\IMathSupport'])) {
-                $class::registerOperations();
+            $classRef = new TypeClassReference(ucfirst($paramClass), 'Class', 'MSSLib\\EmbeddedClasses');
+            if ($classRef->classExists()) {
+                $this->getListManager()->getList('MssClass')->addFunctional($classRef);
+                
+                $implementedInterfaces = class_implements($classRef->getFullClass());
+                if (isset($implementedInterfaces['MSSLib\Essentials\Math\IMathSupport'])) {
+                    $class = $classRef->getFullClass();
+                    $class::registerOperations();
+                }
             }
         }
+    }
+    
+    protected function setRightOrder() {
+        $this->getListManager()->getList('MssClass')->setOrder(array_map(function ($mssClass) {
+            return $mssClass;
+        }, $this->getSettings()->mssClasses), null, function (TypeClassReference $mssClassRef) {
+            return $mssClassRef->getShortName();
+        });
     }
     
     protected function initOperators() {
@@ -170,11 +175,12 @@ class MySheet
     }
     
     private function processOperatorsGroup($operatorsGroup) {
-        $operatorNs = 'MSSLib\\Operators\\';
         foreach ($operatorsGroup as $item) {
             if (is_string($item)) {
-                $class = $operatorNs . ucfirst($item) . 'Operator';
-                $this->getListManager()->getList('Operator')->addFunctional($class);
+                $classRef = new TypeClassReference(ucfirst($item), 'Operator', 'MSSLib\\Operators');
+                if ($classRef->classExists()) {
+                    $this->getListManager()->getList('Operator')->addFunctional($classRef);
+                }
             } else if (is_array($item)) {
                 $this->processOperatorsGroup($item);
             }

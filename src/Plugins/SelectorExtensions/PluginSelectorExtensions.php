@@ -66,7 +66,7 @@ class PluginSelectorExtensions extends PluginBase {
             if ($position !== false) {
                 $startPart = substr($path, $position);
                 $partCopy = $startPart;
-                $function = StringHelper::parseFunction($startPart);
+                $function = StringHelper::parseFunction($startPart, true, false);
                 if ($function !== false) {
                     $pattern = substr($path, $position, strlen($partCopy) - strlen($startPart));
                     return $function['arguments'];
@@ -81,6 +81,13 @@ class PluginSelectorExtensions extends PluginBase {
         
         $queue = new \SplQueue();
         foreach ($pathGroup->getPaths() as $path) {
+            $leftAnyCount = substr_count($path, ':any');
+            // if there are no ':any' substrings we just skip this iteration
+            if ($leftAnyCount < 1) {
+//                $newPaths[] = $path;
+//                continue;
+            }
+            
             $queue->enqueue($path);
             do {
                 $path = $queue->dequeue();
@@ -90,6 +97,12 @@ class PluginSelectorExtensions extends PluginBase {
                     $newPaths[] = $path;
                 } else {
                     $replaces = StringHelper::replaceSubstring($pattern, $subSelectors, $path);
+                    // we can exit the cycle once we are sure that there are no more ':any' substrings
+                    if (--$leftAnyCount === 0) {
+                        \MSSLib\Helpers\ArrayHelper::concat($newPaths, $replaces);
+                        break;
+                    }
+                    
                     foreach ($replaces as $replace) {
                         $queue->enqueue($replace);
                     }

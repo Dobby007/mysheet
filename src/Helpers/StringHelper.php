@@ -40,7 +40,7 @@ abstract class StringHelper
         }
     }
     
-    public static function parseFunction(&$input, $spaceInArgs = false) {
+    public static function parseFunction(&$input, $spaceInArgs = false, $nameChecking = true) {
         $text = ltrim($input);
         $arguments = false;
         $funcName = self::parseStringUntil($text, '(');
@@ -50,7 +50,7 @@ abstract class StringHelper
         
         $args_offset = strlen($funcName);
         $funcName = trim($funcName);
-        if (!preg_match('/^[a-z\-_][[a-z0-9\-_]*$/i', $funcName)) {
+        if ($nameChecking && !preg_match('/^[a-z\-_][[a-z0-9\-_]*$/i', $funcName)) {
             return false;
         }
         
@@ -165,6 +165,8 @@ abstract class StringHelper
                 if ($enclosedPart) {
                     $i += strlen($enclosedPart);
                     continue;
+                } else {
+                    $i++;
                 }
             } else if (
                     ($metDelim && $metDelim === $char) || 

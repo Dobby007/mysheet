@@ -21,6 +21,7 @@ namespace MSSLib\Helpers;
 use MSSLib\Traits\RootClassTrait;
 use MSSLib\Essentials\MssClass;
 use MSSLib\Essentials\FuncListManager;
+use MSSLib\Essentials\TypeClassReference;
 
 /**
  * Description of MssClassHelper
@@ -44,17 +45,17 @@ class MssClassHelper
                 }
             }
             $filter = function ($mssClass) use ($mssClasses, $ignoreFilter) {
-                $issetResult = isset($mssClasses[$mssClass]);
+                $issetResult = isset($mssClasses[$mssClass->getFullClass()]);
                 return $ignoreFilter ? !$issetResult : $issetResult;
             };
         }
         
-        return self::getRootObj()->getListManager()->getList('MssClass')->iterate(function($mssClass) use (&$inputString, $filter) {
+        return self::getRootObj()->getListManager()->getList('MssClass')->iterate(function(TypeClassReference $mssClass) use (&$inputString, $filter) {
             if (!$filter($mssClass)) {
                 return;
             }
             
-            $res = MssClass::tryParse($mssClass, $inputString);
+            $res = MssClass::tryParse($mssClass->getFullClass(), $inputString);
             if ($res instanceof MssClass) {
                 return $res;
             }
