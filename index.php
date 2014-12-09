@@ -36,15 +36,18 @@ $code1 = <<<TEXT
 @import "somefile.mss" aural, screen, tv #090
 @import "main.mss"
    
+/* My simple mixin 
+        It just registeres new mixin
+    */
+        
 @mixin border-radius (left right )
     -webkit-border-radius \$left \$right
     -moz-border-radius \$arguments
     border-radius \$arguments \$left \$right \$left \$right
-    
+    /* new comment*/
 @media screen and width >= 1024px {
-
     h1 , h2, h3,h4
-        color rgb(220,120, 30 )
+        ~color rgb(220,120, 30 ) // this property is no longer usable
         border-color #f3f
         border-bottom-color hsla(350, 80%, 80%, 1)
         background-color red

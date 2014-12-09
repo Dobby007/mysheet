@@ -28,7 +28,8 @@ class BlockParser implements IParser
     private $code = null;
     private $sourceClosure = null;
     private $doc = null;
-
+    protected $processedCode = null;
+    
     public function __construct($code) {
         $this->setCode($code);
     }
@@ -55,6 +56,8 @@ class BlockParser implements IParser
         $this->doc = new Document();
         $this->curBlock = $this->doc;
         $start_time = microtime(true);
+        $this->processedCode = $this->getCode();
+        $this->removeComments();
         $this->divideIntoLines();
         $end_time = microtime(true);
         echo "\nElapsed time 1:" . ($end_time - $start_time);
@@ -72,8 +75,12 @@ class BlockParser implements IParser
         return $this->doc;
     }
 
+    protected function removeComments() {
+        $this->processedCode = preg_replace(['#//[^\n]*#', '#/\*.*\*/#Us'], '', $this->processedCode);
+    }
+    
     protected function divideIntoLines() {
-        $this->lines = preg_split("/\n|\r\n/", $this->code);
+        $this->lines = preg_split("/\n|\r\n/", $this->processedCode);
 
         $indentSize = null;
         $tabsInsteadSpaces = false;

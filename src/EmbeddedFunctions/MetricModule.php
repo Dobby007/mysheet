@@ -22,11 +22,11 @@ use MSSLib\Essentials\FunctionModule;
 use MSSLib\EmbeddedClasses\MetricClass;
 
 /**
- * Description of MathModule
+ * MetricModule provides a set of function to work with 'Metric' MssClass
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class MathModule extends FunctionModule
+class MetricModule extends FunctionModule
 {
     public function abs($value) {
         $value = $value->getValue($this->getVars());
