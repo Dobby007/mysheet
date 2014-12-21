@@ -47,7 +47,7 @@ $code1 = <<<TEXT
     /* new comment*/
 @media screen and width >= 1024px {
     h1 , h2, h3,h4
-        ~color rgb(220,120, 30 ) // this property is no longer usable
+        ~color rgb(220,120, 30 ) /// this property is no longer usable
         border-color #f3f
         border-bottom-color hsla(350, 80%, 80%, 1)
         background-color red
@@ -162,12 +162,128 @@ selector
     width 5px + (50px + 3%) * 4px
     max-width 5px*4-(4*3)+2
     height unitless((4px/70%))+ unitless(abs(negate(2px - 5px)))
-    image url()
+    image url(my/image.png)
     font italic/glamour -1
     expression (4+3
 TEXT;
 
-$result = $mysheet->parseCode($code1);
+$code9 = <<<TEXT
+@import url(http://fonts.googleapis.com/css?family=Open+Sans&subset=latin,cyrillic);
+
+html
+    height 100%
+    body
+        line-height 105%
+        color #777
+        height 100%
+        font-family: 'Open Sans', sans-serif;
+        .wrapper
+            position relative
+            min-height 100%
+            #header
+                color #fff
+                background-color rgba(0, 0, 0, 60%)
+                #logo
+                    float left
+                    .title
+                        padding 4px 5px
+                        font-weight bold
+                        font-size 14pt
+                        a:hover
+                            border 0
+                            color:#09f;
+                #main-menu
+                    overflow hidden
+                    ul
+                        float right
+                        li
+                            float left
+                            padding 8px 6px
+                            a
+                                color #fff
+            .main-presentation
+                padding 10px
+                background-color rgb(62, 161, 218)
+                color white
+                .version-note
+                    letter-spacing 2.1px
+                    text-transform uppercase
+                    font-family avenir,helvetica,arial,sans-serif
+                    margin 15px 0
+                .shaddowed
+                    text-shadow 3px 3px 10px
+            #pcontent
+                position relative
+                .content-sidebar
+                    position absolute
+                    top 0
+                    height 100%
+                    width 20%
+                    background-color rgb(62, 161, 180)
+                    border-right 10px solid rgb(62, 161, 220)
+                    color white
+                    overflow auto
+                    .navigation
+                        padding-top 10px
+                        li 
+                            padding 0
+                            margin 0
+                            li a
+                                padding-left 20pt
+                            a
+                                padding 6px 20pt 6px 5pt
+                                display block
+                            a:hover
+                                border 0
+                                background-color rgb (62, 161, 100)
+                .text-content
+                    padding: 10px 100px
+                    a
+                        color blue
+                &.with-sidebar
+                    position absolute
+                    top 32px
+                    bottom 0
+                    left 0
+                    width: 100%
+                    .text-content
+                        position absolute
+                        left 20%
+                        margin-left 10px
+                        right 0
+                        top 0
+                        bottom 0
+                        overflow auto
+            .footer_clear
+                height 200px
+
+            #footer
+                display block
+                position absolute
+                bottom 0
+                left 0
+                width 100%
+                background-color rgb(62, 161, 218)
+                color white
+                padding 5px 0
+                .copyright-notice
+                    color white
+                    text-align center
+                .yii-notice 
+                    text-align center
+                #footer-menu
+                    margin-top 10px
+                    ul
+                        text-align center
+                        li
+                            display inline
+                            margin-left 4px
+                        li:after
+                            margin-left 4px
+                            content '·'
+TEXT;
+
+$result = $mysheet->parseCode($code9);
 //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
 
 

@@ -18,34 +18,40 @@ namespace MSSLib\Essentials;
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class SourceLine {
-    private $line;
-    private $level;
+    /** @var string */
+    private $_line;
+    /** @var SourceClosure */
+    private $_closure;
     
-    function __construct($line, $level) {
+    function __construct($line, SourceClosure $closure) {
         $this->setLine($line);
-        $this->setLevel($level);
+        $this->setClosure($closure);
     }
     
     public function getLine() {
-        return $this->line;
+        return $this->_line;
     }
 
     public function getLevel() {
-        return $this->level;
+        return $this->_closure->getLevel();
     }
 
     public function setLine($line) {
-        $this->line = (string) $line;
+        $this->_line = (string) $line;
         return $this;
     }
 
-    public function setLevel($level) {
-        $this->level = (int) $level;
+    public function getClosure($level) {
+        return $this->_closure;
+    }
+    
+    public function setClosure($closure) {
+        $this->_closure = $closure;
         return $this;
     }
     
     public function length() {
-        return strlen($this->line);
+        return strlen($this->_line);
     }
     
     public function startsWith($text) {

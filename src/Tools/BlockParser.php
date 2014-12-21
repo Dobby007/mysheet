@@ -60,7 +60,7 @@ class BlockParser implements IParser
         $this->removeComments();
         $this->divideIntoLines();
         $end_time = microtime(true);
-        echo "\nElapsed time 1:" . ($end_time - $start_time);
+        Debugger::logString("\nElapsed time 1:" . ($end_time - $start_time));
         
         $start_time = microtime(true);
         $context = new ParserContext($this, $this->sourceClosure);
@@ -69,14 +69,14 @@ class BlockParser implements IParser
             $this->doc->addChild($parsedBlock);
         }
         $end_time = microtime(true);
-        echo "\nElapsed time 2:" . ($end_time - $start_time);
+        Debugger::logString("\nElapsed time 2:" . ($end_time - $start_time));
         
         Debugger::logObjects("Document", $this->doc, "\n");
         return $this->doc;
     }
 
     protected function removeComments() {
-        $this->processedCode = preg_replace(['#//[^\n]*#', '#/\*.*\*/#Us'], '', $this->processedCode);
+        $this->processedCode = preg_replace(['#///[^\n]*#', '#/\*.*\*/#Us'], '', $this->processedCode);
     }
     
     protected function divideIntoLines() {

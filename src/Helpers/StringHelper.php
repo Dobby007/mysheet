@@ -251,7 +251,7 @@ abstract class StringHelper
         $i = 0;
 
         while ($i < $linelen) {
-            if (!self::isSpaceSymbol($line[$i]) && $i > 0) {
+            if ($line[$i] !== '\t' && $line[$i] !== ' ' && $i > 0) {
                 return $i;
             } else if ($line[$i] === "\r" || $line[$i] === "\n") {
                 return false;

@@ -28,13 +28,14 @@ use MSSLib\Traits\HandlerCallTrait;
 class Selector {
     use RootClassTrait, HandlerCallTrait;
     
-    private $path, $cssPathGroup;
-    private $ruleset;
-    private $fullSelector;
+    private $_mssPath, $_cssPathGroup;
+    private $_ruleset;
+    private $_isFullSelector;
+    private $_isParsed = false;
     
-    public function __construct($path, $ruleset) {
+    public function __construct($mssPath, $ruleset) {
         $this->setRuleset($ruleset);
-        $this->setPath($path);
+        $this->setMssPath($mssPath);
     }
     
     /**
@@ -42,7 +43,7 @@ class Selector {
      * @return Ruleset
      */
     public function getRuleset() {
-        return $this->ruleset;
+        return $this->_ruleset;
     }
     
     /**
@@ -51,7 +52,7 @@ class Selector {
      */
     public function getPathGroup() {
         $pg = new PathGroup();
-        $pg->addPath($this->path);
+        $pg->addPath($this->_mssPath);
         return $pg;
     }
     
@@ -60,39 +61,53 @@ class Selector {
      * @return PathGroup
      */
     public function getCssPathGroup() {
-        $pg = clone $this->cssPathGroup;
-        $this->cssSelectorRenderingEvent($this, $pg);
-        return $pg;
+        return $this->_cssPathGroup;
     }
 
-    public function parsePath() {
+    public function parse() {
         $pg = $this->getPathGroup();
         $this->cssSelectorParsingEvent($this, $pg);
-        $this->cssPathGroup = $pg;
+        $this->_cssPathGroup = $pg;
+        $this->_isParsed = true;
+        $this->cssSelectorParsedEvent($this, $pg);
+        $this->fulfilPaths();
     }
     
-    public function setPath($path) {
+    protected function fulfilPaths() {
+        if (!$this->isFullSelector() && $this->getRuleset()) {
+            $paths = Selector::unionSelectorWithParents($this->getRuleset()->getParentPaths(), $this);
+            $this->_cssPathGroup->setPaths($paths);
+        }
+    }
+    
+    public function isParsed() {
+        return $this->_isParsed;
+    }
+    
+    public function setMssPath($path) {
         $path = trim($path);
         $right_selector = self::canBeSelector($path);
         
         if ($right_selector) {
             $path = preg_replace(['/\s+/'/*, '/\s+:\s*(\S+)/'*/], [' '/*, ':$1'*/], $path);
-            $this->path = $path;
+            $this->_mssPath = $path;
+            $this->_isParsed = false;
         } else {
             throw new ParseException(null, 'BAD_SELECTOR', [$path]);
         }
     }
 
     public function setRuleset(Ruleset $ruleset) {
-        $this->ruleset = $ruleset;
+        $this->_ruleset = $ruleset;
     }
     
     /**
      * Determines whether selector is full or not
+     * Full selectors ore the ones that do not need to be merged with their parent selectors (for example selectors that contain & symbol)
      * @return bool
      */
     public function isFullSelector() {
-        return $this->fullSelector;
+        return $this->_isFullSelector;
     }
 
     /**
@@ -100,17 +115,18 @@ class Selector {
      * @param bool $fullSelector
      */
     public function setFullSelector($fullSelector) {
-        $this->fullSelector = !!$fullSelector;
+        $this->_isFullSelector = !!$fullSelector;
     }
     
-    public static function unionSelectors(array $parent_selectors, Selector $selector) {
-        if (empty($parent_selectors)) {
-            $parent_selectors[] = '';
+    public static function unionSelectorWithParents(array $parentSelectors, Selector $selector) {
+        if (empty($parentSelectors)) {
+            $parentSelectors[] = '';
         }
         
         $combined = [];
-        foreach ($parent_selectors as $psel) {
-            foreach ($selector->getCssPathGroup()->getPaths() as $path) {
+        $cssPathGroup = $selector->getCssPathGroup();
+        foreach ($parentSelectors as $psel) {
+            foreach ($cssPathGroup->getPaths() as $path) {
                 $combined[] = (empty($psel) ? '' : $psel . ' ') . $path;
             }
         }

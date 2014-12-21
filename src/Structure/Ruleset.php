@@ -28,29 +28,39 @@ use MSSLib\Error\CompileException;
  */
 class Ruleset extends NodeBlock {
 
-    private $selectors = array();
-    private $declarations = array();
-
+    private $_selectors = array();
+    private $_declarations = array();
+    private $_parentRuleset = null;
+    
     public function __construct($parent) {
         parent::__construct($parent);
     }
 
     public function setParent($parent) {
         parent::setParent($parent);
+        while ( $parent instanceof NodeBlock && ($parent = $parent->getParent()) ) {
+            if ($parent instanceof Ruleset) {
+                $this->_parentRuleset = $parent;
+            }
+        }
         $this->parseSelectors();
     }
     
+    /**
+     * Array of selectors related to this ruleset
+     * @return Selector[]
+     */
     public function getSelectors() {
-        return $this->selectors;
+        return $this->_selectors;
     }
 
     public function countSelectors() {
-        return count($this->selectors);
+        return count($this->_selectors);
     }
 
     public function addSelector($selector) {
         if (is_string($selector)) {
-            $this->selectors[] = new Selector($selector, $this);
+            $this->_selectors[] = new Selector($selector, $this);
         }
     }
 
@@ -61,22 +71,22 @@ class Ruleset extends NodeBlock {
     }
     
     protected function parseSelectors() {
-        foreach ($this->selectors as $selector) {
-            $selector->parsePath();
+        foreach ($this->_selectors as $selector) {
+            $selector->parse();
         }
     }
 
     public function getDeclarations() {
-        return $this->declarations;
+        return $this->_declarations;
     }
 
     public function countDeclarations() {
-        return count($this->declarations);
+        return count($this->_declarations);
     }
 
     public function addDeclaration($declaration) {
         if (is_string($declaration)) {
-            $this->declarations[] = (new Declaration($declaration));
+            $this->_declarations[] = (new Declaration($declaration));
         }
     }
 
@@ -87,7 +97,7 @@ class Ruleset extends NodeBlock {
         }    
         if (is_array($declarations)) {
             foreach ($declarations as $declaration) {
-                //ignore empty strings: they can appear if user typed semicolon several times
+                // ignore empty strings: they can appear if user typed semicolon several times
                 if (!empty($declaration)) {
                     $this->addDeclaration($declaration);
                 }
@@ -96,44 +106,39 @@ class Ruleset extends NodeBlock {
     }
 
     public function getParentPaths() {
-        $parent = $this->getParent();
-        do {
-            if ($parent instanceof Ruleset) {
-                $parent_paths = $parent->getCssPaths();
-                if (!is_array($parent_paths)) {
-                    $parent_paths = [(string) $parent_paths];
-                }
-                return $parent_paths;
+        if ($this->_parentRuleset instanceof Ruleset) {
+            $parent_paths = $this->_parentRuleset->getFullCssSelectors();
+            if (!is_array($parent_paths)) {
+                $parent_paths = [(string)$parent_paths];
             }
-        } while ( $parent instanceof NodeBlock && ($parent = $parent->getParent()) );
-
+            return $parent_paths;
+        }
         return [];
     }
 
-    public function getCssPaths() {
-        $parent_paths = $this->getParentPaths();
-        $my_selectors = $this->getSelectors();
+    public function getFullCssSelectors() {
+        $parentSelectors = $this->getParentPaths();
+        $mySelectors = $this->getSelectors();
         $combined = [];
 
-        array_walk($my_selectors, function(Selector $selector) use($parent_paths, &$combined) {
-            $combined = array_merge($combined, $selector->isFullSelector() ?
-                            $selector->getCssPathGroup()->getPaths() : Selector::unionSelectors($parent_paths, $selector)
-            );
-        });
+        foreach ($mySelectors as $selector) {
+            // we consider full selectors here because they do not need to be merged with their parent
+            $combined = array_merge($combined, $selector->getCssPathGroup()->getPaths());
+        }
 
         return $combined;
     }
 
     protected function compileRealCss(VariableScope $vars) {
         $lines = new StringBuilder();
-        $selectors = $this->getCssPaths();
+        $selectors = $this->getFullCssSelectors();
         $declarations = $this->getDeclarations();
 
         if (empty($selectors)) {
             throw new CompileException(null, 'NO_SELECTORS_FOUND');
         }
 
-        //if there are no rules and no children return nothing
+        // if there are no rules and no children return nothing
         if (empty($declarations) && empty($this->getChildren())) {
             return [];
         }

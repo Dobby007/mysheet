@@ -18,9 +18,11 @@ namespace MSSLib\Essentials;
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class SourceClosure {
-    private $parent;
-    private $lines = array();
-    private $children = array();
+    private $_parent;
+    private $_lines = array();
+    private $_children = array();
+    
+    protected $_cachedLevel;
     
 //    public function __construct($parentBlock = null) {
 //        $this->setParent($parentBlock);
@@ -31,11 +33,12 @@ class SourceClosure {
      * @return SourceClosure|null
      */
     public function getParent() {
-        return $this->parent;
+        return $this->_parent;
     }
 
     protected function setParent(SourceClosure $parent) {
-        $this->parent = $parent;
+        $this->_parent = $parent;
+        $this->updateLevel();
         return $this;
     }
     
@@ -45,7 +48,7 @@ class SourceClosure {
      * @return int|boolean
      */
     public function indexOf(SourceClosure $closure) {
-        foreach ($this->children as $index => $child) {
+        foreach ($this->_children as $index => $child) {
             if ($child === $closure) {
                 return $index;
             }
@@ -97,32 +100,37 @@ class SourceClosure {
         return $neighbour;
     }
     
-    public function getLevel() {
+    protected function updateLevel() {
         $block = $this;
         $level = 0;
         while ($block->getParent() instanceof SourceClosure) {
             $block = $block->getParent();
             $level++;
         }
-        return $level;
+        $this->_cachedLevel = $level;
+        return $this;
+    }
+    
+    public function getLevel() {
+        return $this->_cachedLevel;
     }
     
     public function getLine($index) {
-        if (isset($this->lines[$index])) {
-            return new SourceLine($this->lines[$index], $this->getLevel());
+        if (isset($this->_lines[$index])) {
+            return $this->_lines[$index];
         }
         return false;
     }
     
     public function setLine($index, $line) {
         // TODO: WTF????
-        if (($line instanceof SourceLine)) {
-            $line = new SourceLine($line);
+        if (!($line instanceof SourceLine)) {
+            $line = new SourceLine((string)$line, $this);
         }
-        if ($index !== null && isset($this->lines[$index])) {
-            $this->lines[$index] = (string) $line;
+        if ($index !== null && isset($this->_lines[$index])) {
+            $this->_lines[$index] = $line;
         } else if ($index === null) {
-            $this->lines[] = (string) $line;
+            $this->_lines[] = $line;
         }
         return $this;
     }
@@ -132,11 +140,11 @@ class SourceClosure {
     }
     
     public function countLines() {
-        return count($this->lines);
+        return count($this->_lines);
     }
     
     public function getLines() {
-        return $this->lines;
+        return $this->_lines;
     }
     
     
@@ -145,18 +153,18 @@ class SourceClosure {
             $index = $this->countChildren() + $index;
         }
         
-        if (isset($this->children[$index])) {
-            return $this->children[$index];
+        if (isset($this->_children[$index])) {
+            return $this->_children[$index];
         }
         return null;
     }
     
     public function setChildClosure($index, SourceClosure $block) {
-        if ($index !== null && isset($this->children[$index])) {
-            $this->children[$index] = $block;
+        if ($index !== null && isset($this->_children[$index])) {
+            $this->_children[$index] = $block;
             $block->setParent($this);
         } else if ($index === null) {
-            $this->children[] = $block;
+            $this->_children[] = $block;
             $block->setParent($this);
         }
         return $this;
@@ -171,11 +179,11 @@ class SourceClosure {
      * @return SourceClosure[]
      */
     public function getChildren() {
-        return $this->children;
+        return $this->_children;
     }
     
     public function countChildren() {
-        return count($this->children);
+        return count($this->_children);
     }
     
     public function hasChildren() {
@@ -188,7 +196,7 @@ class SourceClosure {
         foreach ($this->getLines() as $line) {
             $result .= str_repeat($indentStr, $level) . $line . "\n";
         }
-        foreach ($this->children as $child) {
+        foreach ($this->_children as $child) {
             $result .= (string)$child;
         }
         return $result;
