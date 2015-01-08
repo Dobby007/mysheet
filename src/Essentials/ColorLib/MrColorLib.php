@@ -61,7 +61,7 @@ class MrColorLib extends ColorLib
     public function setChannel($name, $value) {
         $mrName = $this->mrChannelName($name);
         if ($mrName) {
-            $this->color->$mrName = $this->fixColorChannel($name, $value);
+            $this->color->$mrName = self::fixColorChannel($name, $value);
             return true;
         }
         return false;
@@ -82,8 +82,8 @@ class MrColorLib extends ColorLib
             case self::THSLA:
                 $this->color = Color::create([
                     'hue' => $this->getSourceChannel('hue'),
-                    'saturation' => $this->getSourceChannel('sat') / 100,
-                    'lightness' => $this->getSourceChannel('lt') / 100,
+                    'saturation' => $this->getSourceChannel('sat'),
+                    'lightness' => $this->getSourceChannel('lt'),
                     'alpha' => $this->getSourceChannel('a', 1)
                 ]);
                 break;
@@ -115,8 +115,7 @@ class MrColorLib extends ColorLib
     }
     
     public function setLibPath($path) {
-        $fullPath = MySheet::WORKDIR . MSN\DS . $path . MSN\DS . 'manual-init' . MSN\EXT;
-        require_once $fullPath;
+        require_once MySheet::WORKDIR . MSN\DS . $path . MSN\DS . 'manual-init' . MSN\EXT;
     }
     
     

@@ -57,8 +57,8 @@ abstract class MssClass
     abstract public function toRealCss(VariableScope $vars);
 
     protected function parseNestedParam(&$string, $filterThisClass = true) {
-        $result = MssClassHelper::parseMssClass($string, $filterThisClass ? function ($mssClass) {
-            return $mssClass !== get_class($this);
+        $result = MssClassHelper::parseMssClass($string, $filterThisClass ? function (TypeClassReference $mssClass) {
+            return $mssClass->getFullClass() !== get_class($this);
         } : null);
 
         if (!$result) {

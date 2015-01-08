@@ -61,7 +61,7 @@ abstract class StringHelper
             $argString = ltrim(substr($enclosedWithBrackets, 1, -1));
             $rawArguments = StringHelper::parseSplittedString($argString, ',', !$spaceInArgs);
             foreach ($rawArguments as $argument) {
-                $argument = self::parseSplittedString($argument, '=');
+                $argument = self::parseSplittedString($argument, '=', !$spaceInArgs);
                 $cnt = count($argument);
                 if ($cnt === 1) {
                     $arguments[] = $argument[0];
@@ -130,19 +130,20 @@ abstract class StringHelper
         
         $len = strlen($string);
         $charQueue = new \SplStack();
-        $topCharInQueue = null;
+        $charQueue->push($charMap[$startChar]);
+        $topCharInQueue = $charQueue->top();
         
-        for ($i = 0; $i < $len; $i ++) {
+        
+        for ($i = 1; $i < $len; $i ++) {
             $char = $string[$i];
             if (!$charQueue->isEmpty()) {
                 if ($topCharInQueue['closeAt'] === $char) {
                     $charQueue->pop();
+                    $topCharInQueue = $charQueue->isEmpty() ? null : $charQueue->top();
                 } else if ($topCharInQueue['wait'] === false && isset($charMap[$char])) {
+                    $topCharInQueue = $charMap[$char];
                     $charQueue->push($charMap[$char]);
                 }
-            } else if (isset($charMap[$char])) {
-                $topCharInQueue = $charMap[$char];
-                $charQueue->push($charMap[$char]);
             } else {
                 break;
             }

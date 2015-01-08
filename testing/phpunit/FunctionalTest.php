@@ -39,24 +39,6 @@ class FunctionalTest extends BaseTest
         $this->assertEquals( $expectedCss, trim($doc->toRealCss()) );
     }
     
-    /**
-     * @dataProvider dataFreeSyntax
-     */
-    public function testFreeSyntax($mssSource, $expectedCss)
-    {
-        $doc = $this->mysheet->parseCode($mssSource);
-        $this->assertEquals( $expectedCss, trim($doc->toRealCss()) );
-    }
-    
-    /**
-     * @dataProvider dataColorManipulation
-     */
-    public function testColorManipulation($mssSource, $expectedCss)
-    {
-        $doc = $this->mysheet->parseCode($mssSource);
-        $this->assertEquals( $expectedCss, trim($doc->toRealCss()) );
-    }
-    
     public function dataMultipleSelectors() {
         $tests = self::getAvailableTests('FunctionalTest', 'MultipleSelectors');
         $tests = array_map(function ($filePath) {
@@ -67,6 +49,15 @@ class FunctionalTest extends BaseTest
             ];
         }, $tests);
         return $tests;
+    }
+    
+    /**
+     * @dataProvider dataFreeSyntax
+     */
+    public function testFreeSyntax($mssSource, $expectedCss)
+    {
+        $doc = $this->mysheet->parseCode($mssSource);
+        $this->assertEquals( $expectedCss, trim($doc->toRealCss()) );
     }
     
     public function dataFreeSyntax() {
@@ -81,6 +72,15 @@ class FunctionalTest extends BaseTest
         return $tests;
     }
     
+    /**
+     * @dataProvider dataColorManipulation
+     */
+    public function testColorManipulation($mssSource, $expectedCss)
+    {
+        $doc = $this->mysheet->parseCode($mssSource);
+        $this->assertEquals( $expectedCss, trim($doc->toRealCss()) );
+    }
+    
     public function dataColorManipulation() {
         $tests = array_map(function ($filePath) {
             $test = self::getTest($filePath);
@@ -89,6 +89,26 @@ class FunctionalTest extends BaseTest
                 $test['expected']
             ];
         }, self::getAvailableTests('FunctionalTest', 'ColorManipulation'));
+        return $tests;
+    }
+    
+    /**
+     * @dataProvider dataComplexFunctions
+     */
+    public function testComplexFunctions($mssSource, $expectedCss)
+    {
+        $doc = $this->mysheet->parseCode($mssSource);
+        $this->assertEquals( $expectedCss, trim($doc->toRealCss()) );
+    }
+    
+    public function dataComplexFunctions() {
+        $tests = array_map(function ($filePath) {
+            $test = self::getTest($filePath);
+            return [
+                $test['source'],
+                $test['expected']
+            ];
+        }, self::getAvailableTests('FunctionalTest', 'ComplexFunctions'));
         return $tests;
     }
     

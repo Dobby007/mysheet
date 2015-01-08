@@ -105,11 +105,15 @@ class ColorClass extends MssClass implements IOperatorRegistrar
      * @throws InputException
      */
     public function setColor($color) {
-        if ($this->isCorrectColor($this->getType(), $color)) {
-            $this->color = $color;
-        } else {
+        if (!$this->isCorrectColor($this->getType(), $color)) {
             throw new InputException(null, 'WRONG_COLOR_FORMAT');
         }
+        if ($this->getType() !== ColorLib::THEX && $this->getType() !== ColorLib::THTML) {
+            foreach ($color as $channelName => &$channelValue) {
+                $channelValue = ColorLib::fixColorChannel($channelName, $channelValue);
+            }
+        }
+            $this->color = $color;
     }
     
     protected static function fixValueOfMetricClass(MetricClass $instance) {
@@ -169,24 +173,33 @@ class ColorClass extends MssClass implements IOperatorRegistrar
     }
     
     public function toRealCss(VariableScope $vars) {
-        $type = null;
+        $targetType = null;
         $newcolor = $this->getColor();
+        $transformMode = $this->getSetting('color.transform', 'unknown');
         if (
             self::isCssSupportedType($this->getType()) && 
-            $this->getSetting('color.transform', 'unknown') === 'unknown'
+            $transformMode === 'unknown'
         ) {
-            $type = $this->getType();
+            $targetType = $this->getType();
         } else {
             $cur_type = $this->getType();
-            if ($cur_type === ColorLib::THTML) {
+            if ($this->hasAlphaChannel()) {
+                $targetType = $this->getSetting('color.defaultTypeAlpha',  ColorLib::TRGBA);
+            } else {
+                $targetType = $this->getSetting('color.defaultType',  ColorLib::THEX);
+            }
+            if ($cur_type === ColorLib::THTML && !$this->getSetting('color.allowHtmlColorOutput', false)) {
                 $cur_type = ColorLib::THEX;
                 $newcolor = [self::transformHtmltoHexColor($newcolor[0])];
+            } else if ($cur_type === ColorLib::THTML) {
+                $targetType = ColorLib::THTML;
             }
-            $type = $this->getSetting('color.defaultType', $this->hasAlphaChannel() ? ColorLib::TRGBA : ColorLib::THEX);
-            $newcolor = $this->getColorLib()->setColor($cur_type, $newcolor)->transformTo($type);
+            if ($targetType !== $cur_type) {
+                $newcolor = $this->getColorLib()->setColor($cur_type, $newcolor)->transformTo($targetType);
+            }
         }
         
-        return self::colorToString($type, $newcolor);
+        return self::colorToString($targetType, $newcolor);
     }
     
     public function __toString() {
@@ -218,7 +231,7 @@ class ColorClass extends MssClass implements IOperatorRegistrar
             case ColorLib::TRGBA:
                 $arr = [$color['r'], $color['g'], $color['b']];
                 if ($type === ColorLib::TRGBA) {
-                    $arr[] = $color['a'] / 100;
+                    $arr[] = $color['a'];
                 }
                 return $type . '(' . implode(', ', $arr) . ')';
             case ColorLib::THSL:
@@ -374,7 +387,7 @@ class ColorClass extends MssClass implements IOperatorRegistrar
     }
     
     public static function parse(&$string) {
-        if (preg_match('/^([a-z]+)\s+/i', $string, $matches) && ($hcolor = self::transformHtmltoHexColor($matches[1]))) {
+        if (preg_match('/^([a-z]+)(?:\s+|$)/i', $string, $matches) && ($hcolor = self::transformHtmltoHexColor($matches[1]))) {
             parent::trimStringBy($string, strlen($matches[0]));
             return new self(ColorLib::THTML, [$matches[1]]);
         } else if (preg_match('/^(#[[:xdigit:]]{3}|#[[:xdigit:]]{6}|(?:rgb|rgba|hsl|hsla)\(.+\))(?:$|\s)/i', $string, $matches)) {

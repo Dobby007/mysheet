@@ -11,7 +11,10 @@ return [
             'class' => '\MSSLib\Essentials\ColorLib\MrColorLib',
 //            'libPath' => '../../php_libs/mrcolor-0.0.1'
         ],
-        'transform' => 'all'
+        'transform' => 'all',
+        'defaultTypeAlpha' => 'rgba',
+        'defaultType' => 'hex',
+        'allowHtmlColorOutput' => false
     ],
     'dependencies' => [
         'treeLib' => '../../php_libs/nicmart-tree/manual-init.php'

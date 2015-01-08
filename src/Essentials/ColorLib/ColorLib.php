@@ -105,7 +105,7 @@ abstract class ColorLib {
      * @param float $value
      * @return type
      */
-    public function fixColorChannel($channel, $value) {
+    public static function fixColorChannel($channel, $value) {
         switch ($channel) {
             case 'r':
             case 'g':

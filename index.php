@@ -292,7 +292,10 @@ TEXT;
 $code10 = <<<TEXT
 header
     color #fff + 300hue - 20lt
-        
+    color rgba(10,10,10,.7)
+    border-bottom-color hsla(28, 76%, 49%, 0.7)
+    color red
+    color #000 + 20r + 20b - 255g + 240g
 article
     color #acd - 20lt
 body
@@ -303,9 +306,10 @@ $code11 = <<<TEXT
 \$percentage = 0.01 * 100
 .body
    filter: progid:DXImageTransform.Microsoft.Alpha(opacity = \$percentage)
+   filter progid:DXImageTransform.Microsoft.gradient(startColorstr='#917c4d', endColorstr='#ffffff')
 TEXT;
 
-$result = $mysheet->parseCode($code11);
+$result = $mysheet->parseCode($code10);
 //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
 
 

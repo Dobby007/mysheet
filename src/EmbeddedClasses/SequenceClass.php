@@ -89,6 +89,11 @@ class SequenceClass extends MssClass {
             return false;
         }
         
+        $stringCopy = $string;
+        if (is_array(StringHelper::parseFunction($stringCopy, true, true))) {
+            return false;
+        }
+        
         $list = self::splitIntoList($string, $metDelimiter);
         if (is_array($list)) {
             return new self($list, $metDelimiter);
