@@ -39,17 +39,19 @@ class MrColorLib extends ColorLib
         'brightness' => 'bt'
     ];
     
+    
     public function getMrChannel($name) {
         $channel = $this->color->$name;
-        if ($name === 'saturation' || $name === 'lightness')
+        if ($name === 'saturation' || $name === 'lightness') {
             return $channel * 100;
+        }
         
         return $channel;
     }
     
     public function getChannel($name) {
-        $name = $this->mrChannelName($name);
-        return $name === null ? null : $this->color->$name;
+        $mrName = $this->mrChannelName($name);
+        return $name === null ? null : $this->color->$mrName;
     }
 
     public function getLibName() {
@@ -57,10 +59,15 @@ class MrColorLib extends ColorLib
     }
 
     public function setChannel($name, $value) {
-        
+        $mrName = $this->mrChannelName($name);
+        if ($mrName) {
+            $this->color->$mrName = $this->fixColorChannel($name, $value);
+            return true;
+        }
+        return false;
     }
     
-    public function update() {
+    protected function update() {
         switch ($this->type) {
             case self::TRGB:
             case self::TRGBA:
@@ -86,19 +93,6 @@ class MrColorLib extends ColorLib
                 ]);
                 break;
         }
-//        $this->color = Color::create([
-//            'red' => 144,
-//            'blue' => 70,
-//            'green' => 125
-//        ]);
-//        var_dump($this->color->red, $this->color->green, $this->color->blue, $this->color->hue, $this->color->saturation, $this->color->lightness);
-//        $this->color = Color::create([]);
-//        $this->color->hue = 0;
-//        $this->color->saturation = 1;
-//        $this->color->lightness = 0.5;
-        
-//        var_dump($this->color->hex, $this->color->red, $this->color->green, $this->color->blue, $this->color->hue, $this->color->saturation, $this->color->lightness);
-//        echo $this->type . ':' . $this->color . "\n\n";
     }
     
     public function transformTo($type) {
@@ -121,14 +115,15 @@ class MrColorLib extends ColorLib
     }
     
     public function setLibPath($path) {
-        require_once MySheet::WORKDIR . MSN\DS . $path . MSN\DS . 'manual-init' . MSN\EXT;
+        $fullPath = MySheet::WORKDIR . MSN\DS . $path . MSN\DS . 'manual-init' . MSN\EXT;
+        require_once $fullPath;
     }
     
     
     private function mrChannelName($msName) {
-        $index = array_search($msName, self::$mrMap, true);
+        $index = array_search($msName, self::$msMap, true);
         if ($index !== false) {
-            return self::$mrMap[$index];
+            return $index;
         }
         return null;
     }
@@ -147,7 +142,6 @@ class MrColorLib extends ColorLib
         
         $result = [];
         foreach (func_get_args() as $arg) {
-//            var_dump($arg, $this->color->$arg);
             $result[$this->msChannelName($arg)] = $this->getMrChannel($arg);
         }
         return $result;

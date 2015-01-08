@@ -15,6 +15,11 @@ MySheet::setDebugMode(true);
 $mysheet = MySheet::Instance();
 
 $mysheet->getAutoload()->registerAutoload();
+
+$str = ':not( .selected .hover)';
+$res = \MSSLib\Helpers\StringHelper::parseFunction($str, true, false);
+var_dump($res);
+
 $settings = new MSSettings();
 $settings->setCssRenderer([
     'prefixOCB' => "\n"
@@ -169,7 +174,8 @@ TEXT;
 
 $code9 = <<<TEXT
 @import url(http://fonts.googleapis.com/css?family=Open+Sans&subset=latin,cyrillic);
-
+@import "site-common.mss"
+        
 html
     height 100%
     body
@@ -283,7 +289,23 @@ html
                             content '·'
 TEXT;
 
-$result = $mysheet->parseCode($code9);
+$code10 = <<<TEXT
+header
+    color #fff + 300hue - 20lt
+        
+article
+    color #acd - 20lt
+body
+    color #000 + 255b + 40g
+TEXT;
+
+$code11 = <<<TEXT
+\$percentage = 0.01 * 100
+.body
+   filter: progid:DXImageTransform.Microsoft.Alpha(opacity = \$percentage)
+TEXT;
+
+$result = $mysheet->parseCode($code11);
 //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
 
 

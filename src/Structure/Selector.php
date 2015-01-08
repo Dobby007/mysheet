@@ -95,10 +95,12 @@ class Selector {
         } else {
             throw new ParseException(null, 'BAD_SELECTOR', [$path]);
         }
+        return $this;
     }
 
     public function setRuleset(Ruleset $ruleset) {
         $this->_ruleset = $ruleset;
+        return $this;
     }
     
     /**
@@ -116,6 +118,7 @@ class Selector {
      */
     public function setFullSelector($fullSelector) {
         $this->_isFullSelector = !!$fullSelector;
+        return $this;
     }
     
     public static function unionSelectorWithParents(array $parentSelectors, Selector $selector) {

@@ -72,10 +72,6 @@ class MathExprClass extends MssClass {
         return null;
     }
     
-    public function __toString() {
-        return $this->toRealCss();
-    }
-    
     protected static function parseIntoTree(&$expression, $needNormalization = true) {
         $rootTreeNode = $treeNode = new ExpressionNode();
         $expression = ltrim($expression);
@@ -84,7 +80,7 @@ class MathExprClass extends MssClass {
             $nodeChildren = $treeNode->getChildren();
             $expressionCopy = $expression;
             /** @todo Parse only strings with preceeding open bracket */
-            $subExpression = StringHelper::parseEnclosedString($expression);
+            $subExpression = StringHelper::parseEnclosedString($expression, '(');
             if (strlen($subExpression) > 0) {
                 $subExpression = substr($subExpression, 1, -1);
                 $subExpressionNode = self::parseIntoTree($subExpression, false);

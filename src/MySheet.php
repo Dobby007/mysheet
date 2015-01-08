@@ -57,7 +57,7 @@ class MySheet
     private $vs;
     protected $settings;
     protected $plugins = array();
-    
+    protected $_parsedFilePath = null;
     
     private function __construct() {
         $this->autoload = new Autoload();
@@ -153,7 +153,7 @@ class MySheet
                 $this->getListManager()->getList('MssClass')->addFunctional($classRef);
                 
                 $implementedInterfaces = class_implements($classRef->getFullClass());
-                if (isset($implementedInterfaces['MSSLib\Essentials\Math\IMathSupport'])) {
+                if (isset($implementedInterfaces['MSSLib\Essentials\Math\IOperatorRegistrar'])) {
                     $class = $classRef->getFullClass();
                     $class::registerOperations();
                 }
@@ -190,7 +190,8 @@ class MySheet
     public function parseFile($file) {
         $autoload_enabled = $this->getSettings()->get('system.internal_autoload', false);
         if (is_file($file)) {
-            return $this->parseCode(file_get_contents($file));
+            $this->_parsedFilePath = realpath($file);
+            return $this->parseCode(file_get_contents($this->_parsedFilePath));
         } else {
             if ($autoload_enabled) {
                 $this->getAutoload()->registerAutoload();
@@ -219,6 +220,7 @@ class MySheet
             $paths = [$paths];
         }
         
+        Helpers\ArrayHelper::append($paths, dirname($this->_parsedFilePath));
         foreach ($paths as $path) {
             if (!is_string($path)) {
                 continue;

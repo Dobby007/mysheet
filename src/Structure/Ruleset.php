@@ -30,7 +30,7 @@ class Ruleset extends NodeBlock {
 
     private $_selectors = array();
     private $_declarations = array();
-    private $_parentRuleset = null;
+    protected $_parentRuleset = null;
     
     public function __construct($parent) {
         parent::__construct($parent);
@@ -38,12 +38,26 @@ class Ruleset extends NodeBlock {
 
     public function setParent($parent) {
         parent::setParent($parent);
-        while ( $parent instanceof NodeBlock && ($parent = $parent->getParent()) ) {
+        $this->findParentRuleset();
+        $this->parseSelectors();
+    }
+    
+    /**
+     * Finds and reminds nearest parent ruleset
+     * @return null
+     */
+    protected function findParentRuleset() {
+        $parent = $this->getParent();
+        if (!($parent instanceof NodeBlock)) {
+            return;
+        }
+        
+        do {
             if ($parent instanceof Ruleset) {
                 $this->_parentRuleset = $parent;
+                break;
             }
-        }
-        $this->parseSelectors();
+        } while ( ($parent = $parent->getParent()) && $parent instanceof NodeBlock );
     }
     
     /**
@@ -61,6 +75,8 @@ class Ruleset extends NodeBlock {
     public function addSelector($selector) {
         if (is_string($selector)) {
             $this->_selectors[] = new Selector($selector, $this);
+        } else if ($selector instanceof Selector) {
+            $this->_selectors[] = $selector->setRuleset($this);
         }
     }
 
@@ -87,6 +103,8 @@ class Ruleset extends NodeBlock {
     public function addDeclaration($declaration) {
         if (is_string($declaration)) {
             $this->_declarations[] = (new Declaration($declaration));
+        } else if ($declaration instanceof Declaration) {
+            $this->_declarations[] = $declaration;
         }
     }
 

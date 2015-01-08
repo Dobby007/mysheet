@@ -267,12 +267,12 @@ class BlockParser implements IParser
     protected static function countLineSpaces($line, $tabsInsteadSpaces = false, &$indentSize = null) {
         $spaces_count = 0;
         if ($indentSize === null) {
-            $spaces_count = StringHelper::countLineSpaces($line, $tabsInsteadSpaces);
+            $spaces_count = StringHelper::countIndentCharacters($line, $tabsInsteadSpaces);
             if ($spaces_count > 0) {
                 $indentSize = $spaces_count;
             }
         } else {
-            $spaces_count = StringHelper::countLineSpaces($line, $tabsInsteadSpaces);
+            $spaces_count = StringHelper::countIndentCharacters($line, $tabsInsteadSpaces);
         }
         return $spaces_count;
     }

@@ -24,24 +24,25 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
         $path = PU\WORKDIR . PU\DS . 'Data' . PU\DS . $testClass . PU\DS . $testSubClass . PU\DS;
         $files = [];
         if (is_dir($path)) {
-            foreach (scandir($path) as $file) {
+            foreach (glob($path . '*.mss') as $file) {
                 if ($file === '.' || $file === '..') {
                     continue;
                 }
-                $files[] = $path . $file;
+                var_dump(strrpos($file, '.'));
+                $files[] = substr($file, 0, strrpos($file, '.'));
             }
+            var_dump($files);
         }
         
         return $files; 
     }
     
     public static function getTest($filePath) {
-        $content = file_get_contents($filePath);
-        $splitted = preg_split('/[\r\n\s]+====[\r\n\s]+/', $content);
-//        var_dump($splitted);
+        $content_test = file_get_contents($filePath . '.mss');
+        $content_result = file_get_contents($filePath . '.css');
         return [
-            'source' => trim($splitted[0]),
-            'expected' => trim($splitted[1])
+            'source' => trim($content_test),
+            'expected' => trim($content_result)
         ];
     }
 }

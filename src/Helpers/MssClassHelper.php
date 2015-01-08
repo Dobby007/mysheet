@@ -50,15 +50,17 @@ class MssClassHelper
             };
         }
         
+        $inputString = ltrim($inputString);
         return self::getRootObj()->getListManager()->getList('MssClass')->iterate(function(TypeClassReference $mssClass) use (&$inputString, $filter) {
             if (!$filter($mssClass)) {
                 return;
             }
-            
-            $res = MssClass::tryParse($mssClass->getFullClass(), $inputString);
-            if ($res instanceof MssClass) {
-                return $res;
+            $res = null;
+            $mssClassName = $mssClass->getFullClass();
+            if (class_exists($mssClassName) && method_exists($mssClassName, 'parse')) {
+                $res = $mssClassName::parse($inputString);
             }
+            return $res instanceof MssClass ? $res : null;
         });
     }
 }

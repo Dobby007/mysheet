@@ -26,13 +26,14 @@ abstract class OperatorHelper
 {
     use RootClassTrait;
     
-    public static function parseOperator(&$string) {
-        return self::getRootObj()->getListManager()->getList('Operator')->iterate(function(TypeClassReference $operatorClassRef) use (&$string, &$result) {
+    public static function parseOperator(&$inputString) {
+        return self::getRootObj()->getListManager()->getList('Operator')->iterate(function(TypeClassReference $operatorClassRef) use (&$inputString) {
             $operatorClass = $operatorClassRef->getFullClass();
-            $result = $operatorClass::parse($string);
-            if ($result instanceof MathOperator) {
-                return $result;
+            $res = null;
+            if (class_exists($operatorClass) && method_exists($operatorClass, 'parse')) {
+                $res = $operatorClass::parse($inputString);
             }
+            return $res instanceof MathOperator ? $res : null;
         });
     }
 }

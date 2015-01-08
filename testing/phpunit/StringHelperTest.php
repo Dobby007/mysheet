@@ -48,21 +48,24 @@ class StringHelperTest extends BaseTest
     /**
      * @dataProvider dataFunctionParsing
      */
-    public function testFunctionParsing($string, $spaceInArgs, $expected)
+    public function testFunctionParsing($string, $spaceInArgs, $nameChecking, $expected)
     {
-        $parsed = StringHelper::parseFunction($string, $spaceInArgs);
-        $result = [];
-        ArrayHelper::concat($result, $parsed['name'], $parsed['arguments']);
+        $parsed = StringHelper::parseFunction($string, $spaceInArgs, $nameChecking);
+        $result = false;
+        if ($parsed) {
+            $result = [$parsed['name']];
+            ArrayHelper::concat($result, $parsed['arguments']);
+        }
         $this->assertEquals($expected, $result);
     }
     
     
     public function dataFunctionParsing() {
         return [
-            ['rgb( 0, 120, 255)', false, ['rgb', '0', '120', '255']],
-            ['rgba   (10% , 20%, 30%)', false, ['rgba', '10%', '20%', '30%']],
-            [':not(.selected)', false, [':not', '.selected']],
-            [':not( .selected .hover)', true, [':not', '.selected .hover']],
+            ['rgb( 0, 120, 255)', false, true, ['rgb', '0', '120', '255']],
+            ['rgba   (10% , 20%, 30%)', false, true, ['rgba', '10%', '20%', '30%']],
+            [':not(.selected)', false, false, [':not', '.selected']],
+            [':not( .selected .hover)', true, false, [':not', '.selected .hover']],
         ];
     }
     

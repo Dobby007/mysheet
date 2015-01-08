@@ -22,7 +22,7 @@ namespace MSSLib\Essentials\Math;
  *
  * @author dobby007
  */
-interface IMathSupport {
+interface IOperatorRegistrar {
     /**
      * Registers supported arithmetical operations for current class
      */

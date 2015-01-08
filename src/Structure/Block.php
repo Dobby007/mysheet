@@ -89,6 +89,6 @@ abstract class Block {
         }
         
         $this->cssRenderingEndedEvent($this);
-        return $compiled;
+        return $compiled->join();
     }
 }

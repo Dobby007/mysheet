@@ -49,12 +49,12 @@ class VariableClass extends MssClass {
         
     public function toRealCss(VariableScope $vars) {
         $varValue = $this->getValue($vars);
-        return is_array($varValue) ? implode(' ', $varValue) : (string)$varValue;
+        return is_array($varValue) ? implode(' ', $varValue) : $varValue instanceof MssClass ? $varValue->toRealCss($vars) : (string)$varValue;
     }
 
     
     public static function parse(&$string) {
-        if (preg_match('/^\$([a-z0-9]+)/i', $string, $matches)) {
+        if (preg_match('/^\$([a-z0-9_]+)/i', $string, $matches)) {
             parent::trimStringBy($string, strlen($matches[0]));
             return new self($matches[1]);
         }

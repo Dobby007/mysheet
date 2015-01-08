@@ -8,6 +8,6 @@ const EXT = '.php';
 
 
 require_once 'BaseTest' . EXT;
-require_once '../../lib/MySheet' . EXT;
+require_once '../../src/MySheet' . EXT;
 require_once '../../../mrcolor/manual-init' . EXT;
 

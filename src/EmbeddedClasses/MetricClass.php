@@ -13,7 +13,7 @@
 namespace MSSLib\EmbeddedClasses;
 
 use MSSLib\Essentials\MssClass;
-use MSSLib\Essentials\Math\IMathSupport;
+use MSSLib\Essentials\Math\IOperatorRegistrar;
 use MSSLib\Essentials\VariableScope;
 
 /**
@@ -21,7 +21,7 @@ use MSSLib\Essentials\VariableScope;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class MetricClass extends MssClass implements IMathSupport
+class MetricClass extends MssClass implements IOperatorRegistrar
 {
     const DEFAULT_UNIT = '%';
     

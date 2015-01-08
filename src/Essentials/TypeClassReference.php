@@ -25,45 +25,59 @@ namespace MSSLib\Essentials;
  */
 class TypeClassReference
 {
-    protected $className;
-    protected $typeName;
-    protected $namespace;
+    protected $_className;
+    protected $_typeName;
+    protected $_namespace;
+    protected $_fullClass;
+    private $_updateEnabled = false;
     
     public function __construct($className, $typeName, $namespace) {
         $this->setClassName($className);
         $this->setNamespace($namespace);
         $this->setTypeName($typeName);
+        $this->_updateEnabled = true;
+        $this->updateFullClass();
+    }
+    
+    protected function updateFullClass() {
+        if (!$this->_updateEnabled) {
+            return;
+        }
+        $this->_fullClass = $this->_namespace . '\\' . $this->_className . $this->_typeName;
     }
     
     public function getClassName() {
-        return ucfirst($this->className);
+        return $this->_className;
     }
 
     public function getTypeName() {
-        return $this->typeName;
+        return $this->_typeName;
     }
 
     public function getNamespace() {
-        return $this->namespace;
+        return $this->_namespace;
     }
     
     protected function setClassName($className) {
-        $this->className = ucfirst($className);
+        $this->_className = ucfirst($className);
+        $this->updateFullClass();
         return $this;
     }
 
     protected function setTypeName($typeName) {
-        $this->typeName = $typeName;
+        $this->_typeName = $typeName;
+        $this->updateFullClass();
         return $this;
     }
 
     protected function setNamespace($namespace) {
-        $this->namespace = $namespace;
+        $this->_namespace = $namespace;
+        $this->updateFullClass();
         return $this;
     }
 
     public function getFullClass() {
-        return $this->getNamespace() . '\\' . $this->getClassName() . $this->getTypeName();
+        return $this->_fullClass;
     }
     
     public function getShortName() {

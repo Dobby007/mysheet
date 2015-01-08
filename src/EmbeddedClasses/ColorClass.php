@@ -21,13 +21,14 @@ use MSSLib\Essentials\ColorLib\ColorLib;
 use MSSLib\Error\SystemException;
 use MSSLib\Error\InputException;
 use MSSLib\Essentials\VariableScope;
+use MSSLib\Essentials\Math\IOperatorRegistrar;
 
 /**
  * Class that represents a color in both MSS and CSS. It is a rule parameter (MssClass).
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class ColorClass extends MssClass 
+class ColorClass extends MssClass implements IOperatorRegistrar
 {    
     protected static $allowed_types = ['html', 'hex', 'rgb', 'rgba', 'hsl', 'hsla'];
     protected static $css_supported_types = ['html', 'hex', 'rgbs', 'rgba', 'hsl', 'hsla'];
@@ -41,13 +42,17 @@ class ColorClass extends MssClass
         $this->setColor($color);
     }
     
+    /**
+     * Overrided method
+     * @return string
+     */
     public function getShortDescription() {
         return 'Color(' . $this->getType() . ', ' . self::colorToString($this->getType(), $this->getColor()) . ')';
     }
     
     /**
-     * 
-     * @return \MySheet\Essentials\ColorLib
+     * Gets current library which will be used to manipulate with colors
+     * @return \MSSLib\Essentials\ColorLib\ColorLib
      */
     public function getColorLib() {
         $libClass = $this->getSetting('color.lib.class', null);
@@ -65,15 +70,27 @@ class ColorClass extends MssClass
         
     }
 
-        
+    /**
+     * Gets current type
+     * @return string
+     */
     public function getType() {
         return $this->type;
     }
-
+    
+    /**
+     * Gets current color
+     * @return array
+     */
     public function getColor() {
         return $this->color;
     }
 
+    /**
+     * Sets a current type of the color
+     * @param array $color
+     * @throws InputException
+     */
     public function setType($type) {
         if (self::isRightType($type)) {
             $this->type = $type;
@@ -82,11 +99,55 @@ class ColorClass extends MssClass
         }
     }
 
+    /**
+     * Sets a current color
+     * @param array $color
+     * @throws InputException
+     */
     public function setColor($color) {
         if ($this->isCorrectColor($this->getType(), $color)) {
             $this->color = $color;
         } else {
             throw new InputException(null, 'WRONG_COLOR_FORMAT');
+        }
+    }
+    
+    protected static function fixValueOfMetricClass(MetricClass $instance) {
+        switch ($instance->getUnit()) {
+            case 'lt':
+            case 'sat':
+                return $instance->getMetric() / 100;
+            default:
+                return $instance->getMetric();
+        }
+    }
+    
+    /**
+     * Gets a value of specific channel and updates current color
+     * @param string $channel
+     */
+    public function getColorChannel($channel) {
+        return $this->getColorLib()->setColor($this->getType(), $this->getColor())->getChannel($channel);
+    }
+    
+    /**
+     * Sets a value to the specific channel $channel and ss current color
+     * @param string $channel
+     */
+    public function setColorChannel($channel, $value) {
+        $result = $this->getColorLib()->setColor($this->getType(), $this->getColor())->setChannel($channel, $value);
+        if ($result === true) {
+            $this->setColor($this->getColorLib()->getColor());
+        }
+    }
+    
+    /**
+     * Adds a delta-value to specific channel of the color and updates current color
+     */
+    public function addDeltaToColorChannel($channel, $value) {
+        $result = $this->getColorLib()->setColor($this->getType(), $this->getColor())->addChannel($channel, $value);
+        if ($result === true) {
+            $this->setColor($this->getColorLib()->getColor());
         }
     }
     
@@ -97,6 +158,12 @@ class ColorClass extends MssClass
         return substr($this->getType(), -1) === 'a';
     }
     
+    /**
+     * Returns boolean which indicates whether color array $color is correct for the type $type
+     * @param string $type
+     * @param array $color
+     * @return boolean
+     */
     public function isCorrectColor($type, array $color) {
         return true;
     }
@@ -113,7 +180,7 @@ class ColorClass extends MssClass
             $cur_type = $this->getType();
             if ($cur_type === ColorLib::THTML) {
                 $cur_type = ColorLib::THEX;
-                $newcolor = [self::getHtmlColor($newcolor[0])];
+                $newcolor = [self::transformHtmltoHexColor($newcolor[0])];
             }
             $type = $this->getSetting('color.defaultType', $this->hasAlphaChannel() ? ColorLib::TRGBA : ColorLib::THEX);
             $newcolor = $this->getColorLib()->setColor($cur_type, $newcolor)->transformTo($type);
@@ -126,6 +193,25 @@ class ColorClass extends MssClass
         return $this->toRealCss();
     }
     
+    public static function registerOperations() {
+        \MSSLib\Operators\PlusOperator::registerCalculationFunction(get_class(), 'MSSLib\EmbeddedClasses\MetricClass', function (ColorClass $obj1, MetricClass $obj2) {
+            $resultColor = clone $obj1;
+            $resultColor->addDeltaToColorChannel($obj2->getUnit(), self::fixValueOfMetricClass($obj2));
+            return $resultColor;
+        });
+        \MSSLib\Operators\MinusOperator::registerCalculationFunction(get_class(), 'MSSLib\EmbeddedClasses\MetricClass', function (ColorClass $obj1, MetricClass $obj2) {
+            $resultColor = clone $obj1;
+            $resultColor->addDeltaToColorChannel($obj2->getUnit(), -self::fixValueOfMetricClass($obj2));
+            return $resultColor;
+        });
+    }
+    
+    /**
+     * Transforms color array to CSS representation
+     * @param string $type
+     * @param array $color
+     * @return array
+     */
     public static function colorToString($type, array $color) {
         switch ($type) {
             case ColorLib::TRGB:
@@ -154,6 +240,11 @@ class ColorClass extends MssClass
         return in_array($type, self::$css_supported_types);
     }
     
+    /**
+     * Parses string with CSS representation of color in hex-format (e.g #abc)
+     * @param string $string
+     * @return false|array
+     */
     protected static function parseHexColorString($string) {
         $hexCode = substr($string, 1);
         $clen = strlen($hexCode);
@@ -174,6 +265,11 @@ class ColorClass extends MssClass
         
     }
     
+    /**
+     * Parses string with CSS representation of color in function-format (e.g rgb(a,b,c))
+     * @param string $string
+     * @return false|array
+     */
     protected static function parseFunctionColorString($string) {
         $function = StringHelper::parseFunction($string);
         
@@ -188,9 +284,8 @@ class ColorClass extends MssClass
             if ($metric === false) {
                 return false;
             }
-            $arg = $metric['metric'];
+            $arg = self::fixPercentageValue($metric);
         }
-        
 
         //tricky thing to check number of arguments
         if (strlen($function['name']) !== count($arguments)) {
@@ -234,11 +329,27 @@ class ColorClass extends MssClass
                 ];
                 break;
         }
-
         return $result;
-        
     }
     
+    /**
+     * Fixes percentage value, transforms it to float value and returns it. If unit of the value is not measured in percents, original value is returned.
+     * @param array $value
+     * @return float|int
+     */
+    protected static function fixPercentageValue(array $value) {
+        if ($value['unit'] === '%') {
+            return $value['metric'] / 100;
+        } else {
+            return $value['metric'];
+        }
+    }
+    
+    /**
+     * Parses string with CSS representation of color
+     * @param string $string
+     * @return false|array
+     */
     public static function parseColorString($string) {
         $result = false;
         if ($string[0] === '#') {
@@ -251,7 +362,7 @@ class ColorClass extends MssClass
         return $result;
     }
     
-    public static function getHtmlColor($name) {
+    public static function transformHtmltoHexColor($name) {
         static $html_colors = null;
         if ($html_colors === null) {
             $html_colors = require_once(MySheet::WORKDIR . MSN\DS . 'Etc' . MSN\DS . 'Includes' . MSN\DS . 'HtmlColors' . MSN\EXT);
@@ -263,10 +374,10 @@ class ColorClass extends MssClass
     }
     
     public static function parse(&$string) {
-        if (preg_match('/^([a-z]+)/i', $string, $matches) && ($hcolor = self::getHtmlColor($matches[1]))) {
+        if (preg_match('/^([a-z]+)\s+/i', $string, $matches) && ($hcolor = self::transformHtmltoHexColor($matches[1]))) {
             parent::trimStringBy($string, strlen($matches[0]));
             return new self(ColorLib::THTML, [$matches[1]]);
-        } else if (preg_match('/^(#[[:xdigit:]]{3}|#[[:xdigit:]]{6}|(?:rgb|rgba|hsl|hsla|hsb)\(.+\))(?:$|\s)/i', $string, $matches)) {
+        } else if (preg_match('/^(#[[:xdigit:]]{3}|#[[:xdigit:]]{6}|(?:rgb|rgba|hsl|hsla)\(.+\))(?:$|\s)/i', $string, $matches)) {
             $color = self::parseColorString($matches[1]);
             if ($color) {
                 parent::trimStringBy($string, strlen($matches[0]));

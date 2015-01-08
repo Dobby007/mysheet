@@ -93,8 +93,12 @@ class FunctionClass extends MssClass {
     public function toRealCss(VariableScope $vars) {
         $module = $this->getModuleForFunction($vars);
         if ($module=== false) {
-            return  $this->getName() . 
-                    '(' . ArrayHelper::implode_objects(', ', $this->getArguments(), 'toRealCss', $vars) . ')';
+            /* @var $arguments MssClass[] */
+            $arguments = [];
+            foreach ($this->getArguments() as $name=>$argument) {
+                $arguments[] = (is_string($name) ? $name . ' = ' : '') . $argument->toRealCss($vars);
+            }
+            return  $this->getName() . '(' . implode(', ', $arguments) . ')';
         }
         
         return call_user_func_array([$module, $this->getName()], $this->getArguments());
@@ -103,7 +107,7 @@ class FunctionClass extends MssClass {
     public static function parse(&$string) {
         $string_copy = $string;
         $function = StringHelper::parseFunction($string_copy, true);
-        if ($function && ctype_alnum($function['name'])) {
+        if (is_array($function)) {
             $string = $string_copy;
             return new self($function['name'], $function['arguments']);
         }

@@ -12,6 +12,8 @@
 
 namespace MSSLib\Helpers;
 
+use MSSLib\Essentials\VariableScope;
+
 /**
  * Class that helps to work with strings and provides basic operations to work with them in MySheet
  *
@@ -50,14 +52,23 @@ abstract class StringHelper
         
         $args_offset = strlen($funcName);
         $funcName = trim($funcName);
-        if ($nameChecking && !preg_match('/^[a-z\-_][[a-z0-9\-_]*$/i', $funcName)) {
+        if ($nameChecking && !preg_match('/^[a-z\-_][[a-z0-9\-_:.]*$/i', $funcName)) {
             return false;
         }
         
         $enclosedWithBrackets = StringHelper::parseEnclosedString($text);
         if ($enclosedWithBrackets) {
             $argString = ltrim(substr($enclosedWithBrackets, 1, -1));
-            $arguments = StringHelper::parseSplittedString($argString, ',', !$spaceInArgs);
+            $rawArguments = StringHelper::parseSplittedString($argString, ',', !$spaceInArgs);
+            foreach ($rawArguments as $argument) {
+                $argument = self::parseSplittedString($argument, '=');
+                $cnt = count($argument);
+                if ($cnt === 1) {
+                    $arguments[] = $argument[0];
+                } else if ($cnt === 2 && VariableScope::canBeVariable($argument[0])) {
+                    $arguments[$argument[0]] = $argument[1];
+                }
+            }
         }
         if (!empty($arguments) && !empty($funcName)) {
             $input = substr($input, $args_offset + strlen($enclosedWithBrackets));
@@ -105,11 +116,15 @@ abstract class StringHelper
         return ['metric' => floatval($metric), 'unit' => $unit];
     }
     
-    public static function parseEnclosedString(&$string) {
+    public static function parseEnclosedString(&$string, $allowedStartChars = null) {
         $charMap = self::$enclosedCharMap;
         $stringCopy = $string;
+        $startChar = substr($string, 0, 1);
         
-        if (!isset($charMap[substr($string, 0, 1)])) {
+        if (
+            ($allowedStartChars !== null && strpos($allowedStartChars, $startChar) === false) ||
+            !isset($charMap[$startChar])
+        ) {
             return false;
         }
         
@@ -158,6 +173,9 @@ abstract class StringHelper
             }
             
             $char = $string[$i];
+            if (in_array($char, $delimiters)) {
+                $metDelim = $char;
+            }
             if (isset(self::$enclosedCharMap[$char])) {
                 $possibleEnclosed = substr($string, $i);
                 $enclosedPart = self::parseEnclosedString($possibleEnclosed);
@@ -170,15 +188,11 @@ abstract class StringHelper
                 }
             } else if (
                     ($metDelim && $metDelim === $char) || 
-                    (!$metDelim && in_array($char, $delimiters)) || 
                     ($stopAtSpace === true && ctype_space($char)) 
             ) {
                 $splittedList[] = substr($string, $offset, $i - $offset);
-                if (!$metDelim) {
-                    $metDelim = $char;
-                }
                 $i += self::countPrecSpaces(substr($string, $i));
-                if ($i >= $len || !in_array($char, $delimiters)) {
+                if ($i >= $len || !in_array($string[$i], $delimiters)) {
                     break;
                 } else {
                     $i++;
@@ -243,20 +257,18 @@ abstract class StringHelper
     /**
      * 
      * @param string $line Text line
-     * @param boolean $count_tabs True if you want to count \t characters instead of spaces
-     * @return int|boolean Returns the number of spaces till the first meaning character
+     * @param boolean $countTabs Set it to true if you want to count \t characters instead of spaces
+     * @return int|false Returns the number of spaces till the first meaning character or false, if there aren't any non-space characters in the line
      */
-    public static function countLineSpaces($line, $count_tabs = false) {
+    public static function countIndentCharacters($line, $countTabs = false) {
         $linelen = strlen($line);
         $i = 0;
 
         while ($i < $linelen) {
-            if ($line[$i] !== '\t' && $line[$i] !== ' ' && $i > 0) {
-                return $i;
-            } else if ($line[$i] === "\r" || $line[$i] === "\n") {
+            if ($line[$i] === '\r' || $line[$i] === '\n') {
                 return false;
-            } else if ($i === 0 && !self::isSpaceSymbol($line[$i])) {
-                return 0;
+            } else if ((!$countTabs && $line[$i] !== ' ') || ($countTabs && $line[$i] !== '\t')) {
+                return $i;
             }
 
             $i++;
@@ -265,7 +277,7 @@ abstract class StringHelper
         return false;
     }
 
-    public static function isSpaceSymbol($char) {
+    public static function isIndentSymbol($char) {
         if ($char === ' ' || $char === "\t")
             return true;
 
@@ -275,7 +287,8 @@ abstract class StringHelper
     /**
      * 
      * @param string $string
-     * @param mixed $prefixes
+     * @param string|string[] $prefixes
+     * @return bool Function returns boolean indicating whether string starts with exact prefix or one of the prefixes from $prefixes array
      */
     public static function stringStartsWith($string, $prefixes) {
         if (is_string($prefixes)) {

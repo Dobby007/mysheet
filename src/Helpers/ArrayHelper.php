@@ -34,26 +34,34 @@ abstract class ArrayHelper {
         return implode($glue, $proccessed);
     }
 
-    public static function insert_pair(array &$input, $key, $val) {
+    public static function insert_value(array &$input, $key, $val) {
         if (!is_int($key) && $key !== null) {
             $input[$key] = $val;
         } else {
             $input[] = $val;
         }
     }
-
+    
+    public static function append(array &$input, $value) {
+        if (is_array($value)) {
+            foreach ($value as $key => $value) {
+                if (!is_int($key)) {
+                    $input[$key] = $value;
+                } else {
+                    $input[] = $value;
+                }
+            }
+        } else {
+            $input[] = $value;
+        }
+    }
+    
     public static function concat(array &$input, $val1, $_val = null) {
         $values = array_slice(func_get_args(), 1);
 
-        array_walk($values, function($value) use(&$input) {
-            if (is_array($value)) {
-                foreach ($value as $key => $value) {
-                    self::insert_pair($input, $key, $value);
-                }
-            } else {
-                $input[] = $value;
-            }
-        });
+        foreach($values as $value) {
+            self::append($input, $value);
+        }
     }
 
     public static function filter(array $array, callable $callback = null) {

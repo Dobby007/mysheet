@@ -1,13 +1,26 @@
 This is a simple TODO list. 
-Features that are marked with dash symbol are not yet implemented. 
-On the other hand, features marked with asterisk are already implemented.
+
+Glossary:
+[-] - Not yet done
+[+] - Already done
+
 
 [+] Implement support of unary operators
-[+] Make so that arithmetic expression was recognized correctly when operators are not separated by spaces
+[-] Make so that arithmetic expression was recognized correctly when operators are not separated by spaces
 [-] Enhance support of plugins: make so that plugins can register it's own MssClass and ParserExtension in user defined precedence
-[+] BUG: Not correct MathExpression makes whole library to fail
-[+] Make better the process of recognizing of unary and binary operators
+[-] BUG: Not correct MathExpression makes whole library to fail
+[-] Make better the process of recognizing of unary and binary operators
 [+] Add list of reserved keywords to UnaryOperator class
-[+] What about: MSSLib\Essentials\FuncList->setOrder @ 41 	36 	2.17 ?
 [-] Bug with parsing of functions that contains dash symbol
-[-] DXImage filters and some Chrome gradient functions
+[+] DXImage filters
+[-] Chrome gradient functions
+[-] Possibility of setting prefix for url functions
+
+
+============================================
+
+
+Pre-release tasks
+
+[-] Check possibility of enclosing single quote symbol
+[+] What about: MSSLib\Essentials\FuncList->setOrder @ 41 	36 	2.17 ?

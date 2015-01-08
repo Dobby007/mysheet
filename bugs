@@ -1,19 +1,23 @@
-XXX 1.
++++ 1.
 margin-bottom: 0.5em
 font-size: .8em
 transition: all 0.7s
 transform: rotate(6.28rad);
 
-XXX 2.
++++ 2.
 margin 0 auto 1em auto
 
-XXX 3.
++++ 3.
 background: url('i/download') 0px 0px
 background: none
 
-4.
++++ 4.
 @media only screen and (-webkit-device-pixel-ratio: 2) {
 	#content li.try-jquery a {
 		background-image: url('i/try-jquery@2x.jpg');
 	}
 }
+
+5.
+header
+    color #fff + 300hue - 20lt

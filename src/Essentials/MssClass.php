@@ -82,13 +82,4 @@ abstract class MssClass
         }
     }
 
-    public static function tryParse($paramClass, &$string) {
-        $string = ltrim($string);
-        if (class_exists($paramClass) && method_exists($paramClass, 'parse')) {
-            return $paramClass::parse($string);
-        }
-
-        return false;
-    }
-
 }
