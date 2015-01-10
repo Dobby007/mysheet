@@ -291,7 +291,7 @@ TEXT;
 
 $code10 = <<<TEXT
 header
-    color #fff + 300hue - 20lt
+    color red + 50lt - 40sat
     color rgba(10,10,10,.7)
     border-bottom-color hsla(28, 76%, 49%, 0.7)
     color red

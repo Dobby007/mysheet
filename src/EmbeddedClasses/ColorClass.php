@@ -32,10 +32,10 @@ class ColorClass extends MssClass implements IOperatorRegistrar
 {    
     protected static $allowed_types = ['html', 'hex', 'rgb', 'rgba', 'hsl', 'hsla'];
     protected static $css_supported_types = ['html', 'hex', 'rgbs', 'rgba', 'hsl', 'hsla'];
-    protected static $html_colors;
     protected $type;
     protected $color;
     protected $_colorLib;
+    protected static $html_colors = null;
     
     public function __construct($type, array $color = []) {
         $this->setType($type);
@@ -79,10 +79,29 @@ class ColorClass extends MssClass implements IOperatorRegistrar
     }
     
     /**
+     * Returns type of the color if it is not HTML, otherwise returns ColorLib::THEX
+     * @return string
+     */
+    public function getSafeType() {
+        return $this->type === ColorLib::THTML ? ColorLib::THEX : $this->type;
+    }
+    
+    /**
      * Gets current color
      * @return array
      */
     public function getColor() {
+        return $this->color;
+    }
+    
+    /**
+     * Returns current color if it is not of HTML-type, otherwise converts it to HEX-type
+     * @return array
+     */
+    public function getSafeColor() {
+        if ($this->type === ColorLib::THTML) {
+            return [self::transformHtmlToHexColor($this->color[0])];
+        }
         return $this->color;
     }
 
@@ -105,7 +124,7 @@ class ColorClass extends MssClass implements IOperatorRegistrar
      * @throws InputException
      */
     public function setColor($color) {
-        if (!$this->isCorrectColor($this->getType(), $color)) {
+        if (!self::isCorrectColor($this->getType(), $color)) {
             throw new InputException(null, 'WRONG_COLOR_FORMAT');
         }
         if ($this->getType() !== ColorLib::THEX && $this->getType() !== ColorLib::THTML) {
@@ -114,6 +133,20 @@ class ColorClass extends MssClass implements IOperatorRegistrar
             }
         }
             $this->color = $color;
+    }
+    
+    protected function setResultColor() {
+        $resultColor = $this->getColorLib()->getColor();
+        
+        if ($this->type === ColorLib::THTML) {
+            $htmlAnalog = self::transformHexToHtmlColor($resultColor[0]);
+            if ($htmlAnalog) {
+                $resultColor = [$htmlAnalog];
+            } else {
+                $this->setType(ColorLib::THEX);
+            }
+        }
+        $this->setColor($resultColor);
     }
     
     protected static function fixValueOfMetricClass(MetricClass $instance) {
@@ -131,7 +164,7 @@ class ColorClass extends MssClass implements IOperatorRegistrar
      * @param string $channel
      */
     public function getColorChannel($channel) {
-        return $this->getColorLib()->setColor($this->getType(), $this->getColor())->getChannel($channel);
+        return $this->getColorLib()->setColor($this->getSafeType(), $this->getSafeColor())->getChannel($channel);
     }
     
     /**
@@ -139,9 +172,9 @@ class ColorClass extends MssClass implements IOperatorRegistrar
      * @param string $channel
      */
     public function setColorChannel($channel, $value) {
-        $result = $this->getColorLib()->setColor($this->getType(), $this->getColor())->setChannel($channel, $value);
+        $result = $this->getColorLib()->setColor($this->getSafeType(), $this->getSafeColor())->setChannel($channel, $value);
         if ($result === true) {
-            $this->setColor($this->getColorLib()->getColor());
+            $this->setResultColor();
         }
     }
     
@@ -149,9 +182,9 @@ class ColorClass extends MssClass implements IOperatorRegistrar
      * Adds a delta-value to specific channel of the color and updates current color
      */
     public function addDeltaToColorChannel($channel, $value) {
-        $result = $this->getColorLib()->setColor($this->getType(), $this->getColor())->addChannel($channel, $value);
+        $result = $this->getColorLib()->setColor($this->getSafeType(), $this->getSafeColor())->addChannel($channel, $value);
         if ($result === true) {
-            $this->setColor($this->getColorLib()->getColor());
+            $this->setResultColor();
         }
     }
     
@@ -168,8 +201,15 @@ class ColorClass extends MssClass implements IOperatorRegistrar
      * @param array $color
      * @return boolean
      */
-    public function isCorrectColor($type, array $color) {
-        return true;
+    public static function isCorrectColor($type, array $color) {
+        switch ($type) {
+            case ColorLib::THTML:
+                return self::htmlColorExists($color[0]);
+            case ColorLib::THEX:
+                return in_array(strlen($color[0]), [3, 6]);
+            default:
+                return true;
+        }
     }
     
     public function toRealCss(VariableScope $vars) {
@@ -190,7 +230,7 @@ class ColorClass extends MssClass implements IOperatorRegistrar
             }
             if ($cur_type === ColorLib::THTML && !$this->getSetting('color.allowHtmlColorOutput', false)) {
                 $cur_type = ColorLib::THEX;
-                $newcolor = [self::transformHtmltoHexColor($newcolor[0])];
+                $newcolor = [self::transformHtmlToHexColor($newcolor[0])];
             } else if ($cur_type === ColorLib::THTML) {
                 $targetType = ColorLib::THTML;
             }
@@ -375,19 +415,31 @@ class ColorClass extends MssClass implements IOperatorRegistrar
         return $result;
     }
     
-    public static function transformHtmltoHexColor($name) {
-        static $html_colors = null;
-        if ($html_colors === null) {
-            $html_colors = require_once(MySheet::WORKDIR . MSN\DS . 'Etc' . MSN\DS . 'Includes' . MSN\DS . 'HtmlColors' . MSN\EXT);
-        }
-        if (isset($html_colors[$name])) {
-            return $html_colors[$name];
+    public static function transformHtmlToHexColor($name) {
+        self::loadHtmlColors();
+        if (isset(self::$html_colors[$name])) {
+            return self::$html_colors[$name];
         }
         return false;
     }
     
+    public static function transformHexToHtmlColor($hex) {
+        self::loadHtmlColors();
+        return array_search($hex, self::$html_colors);
+    }
+    
+    public static function htmlColorExists($name) {
+        return !!self::transformHtmlToHexColor($name);
+    }
+    
+    protected static function loadHtmlColors() {
+        if (self::$html_colors === null) {
+            self::$html_colors = require_once(MySheet::WORKDIR . MSN\DS . 'Etc' . MSN\DS . 'Includes' . MSN\DS . 'HtmlColors' . MSN\EXT);
+        }
+    }
+    
     public static function parse(&$string) {
-        if (preg_match('/^([a-z]+)(?:\s+|$)/i', $string, $matches) && ($hcolor = self::transformHtmltoHexColor($matches[1]))) {
+        if (preg_match('/^([a-z]+)(?:\s+|$)/i', $string, $matches) && self::htmlColorExists($matches[1])) {
             parent::trimStringBy($string, strlen($matches[0]));
             return new self(ColorLib::THTML, [$matches[1]]);
         } else if (preg_match('/^(#[[:xdigit:]]{3}|#[[:xdigit:]]{6}|(?:rgb|rgba|hsl|hsla)\(.+\))(?:$|\s)/i', $string, $matches)) {
