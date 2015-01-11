@@ -8,14 +8,14 @@ Glossary:
 [+] Implement support of unary operators
 [-] Make so that arithmetic expression was recognized correctly when operators are not separated by spaces
 [-] Enhance support of plugins: make so that plugins can register it's own MssClass and ParserExtension in user defined precedence
-[-] BUG: Not correct MathExpression makes whole library to fail
+[+] BUG: Not correct MathExpression makes whole library to fail
 [-] Make better the process of recognizing of unary and binary operators
 [+] Add list of reserved keywords to UnaryOperator class
-[-] Bug with parsing of functions that contains dash symbol
+[+] Bug with parsing of functions that contains dash symbol
 [+] DXImage filters
 [-] Chrome gradient functions
-[-] Possibility of setting prefix for url functions
-
+[+] Possibility of setting prefix for url functions: -webkit-url()
+[-] Add support of at-rules in the end!
 
 ============================================
 

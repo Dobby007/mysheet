@@ -44,12 +44,12 @@ class VariableClass extends MssClass {
 
     public function getValue(VariableScope $vars) {
         $varValue = $vars[$this->getVarName()];
-        return $varValue;
+        return $varValue instanceof MssClass ? $varValue->getValue($vars) : $varValue;
     }
         
     public function toRealCss(VariableScope $vars) {
         $varValue = $this->getValue($vars);
-        return is_array($varValue) ? implode(' ', $varValue) : $varValue instanceof MssClass ? $varValue->toRealCss($vars) : (string)$varValue;
+        return is_array($varValue) ? implode(' ', $varValue) : (string)$varValue;
     }
 
     

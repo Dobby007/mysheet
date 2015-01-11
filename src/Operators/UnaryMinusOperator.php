@@ -32,7 +32,7 @@ class UnaryMinusOperator extends UnaryOperator
     protected static $operatorSymbol = '-';
     protected static $binaryAnalog = 'minus';
     
-    protected static $browserPrefixes = array('-webkit-', '-moz-', '-o-', '-ms-');
+    protected static $browserPrefixes = array('-webkit-', '-moz-', '-o-', '-ms-', '-khtml-');
     
     public static function parse(&$string) {
         if (self::canBeUnaryOperator($string) && !StringHelper::stringStartsWith($string, self::$browserPrefixes)) {

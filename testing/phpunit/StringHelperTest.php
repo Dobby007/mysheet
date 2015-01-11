@@ -66,6 +66,7 @@ class StringHelperTest extends BaseTest
             ['rgba   (10% , 20%, 30%)', false, true, ['rgba', '10%', '20%', '30%']],
             [':not(.selected)', false, false, [':not', '.selected']],
             [':not( .selected .hover)', true, false, [':not', '.selected .hover']],
+            [':not("123", "asd", \'jgdss\')', true, false, [':not', '"123"', '"asd"', "'jgdss'"]],
         ];
     }
     
