@@ -17,7 +17,6 @@ return [
         'allowHtmlColorOutput' => false
     ],
     'dependencies' => [
-        'treeLib' => '../../php_libs/nicmart-tree/manual-init.php'
     ],
     'plugins' => [
         'mixin', 'selectorExtensions'
