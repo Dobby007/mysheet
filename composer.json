@@ -2,7 +2,7 @@
     "name": "mysheet/mysheet",
     "type": "library",
     "description": "",
-    "keywords": ["css preprocessor", "css parser", "css"],
+    "keywords": ["css preprocessor", "css parser", "css", "mss"],
     "homepage": "http://mss.flydigo.com",
     "license": "Apache-2.0",
     "authors": [
