@@ -22,7 +22,5 @@ class Document extends NodeBlock {
         parent::__construct(null);
     }
     
-    
-    
 
 }

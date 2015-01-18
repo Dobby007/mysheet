@@ -32,6 +32,10 @@ abstract class NodeBlock extends Block {
     public function getChildren() {
         return $this->children;
     }
+    
+    public function getChild($index) {
+        return isset($this->children[$index]) ? $this->children[$index] : null;
+    }
 
     public function lastChild() {
         $size = count($this->children);
@@ -39,6 +43,15 @@ abstract class NodeBlock extends Block {
             return $this->children[$size - 1];
         }
         return false;
+    }
+    
+    public function countChildren() {
+        return count($this->children);
+    }
+    
+    public function hasChildren() {
+        $size = count($this->children);
+        return $size > 0;
     }
 
     /**

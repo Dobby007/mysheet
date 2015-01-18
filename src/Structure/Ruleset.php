@@ -20,6 +20,7 @@ use MSSLib\Essentials\StringBuilder;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Helpers\StringHelper;
 use MSSLib\Error\CompileException;
+use MSSLib\Essentials\RulesetFinder;
 
 /**
  * Class that represents CSS rule set that consists of selectors (Selector) and declarations (Declaration)
@@ -122,6 +123,33 @@ class Ruleset extends NodeBlock {
             }
         }
     }
+    
+    public function getMatchedSelectors($selectorsToMatch, $cutOffSelectors = true, $flags = RulesetFinder::DEFAULT_FIND_FLAGS) {
+        $selectors = [];
+        if (!is_array($selectorsToMatch)) {
+            $selectorsToMatch = (string)$selectorsToMatch;
+        }
+        if ($flags & RulesetFinder::FIND_ONLY_MSS_SELECTORS) {
+            $selectors = array_map(function (Selector $item) {
+                return $item->getMssPath();
+            }, $this->getSelectors());
+        }
+        
+        if ($flags & RulesetFinder::FIND_ONLY_CSS_SELECTORS) {
+            $selectors = array_merge($selectors, $this->getFullCssSelectors());
+        }
+
+        $matchedSelectors = [];
+        foreach ($selectors as $selector) {
+            foreach ($selectorsToMatch as $selectorToMatch) {
+                $matchLen = strlen($selectorToMatch);
+                if (strncmp($selector, $selectorToMatch, $matchLen) === 0) {
+                    $matchedSelectors[] = $cutOffSelectors ? (!($end = substr($selector, $matchLen)) && !$end ? '' : $end) : $selector;
+                }
+            }
+        }
+        return $matchedSelectors;
+    }
 
     public function getParentPaths() {
         if ($this->_parentRuleset instanceof Ruleset) {
@@ -135,7 +163,6 @@ class Ruleset extends NodeBlock {
     }
 
     public function getFullCssSelectors() {
-        $parentSelectors = $this->getParentPaths();
         $mySelectors = $this->getSelectors();
         $combined = [];
 

@@ -36,5 +36,5 @@ return [
         'includeError' => 'exception'
     ],
     'parser' => '\MSSLib\Tools\BlockParser',
-    'language' => 'ru_ru'
+    'language' => 'en_us'
 ];

@@ -148,7 +148,7 @@ class MySheet
     protected function initMssClasses() {
         $availableParams = require(self::WORKDIR . DS . 'Etc' . DS . 'Includes' . DS . 'EmbeddedClasses' . EXT);
         foreach ($availableParams as $paramClass) {
-            $classRef = new TypeClassReference(ucfirst($paramClass), 'Class', 'MSSLib\\EmbeddedClasses');
+            $classRef = new TypeClassReference($paramClass, 'Class', 'MSSLib\\EmbeddedClasses');
             if ($classRef->classExists()) {
                 $this->getListManager()->getList('MssClass')->addFunctional($classRef);
                 
@@ -163,9 +163,9 @@ class MySheet
     
     protected function setRightOrder() {
         $this->getListManager()->getList('MssClass')->setOrder(array_map(function ($mssClass) {
-            return $mssClass;
+            return strtolower($mssClass);
         }, $this->getSettings()->mssClasses), null, function (TypeClassReference $mssClassRef) {
-            return $mssClassRef->getShortName();
+            return strtolower($mssClassRef->getShortName());
         });
     }
     

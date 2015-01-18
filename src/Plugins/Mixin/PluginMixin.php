@@ -15,6 +15,7 @@ namespace MSSLib\Plugins\Mixin;
 use MSSLib\Plugins\PluginBase;
 use MSSLib\Structure\Declaration;
 use MSSLib\Essentials\VariableScope;
+use MSSLib\Essentials\TypeClassReference;
 
 /**
  * Description of Mixin

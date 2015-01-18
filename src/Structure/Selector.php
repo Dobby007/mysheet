@@ -47,10 +47,10 @@ class Selector {
     }
     
     /**
-     * Returns input selector as a group of mss selectors
+     * Creates a group of selectors and add source MSS selector to it
      * @return PathGroup
      */
-    public function getPathGroup() {
+    protected function createPathGroup() {
         $pg = new PathGroup();
         $pg->addPath($this->_mssPath);
         return $pg;
@@ -65,7 +65,7 @@ class Selector {
     }
 
     public function parse() {
-        $pg = $this->getPathGroup();
+        $pg = $this->createPathGroup();
         $this->cssSelectorParsingEvent($this, $pg);
         $this->_cssPathGroup = $pg;
         $this->_isParsed = true;
@@ -82,6 +82,10 @@ class Selector {
     
     public function isParsed() {
         return $this->_isParsed;
+    }
+    
+    public function getMssPath() {
+        return $this->_mssPath;
     }
     
     public function setMssPath($path) {

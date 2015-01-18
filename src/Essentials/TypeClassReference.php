@@ -29,6 +29,7 @@ class TypeClassReference
     protected $_typeName;
     protected $_namespace;
     protected $_fullClass;
+    protected $_pluginName;
     private $_updateEnabled = false;
     
     public function __construct($className, $typeName, $namespace) {
@@ -49,6 +50,10 @@ class TypeClassReference
     public function getClassName() {
         return $this->_className;
     }
+    
+    public function getPluginName() {
+        return $this->_pluginName;
+    }
 
     public function getTypeName() {
         return $this->_typeName;
@@ -59,7 +64,17 @@ class TypeClassReference
     }
     
     protected function setClassName($className) {
-        $this->_className = ucfirst($className);
+        $parsedName = explode('\\', $className, 2);
+        foreach ($parsedName as &$part) {
+            $part = ucfirst($part);
+        }
+        if (count($parsedName) === 2) {
+            $this->_pluginName = $parsedName[0];
+            $this->_className = $parsedName[1];
+        } else {
+            $this->_className = $parsedName[0];
+        }
+        
         $this->updateFullClass();
         return $this;
     }
@@ -81,11 +96,14 @@ class TypeClassReference
     }
     
     public function getShortName() {
-        return lcfirst($this->getClassName());
+        return (!empty($this->_pluginName) ? lcfirst($this->_pluginName) . '\\' : '') . lcfirst($this->getClassName());
     }
     
     public function classExists($autoload = true) {
         return class_exists($this->getFullClass(), $autoload);
     }
-    
+ 
+    public function compareShortName($shortName) {
+        return strtolower($this->getShortName()) === strtolower($shortName);
+    }
 }

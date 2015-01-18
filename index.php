@@ -3,6 +3,7 @@
 
 <pre>
 <?php
+set_time_limit(4);
 require_once 'src/MySheet.php';
 
 use MSSLib\MySheet;
@@ -13,23 +14,10 @@ MySheet::setDebugMode(true);
 
 
 $mysheet = MySheet::Instance();
-
 $mysheet->getAutoload()->registerAutoload();
-
 $settings = new MSSettings();
-$settings->setCssRenderer([
-    'prefixOCB' => "\n"
-]);
-$settings->setCssRenderer([
-    'prefixCCB' => "\n",
-    'prefixOCB' => ""
-]);
-$settings->setSystem([
-    'internal_autoload' => true
-]);
+$settings->setDependencies(['../../php_libs/nicmart-tree/manual-init.php']);
 $settings->set('color.lib.libPath', '../../mrcolor');
-
-$mysheet->getAutoload()->restoreAutoload();
 $mysheet->init($settings);
 
 
@@ -101,6 +89,9 @@ body {
     
 }
 
+.wrapper
+    font-size 23px
+   
 .header
     border thick
 
@@ -114,7 +105,7 @@ h1 span, h1 i
 h2 {
     color rgb(220,120, 30 )
 }
-        
+
 h3 
 {
     color: red
@@ -295,7 +286,7 @@ header
 article
     color #acd - 20lt
 body
-    color #000 + 255b + 40g
+    color #000 + asdas255b + 40g
 TEXT;
 
 $code11 = <<<TEXT
@@ -307,8 +298,14 @@ $code11 = <<<TEXT
    background: -khtml-url(asd) -webkit-url(dodo) -moz-url(tata) -ms-url(taktak)
 TEXT;
 
-$result = $mysheet->parseCode($code11);
+$result = $mysheet->parseCode($code2);
 //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
+
+$resultRulesets = \MSSLib\Essentials\RulesetFinder::querySelectorAll('.wrapper', $result);
+
+foreach ($resultRulesets as $resultRuleset) {
+    var_dump($resultRuleset ? $resultRuleset->toRealCss() : 'not found!');
+}
 
 
 //var_dump($result);
