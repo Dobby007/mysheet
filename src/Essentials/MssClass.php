@@ -74,6 +74,13 @@ abstract class MssClass
     public static function parse(&$string) {
         
     }
+    
+    /**
+     * @return MssClass|false
+     */
+    public static function parseConstant($constValue) {
+        return static::parse($constValue);
+    }
 
     public static function trimStringBy(&$string, $length) {
         $string = substr($string, $length);

@@ -12,12 +12,14 @@
 
 namespace MSSLib\Structure;
 
+use MSSLib\Essentials\BlockInterfaces\IMayContainRuleset;
+
 /**
  * Description of Document
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class Document extends NodeBlock {
+class Document extends NodeBlock implements IMayContainRuleset {
     public function __construct() {
         parent::__construct(null);
     }

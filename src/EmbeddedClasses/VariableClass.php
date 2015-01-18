@@ -49,6 +49,9 @@ class VariableClass extends MssClass {
         
     public function toRealCss(VariableScope $vars) {
         $varValue = $this->getValue($vars);
+        if ($varValue instanceof MssClass) {
+            $varValue = $varValue->toRealCss($vars);
+        }
         return is_array($varValue) ? implode(' ', $varValue) : (string)$varValue;
     }
 

@@ -20,14 +20,14 @@ use MSSLib\Essentials\StringBuilder;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Helpers\StringHelper;
 use MSSLib\Error\CompileException;
-use MSSLib\Essentials\RulesetFinder;
-
+use MSSLib\Essentials\Finder\RulesetFinder;
+use MSSLib\Essentials\BlockInterfaces\IMayContainRuleset;
 /**
  * Class that represents CSS rule set that consists of selectors (Selector) and declarations (Declaration)
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class Ruleset extends NodeBlock {
+class Ruleset extends NodeBlock implements IMayContainRuleset {
 
     private $_selectors = array();
     private $_declarations = array();
@@ -139,12 +139,14 @@ class Ruleset extends NodeBlock {
             $selectors = array_merge($selectors, $this->getFullCssSelectors());
         }
 
+        $selectors = array_unique($selectors);
         $matchedSelectors = [];
         foreach ($selectors as $selector) {
+            $selectorLen = strlen($selector);
             foreach ($selectorsToMatch as $selectorToMatch) {
-                $matchLen = strlen($selectorToMatch);
-                if (strncmp($selector, $selectorToMatch, $matchLen) === 0) {
-                    $matchedSelectors[] = $cutOffSelectors ? (!($end = substr($selector, $matchLen)) && !$end ? '' : $end) : $selector;
+                $nextSymbol = substr($selectorToMatch, $selectorLen, 1);
+                if (strncmp($selector, $selectorToMatch, $selectorLen) === 0 && (ctype_space($nextSymbol) || empty($nextSymbol))) {
+                    $matchedSelectors[] = $cutOffSelectors ? (!($end = substr($selectorToMatch, $selectorLen)) && !$end ? '' : trim($end)) : $selector;
                 }
             }
         }

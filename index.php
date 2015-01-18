@@ -301,7 +301,7 @@ TEXT;
 $result = $mysheet->parseCode($code2);
 //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
 
-$resultRulesets = \MSSLib\Essentials\RulesetFinder::querySelectorAll('.wrapper', $result);
+$resultRulesets = \MSSLib\Essentials\Finder\RulesetFinder::querySelectorAll('.wrapper, .header', $result);
 
 foreach ($resultRulesets as $resultRuleset) {
     var_dump($resultRuleset ? $resultRuleset->toRealCss() : 'not found!');

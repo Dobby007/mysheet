@@ -19,13 +19,14 @@ use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Essentials\StringBuilder;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Tools\Debugger;
+use MSSLib\Essentials\BlockInterfaces\IMayContainRuleset;
 
 /**
  * Description of Ruleset
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class MediaRequest extends NodeBlock {
+class MediaRequest extends NodeBlock implements IMayContainRuleset {
     protected $request = null;
     
     public function __construct($parent) {
