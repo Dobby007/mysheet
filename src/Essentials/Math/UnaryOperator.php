@@ -36,7 +36,7 @@ abstract class UnaryOperator extends MathOperator
     }
     
     public static function getBinaryAnalogClass() {
-        if (!class_exists(static::$binaryAnalog)) {
+        if (!class_exists(static::$binaryAnalog, false)) {
             return '\\MSSLib\\Operators\\' . ucfirst(static::$binaryAnalog) . 'Operator';
         } else {
             return static::$binaryAnalog;

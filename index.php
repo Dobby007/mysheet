@@ -298,7 +298,17 @@ $code11 = <<<TEXT
    background: -khtml-url(asd) -webkit-url(dodo) -moz-url(tata) -ms-url(taktak)
 TEXT;
 
-$result = $mysheet->parseCode($code2);
+$code12 = <<<TEXT
+selector
+    width 5px + (50px + 3%) * 4px
+    max-width 5px*4-(4*3)+2
+    height unitless((4px/70%))+ unitless(abs(negate(2px - 5px)))
+    image url(my/image.png)
+    font italic/glamour -1
+    expression (4+3)
+TEXT;
+
+$result = $mysheet->parseCode($code12);
 //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
 
 $resultRulesets = \MSSLib\Essentials\Finder\RulesetFinder::querySelectorAll('.wrapper, .header', $result);

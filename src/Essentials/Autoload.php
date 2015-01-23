@@ -16,19 +16,15 @@ class Autoload
     
     public function autoload($class) {
         Debugger::logString("Trying to load: ". $class);
-        $start = microtime(true);
         if (substr($class, 0, strlen(MSSNS) + 1) === MSSNS . '\\') {
             $class = substr($class, strlen(MSSNS) + 1);
             $file = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $class);
             $filePath = MSN\WORKDIR . DIRECTORY_SEPARATOR . $file . MSN\EXT;
-            $includeResult = (@include_once $filePath) or false;
+            $includeResult = (include_once $filePath) or false;
             if (!$includeResult) {
                 throw new \Exception('Class not found: ' . $class);
             }
-            
-            self::$sum += microtime(true) - $start;
         }
-//        var_dump(self::$sum);
         
     }
     
@@ -39,6 +35,6 @@ class Autoload
     
     public function registerAutoload() {
         Debugger::logString("MySheet Autoloader is gonna to be registered.");
-        spl_autoload_register([$this, 'autoload']);
+        spl_autoload_register([$this, 'autoload'], true, true);
     }
 }
