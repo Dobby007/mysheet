@@ -17,6 +17,9 @@ Glossary:
 [-] Add support of at-rules in the end!
 [-] background-image with base64 encoded images
 [-] Implement variable searching
+[-] Implement Base64-encoding of the images on the fly
+[-] Implement more accurate parsing of CSS functions. E.g. url()
+[-] Prefixes for the background-images
 
 ============================================
 
