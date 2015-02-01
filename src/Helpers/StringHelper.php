@@ -42,7 +42,18 @@ abstract class StringHelper
         }
     }
     
-    public static function parseFunction(&$input, $spaceInArgs = false, $nameChecking = true) {
+    /**
+     * Returns array containing info about function. Array contains 3 items:
+     *      name - funciton name
+     *      arguments - parsed arguments
+     *      rawArgsString - raw string of function arguments
+     * @param string $input Input string
+     * @param bool $spaceInArgs If set to true, indicates that arguments may contain spaces. E.g. :not(.selector .wrapper)
+     * @param bool $nameChecking If set to true, function name will be checked to be legitimate; check will be perfomed based on basic rules
+     * @param bool $parseArguments If set to true, array item with 'arguments' key will contain parsed arguments
+     * @return boolean
+     */
+    public static function parseFunction(&$input, $spaceInArgs = false, $nameChecking = true, $parseArguments = true) {
         $text = ltrim($input);
         $arguments = false;
         $funcName = self::parseStringUntil($text, '(');
@@ -57,27 +68,45 @@ abstract class StringHelper
         }
         
         $enclosedWithBrackets = StringHelper::parseEnclosedString($text);
+        $argString = null;
         if ($enclosedWithBrackets) {
             $argString = ltrim(substr($enclosedWithBrackets, 1, -1));
-            $rawArguments = StringHelper::parseSplittedString($argString, ',', !$spaceInArgs);
-            foreach ($rawArguments as $argument) {
-                $argument = self::parseSplittedString($argument, '=', !$spaceInArgs);
-                $cnt = count($argument);
-                if ($cnt === 1) {
-                    $arguments[] = $argument[0];
-                } else if ($cnt === 2 && VariableScope::canBeVariable($argument[0])) {
-                    $arguments[$argument[0]] = $argument[1];
-                }
+            if ($parseArguments) {
+                $arguments = self::parseFunctionArguments($argString, $spaceInArgs);
             }
         }
-        if (!empty($arguments) && !empty($funcName)) {
+        if ($argString !== null && !empty($funcName)) {
             $input = substr($input, $args_offset + strlen($enclosedWithBrackets));
             return [
                 'name' => $funcName,
-                'arguments' => $arguments
+                'arguments' => $arguments,
+                'rawArgsString' => $argString
             ];
         }
         return false;
+    }
+    
+    /**
+     * Parses string which present function arguments into array of arguments. Examples of strings:
+     *      true, 1px, 'some string'
+     *      1px, 5px
+     * @param string $rawArgsString String with arguments delimited by comma
+     * @param bool $spaceInArgs If set to true, indicates that arguments may contain spaces. E.g. :not(.selector .wrapper)
+     * @return string[]|null
+     */
+    public static function parseFunctionArguments($rawArgsString, $spaceInArgs = false) {
+        $rawArguments = StringHelper::parseSplittedString($rawArgsString, ',', !$spaceInArgs);
+        $arguments = null;
+        foreach ($rawArguments as $argument) {
+            $argument = self::parseSplittedString($argument, '=', !$spaceInArgs);
+            $cnt = count($argument);
+            if ($cnt === 1) {
+                $arguments[] = $argument[0];
+            } else if ($cnt === 2 && VariableScope::canBeVariable($argument[0])) {
+                $arguments[$argument[0]] = $argument[1];
+            }
+        }
+        return $arguments;
     }
     
     public static function parseMetric(&$input) {

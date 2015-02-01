@@ -33,6 +33,11 @@ class MssClassHelper
     use RootClassTrait;
     
     public static function parseMssClass(&$inputString, $filter = null, $ignoreFilter = false) {
+        // return input if it is already a instance of MssClass
+        if ($inputString instanceof MssClass) {
+            return $inputString;
+        }
+        
         if (empty($filter)) {
             $filter = function () { return true; };
         }

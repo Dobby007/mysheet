@@ -14,7 +14,6 @@ namespace MSSLib\EmbeddedClasses;
 
 use MSSLib\Essentials\MssClass;
 use MSSLib\Helpers\StringHelper;
-use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Helpers\FunctionModuleHelper;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Helpers\MssClassHelper;
@@ -50,29 +49,52 @@ class FunctionClass extends MssClass {
     public function setArguments(array $arguments) {
         switch ($this->getName()) {
             case 'url':
-                $result = count($arguments) > 0 ?
-                        MssClassHelper::parseMssClass($arguments[0], array('string', 'nonQuotedString')) : false;
-                
-                if ($result instanceof MssClass) {
-                    $arguments = [$result];
-                } else {
-                    $arguments = [];
-                }
+                $arguments = $this->parseArgumentsForUrlFunction($arguments);
                 break;
             default:
                 $arguments = array_map(function ($item) {
-                    if ($item instanceof MssClass) {
-                        return $item;
-                    }
                     return MssClassHelper::parseMssClass($item, array('sequence'), true);
                 }, $arguments);
                 
         }
-        
         $this->arguments = $arguments;
         return $this;
     }
 
+    protected function parseArgumentsForUrlFunction(array $arguments) {
+        $result = false;
+        if (count($arguments) >= 1) {
+            $firstArg = $arguments[0];
+            if (!($firstArg instanceof MssClass)) {
+                $result = FileDataClass::parse($firstArg);
+            }
+            // parse with other registered classes
+            if (!$result) {
+                $result = MssClassHelper::parseMssClass($firstArg);
+            }
+            if ($result instanceof MssClass) {
+                return [$result];
+            }
+        }
+        return [];
+    }
+    
+    /**
+     * Splits arguments parsed by StringHelper::parseFunction() method into array with respect to function name
+     * @param array $functionInfo Info returned by StringHelper::parseFunction() method
+     */
+    protected static function splitFunctionArguments(array $functionInfo) {
+        switch ($functionInfo['name']) {
+            case 'url':
+                $functionInfo['arguments'] = [$functionInfo['rawArgsString']];
+                break;
+            default:
+                $functionInfo['arguments'] = StringHelper::parseFunctionArguments($functionInfo['rawArgsString'], true);
+                break;
+        }
+        return $functionInfo;
+    }
+    
     protected function getModuleForFunction(VariableScope $vars) {
         $module = FunctionModuleHelper::findModule($this->getName(), $this->getArguments());
         if ($module !== false) {
@@ -100,16 +122,16 @@ class FunctionClass extends MssClass {
             }
             return  $this->getName() . '(' . implode(', ', $arguments) . ')';
         }
-        
         return call_user_func_array([$module, $this->getName()], $this->getArguments());
     }
         
     public static function parse(&$string) {
         $string_copy = $string;
-        $function = StringHelper::parseFunction($string_copy, true);
-        if (is_array($function)) {
+        $functionInfo = StringHelper::parseFunction($string_copy, true, true, false);
+        if (is_array($functionInfo)) {
             $string = $string_copy;
-            return new self($function['name'], $function['arguments']);
+            $functionInfo = static::splitFunctionArguments($functionInfo);
+            return new self($functionInfo['name'], $functionInfo['arguments']);
         }
         return false;
     }

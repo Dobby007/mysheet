@@ -15,11 +15,13 @@ Glossary:
 [-] Chrome gradient functions
 [+] Possibility of setting prefix for url functions: -webkit-url()
 [-] Add support of at-rules in the end!
-[-] background-image with base64 encoded images
+[+] background-image with base64 encoded images
 [-] Implement variable searching
 [-] Implement Base64-encoding of the images on the fly
-[-] Implement more accurate parsing of CSS functions. E.g. url()
+[+] Implement more accurate parsing of CSS functions. E.g. url()
 [-] Prefixes for the background-images
+[-] Embed internal mixins
+[-] Implement searching of all URL functions
 
 ============================================
 
