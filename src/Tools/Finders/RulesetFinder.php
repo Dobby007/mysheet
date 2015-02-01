@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-namespace MSSLib\Essentials\Finder;
+namespace MSSLib\Tools\Finders;
 
 use MSSLib\Structure\Ruleset;
 use MSSLib\Structure\NodeBlock;

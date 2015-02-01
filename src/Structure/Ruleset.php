@@ -20,10 +20,10 @@ use MSSLib\Essentials\StringBuilder;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Helpers\StringHelper;
 use MSSLib\Error\CompileException;
-use MSSLib\Essentials\Finder\RulesetFinder;
+use MSSLib\Tools\Finders\RulesetFinder;
 use MSSLib\Essentials\BlockInterfaces\IMayContainRuleset;
 /**
- * Class that represents CSS rule set that consists of selectors (Selector) and declarations (Declaration)
+ * Class that represents CSS ruleset that consists of selectors (Selector) and declarations (Declaration)
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */

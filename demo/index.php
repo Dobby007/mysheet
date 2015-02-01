@@ -4,7 +4,7 @@
 <pre>
 <?php
 set_time_limit(4);
-require_once 'src/MySheet.php';
+require_once '../src/MySheet.php';
 
 use MSSLib\MySheet;
 use MSSLib\Tools\MSSettings;
@@ -312,7 +312,7 @@ TEXT;
 $result = $mysheet->parseCode($code12);
 //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
 
-$resultRulesets = \MSSLib\Essentials\Finder\RulesetFinder::querySelectorAll('.wrapper, .header', $result);
+$resultRulesets = \MSSLib\Tools\Finders\RulesetFinder::querySelectorAll('.wrapper, .header', $result);
 
 foreach ($resultRulesets as $resultRuleset) {
     var_dump($resultRuleset ? $resultRuleset->toRealCss() : 'not found!');
