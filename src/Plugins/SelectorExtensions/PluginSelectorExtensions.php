@@ -29,7 +29,7 @@ class PluginSelectorExtensions extends PluginBase {
     
     
     public function init() {
-        $this->getRoot()->getHandlerFactory()->registerHandler('Selector', 'cssSelectorParsing', function(&$handled, Selector $selector, PathGroup $pathGroup) {
+        self::getRootObj()->getHandlerFactory()->registerHandler('Selector', 'cssSelectorParsing', function(&$handled, Selector $selector, PathGroup $pathGroup) {
             foreach ($this->handlers as $handler) {
                 $method_name = 'parse' . ucfirst($handler) . 'Handler';
                 $this->$method_name($selector, $pathGroup);

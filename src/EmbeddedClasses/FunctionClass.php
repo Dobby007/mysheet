@@ -17,6 +17,8 @@ use MSSLib\Helpers\StringHelper;
 use MSSLib\Helpers\FunctionModuleHelper;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Helpers\MssClassHelper;
+use MSSLib\Structure\Document;
+use MSSLib\Tools\FileInfo;
 
 /**
  * Internal class that allows using functions in rule values. It is a rule parameter (MssClass).
@@ -33,12 +35,30 @@ class FunctionClass extends MssClass {
         $this->setArguments($arguments);
     }
 
+    /**
+     * Gets function's name
+     * @return string
+     */
     public function getName() {
         return $this->name;
     }
 
+    /**
+     * Gets arguments for function
+     * @return MssClass[]
+     */
     public function getArguments() {
         return $this->arguments;
+    }
+    
+    /**
+     * Gets single funciton's argument if it exists and $default otherwise
+     * @param mixed $id
+     * @param mixed $default
+     * @return MssClass
+     */
+    public function getArgument($id, $default = null) {
+        return isset($this->arguments[$id]) ? $this->arguments[$id] : $default;
     }
 
     public function setName($name) {
@@ -70,7 +90,7 @@ class FunctionClass extends MssClass {
             }
             // parse with other registered classes
             if (!$result) {
-                $result = MssClassHelper::parseMssClass($firstArg);
+                $result = MssClassHelper::parseMssClass($firstArg, array('sequence'), true);
             }
             if ($result instanceof MssClass) {
                 return [$result];
@@ -112,18 +132,48 @@ class FunctionClass extends MssClass {
         return call_user_func_array([$module, $this->getName()], $this->getArguments());
     }
 
+    protected function renderArguments(VariableScope $vars) {
+        $arguments = [];
+        switch ($this->getName()) {
+            case 'url':
+                $fileUrl = $this->getArgument(0);
+                if ($fileUrl === null) {
+                    break;
+                }
+                $fileUrl = $fileUrl->getValue($vars);
+                if ($fileUrl instanceof \MSSLib\Essentials\MssClassInterfaces\IGenericString) {
+                    $fileUrlStr = $fileUrl->getNonQuotedString();
+                    $prefix = $this->getSetting('urlFunction.autoPrefix', false);
+                    if (!filter_var($fileUrlStr, FILTER_VALIDATE_URL) && $this->getSetting('cssData.autoConvert')) {
+                        $fileUrlStr =  $prefix ? $prefix . $fileUrlStr : $fileUrlStr;
+                        $fullLocalPath = Document::makeRelativeFilePath(self::getRootObj()->getActiveDocument(), $fileUrlStr);
+                        $fileInfo = new FileInfo($fullLocalPath);
+                        if ($fileInfo->fileExists && $fileInfo->fileSize / 1024 <= $this->getSetting('cssData.sizeLimit', 0)) {
+                            $arguments[] = FileDataClass::fromFile($fullLocalPath, $fileInfo->mimeType);
+                            break;
+                        }
+                        
+                    }
+                }
+                $arguments[] = $fileUrl->toRealCss($vars);
+                
+                break;
+            default:
+                foreach ($this->getArguments() as $name=>$argument) {
+                    $arguments[] = (is_string($name) ? $name . ' = ' : '') . $argument->toRealCss($vars);
+                }
+        }
+        return  $this->getName() . '(' . implode(', ', $arguments) . ')';
+    }
+    
     public function toRealCss(VariableScope $vars) {
         $module = $this->getModuleForFunction($vars);
         if ($module=== false) {
-            /* @var $arguments MssClass[] */
-            $arguments = [];
-            foreach ($this->getArguments() as $name=>$argument) {
-                $arguments[] = (is_string($name) ? $name . ' = ' : '') . $argument->toRealCss($vars);
-            }
-            return  $this->getName() . '(' . implode(', ', $arguments) . ')';
+            return $this->renderArguments($vars);
         }
         return call_user_func_array([$module, $this->getName()], $this->getArguments());
     }
+    
         
     public static function parse(&$string) {
         $string_copy = $string;

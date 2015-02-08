@@ -24,16 +24,19 @@ use MSSLib\Essentials\HandlerCallResult;
 trait HandlerCallTrait {
     private $_handlerMap = null;
     public function __call($name, array $arguments) {
-        if (substr($name, -5) === 'Event')
+        if (substr($name, -5) === 'Event') {
             $handlerName = substr($name, 0, -5);
-        else return;
+        } else { 
+            return;
+        }
+        
         
         $class = substr(strrchr(__CLASS__, '\\'), 1);
         if ($class === false) {
             $class = __CLASS__;
         }
         
-        $result = $this->getRoot()->getHandlerFactory()->triggerEvent($class, $handlerName, $arguments, $handled);
+        $result = self::getRootObj()->getHandlerFactory()->triggerEvent($class, $handlerName, $arguments, $handled);
         
         return new HandlerCallResult($handled, $result);
         

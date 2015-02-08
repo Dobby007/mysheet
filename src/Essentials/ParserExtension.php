@@ -13,7 +13,7 @@
 namespace MSSLib\Essentials;
 
 use MSSLib\Essentials\ParserContext;
-use MSSLib\Tools\IParser;
+use MSSLib\Essentials\IParser;
 use MSSLib\Traits\RootClassTrait;
 
 /**

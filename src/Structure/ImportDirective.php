@@ -51,7 +51,7 @@ class ImportDirective extends LeafBlock {
             ) {
                 Debugger::logString('IMPORT COMPILATION: '. $url);
                 $url = str_replace('..', '', $url->getText());
-                $resultDoc = $this->getRoot()->parseImportFile($url);
+                $resultDoc = self::getRootObj()->parseImportFile($url);
                 if ($resultDoc instanceof Block) {
                     return $resultDoc->compileRealCss($vars);
                 }

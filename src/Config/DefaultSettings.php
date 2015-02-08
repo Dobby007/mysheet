@@ -35,6 +35,13 @@ return [
         'paths' => [MySheet::WORKDIR . MSN\DS . 'Etc' . MSN\DS . 'MssTemplates'],
         'includeError' => 'exception'
     ],
+    'cssData' => [
+        'autoConvert' => true,
+        'sizeLimit' => 20
+    ],
+    'urlFunction' => [
+        'autoPrefix' => false
+    ],
     'parser' => '\MSSLib\Tools\BlockParser',
     'language' => 'en_us'
 ];

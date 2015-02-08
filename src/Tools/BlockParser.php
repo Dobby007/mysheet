@@ -2,7 +2,7 @@
 
 namespace MSSLib\Tools;
 
-use MSSLib\Tools\IParser;
+use MSSLib\Essentials\IParser;
 use MSSLib\Structure\Block;
 use MSSLib\Structure\NodeBlock;
 use MSSLib\Structure\Document;

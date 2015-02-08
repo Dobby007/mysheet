@@ -75,7 +75,7 @@ abstract class Block {
     public function toRealCss(VariableScope $vars = null) {
         $autoload_enabled = self::getRootObj()->getSettings()->get('system.internal_autoload', true);
         if ($autoload_enabled === true) {
-            $this->getRoot()->getAutoload()->registerAutoload();
+            self::getRootObj()->getAutoload()->registerAutoload();
         }
         $this->cssRenderingStartedEvent($this);
         

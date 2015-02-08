@@ -20,9 +20,42 @@ use MSSLib\Essentials\BlockInterfaces\IMayContainRuleset;
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class Document extends NodeBlock implements IMayContainRuleset {
+    protected $_docFilePath;
+    
     public function __construct() {
         parent::__construct(null);
     }
+    
+    public function hasFilePath() {
+        return !empty($this->_docFilePath);
+    }
+    
+    public function getDocFilePath() {
+        return $this->_docFilePath;
+    }
+
+    public function setDocFilePath($docFilePath) {
+        $this->_docFilePath = $docFilePath;
+        return $this;
+    }
+    
+    public static function makeRelativeFilePath($doc, $relativeFilePath) {
+        $basedir = null;
+        if ($doc instanceof Document && $doc->hasFilePath()) {
+            $basedir = dirname($doc->getDocFilePath());
+        }
+        if (!$basedir) {
+            $basedir = self::getRootObj()->getActiveDirectory();
+        }
+            
+        return $basedir ? $basedir . DIRECTORY_SEPARATOR . $relativeFilePath : $relativeFilePath;
+    }
+    
+    protected function compileRealCss(\MSSLib\Essentials\VariableScope $vars) {
+        self::getRootObj()->setActiveDocument($this);
+        return parent::compileRealCss($vars);
+    }
+
     
 
 }

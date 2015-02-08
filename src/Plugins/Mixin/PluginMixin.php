@@ -15,7 +15,6 @@ namespace MSSLib\Plugins\Mixin;
 use MSSLib\Plugins\PluginBase;
 use MSSLib\Structure\Declaration;
 use MSSLib\Essentials\VariableScope;
-use MSSLib\Essentials\TypeClassReference;
 
 /**
  * Description of Mixin
@@ -27,11 +26,13 @@ class PluginMixin extends PluginBase {
     
     
     public function init() {
-        $this->getRoot()->getHandlerFactory()->registerHandler('Declaration', 'renderCss', [$this, 'mixinHandler']);
-        $this->getRoot()->getParser()->addParserExtension(new MixinParserExtension($this));
-        $this->getRoot()->getHandlerFactory()->registerHandler('Block', 'cssRenderingStarted', function() {
-            $this->cleanMixins();
-        });
+        self::getRootObj()->getHandlerFactory()->registerHandler('Declaration', 'renderCss', [$this, 'mixinHandler'])
+                          ->registerHandler('Block', 'cssRenderingStarted', 
+                                function() {
+                                    $this->cleanMixins();
+                                }
+        );
+        self::getRootObj()->getParser()->addParserExtension(new MixinParserExtension($this));
     }
     
     public function registerMixin(Mixin $mixin) {

@@ -14,6 +14,7 @@ namespace MSSLib\EmbeddedClasses;
 
 use MSSLib\Essentials\MssClass;
 use MSSLib\Essentials\VariableScope;
+use MSSLib\Essentials\MssClassInterfaces\IGenericString;
 
 /**
  * Class that represents all other rule parameters (MssClass) that do not match requirements of any other rule parameter (MssClass).
@@ -22,7 +23,7 @@ use MSSLib\Essentials\VariableScope;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class NonQuotedStringClass extends MssClass {
+class NonQuotedStringClass extends MssClass implements IGenericString {
     protected $text;
     
     public function __construct($text) {
@@ -37,7 +38,16 @@ class NonQuotedStringClass extends MssClass {
     public function setText($text) {
         $this->text = $text;
     }
-        
+    
+    public function getNonQuotedString() {
+        return $this->getText();
+    }
+
+    public function getQuotedString() {
+        return '"' . str_replace('"', '\"', $this->getText()) . '"';
+    }
+
+    
     public function toRealCss(VariableScope $vars) {
         return $this->getText();
     }

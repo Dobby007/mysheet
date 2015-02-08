@@ -14,6 +14,8 @@ namespace MSSLib\EmbeddedClasses;
 
 use MSSLib\Essentials\MssClass;
 use MSSLib\Essentials\VariableScope;
+use MSSLib\Tools\FileInfo;
+use MSSLib\Tools\Converters\DataEncoder;
 
 /**
  * Class that represents a file data embedded right into CSS. E.g. data:image/png;base64,ABCDE=-
@@ -21,11 +23,14 @@ use MSSLib\Essentials\VariableScope;
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class FileDataClass extends MssClass {
+    const DEFAULT_CHARSET = 'US-ASCII';
+    
     protected $_mime;
     protected $_data;
     protected $_encodeMethod;
+    protected $_charset;
     
-    public function __construct($mime, $data, $encodeMethod = 'base64') {
+    public function __construct($mime, $data, $encodeMethod = 'base64', $charset = self::DEFAULT_CHARSET) {
         $this->setMime($mime);
         $this->setEncodeMethod($encodeMethod);
         $this->setData($data);
@@ -38,18 +43,22 @@ class FileDataClass extends MssClass {
     public function getData() {
         return $this->_data;
     }
+    
+    public function getCharset() {
+        return $this->_charset;
+    }
 
     public function getEncodeMethod() {
         return $this->_encodeMethod;
     }
 
     public function setMime($mime) {
-        $this->_mime = $mime;
+        $this->_mime = trim($mime);
         return $this;
     }
 
     public function setData($data) {
-        $this->_data = $data;
+        $this->_data = trim($data);
         return $this;
     }
 
@@ -58,12 +67,27 @@ class FileDataClass extends MssClass {
         if ($encodeMethod !== 'base64') {
             $encodeMethod = 'base64';
         }
-        $this->_encodeMethod = $encodeMethod;
+        $this->_encodeMethod = trim($encodeMethod);
+        return $this;
+    }
+
+    public function setCharset($charset) {
+        $this->_charset = $charset;
         return $this;
     }
     
     public function toRealCss(VariableScope $vars) {
         return sprintf('data:%s;%s,%s', $this->getMime(), $this->getEncodeMethod(), $this->getData());
+    }
+    
+    public static function fromFile($filepath, $forcedMimeType = false) {
+        $targetMimeType = $forcedMimeType;
+        if (!$targetMimeType) {
+            $fileInfo = new FileInfo($filepath);
+            $targetMimeType = $fileInfo->mimeType;
+        }
+        $encodedContent = DataEncoder::b64EncodeFile($filepath);
+        return new FileDataClass($targetMimeType, $encodedContent);
     }
         
     public static function parse(&$string) {

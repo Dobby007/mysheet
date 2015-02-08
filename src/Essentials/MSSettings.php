@@ -10,7 +10,7 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-namespace MSSLib\Tools;
+namespace MSSLib\Essentials;
 
 use MSSLib as MS;
 use MSSLib\Traits\MagicPropsTrait;
@@ -38,7 +38,7 @@ use MSSLib\Helpers\SettingsHelper;
  * @method this setLanguage(string $lang) Sets the language that is used in MySheet
  * @method string getLanguage() Gets the language that is used in MySheet
  */
-class MSSettings
+class MSSettings implements IMSSettings
 {
     use MagicPropsTrait,
         MagicMethodsTrait;                                                                                                                                                               // :-)
@@ -51,6 +51,8 @@ class MSSettings
     public $language;
     public $system;
     public $dependencies;
+    public $cssData;
+    public $urlFunction;
     private $_mssClasses;
     private $_parserExtensions;
     private $_functionModules;

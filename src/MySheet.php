@@ -20,19 +20,21 @@ define('MSSNS', __NAMESPACE__);
 define(MSSNS . '\WORKDIR', __DIR__ . DS);
 
 
+require_once WORKDIR . DS . 'Essentials' . DS . 'IMSSettings' . EXT;
 require_once WORKDIR . DS . 'Essentials' . DS . 'Autoload' . EXT;
 require_once WORKDIR . DS . 'Tools' . DS . 'Debugger' . EXT;
 
 use MSSLib\Essentials\Autoload;
 use MSSLib\Essentials\HandlerFactory;
-use MSSLib\Tools\IParser;
-use MSSLib\Tools\MSSettings;
+use MSSLib\Essentials\IParser;
+use MSSLib\Essentials\IMSSettings;
+use MSSLib\Essentials\MSSettings;
 use MSSLib\Essentials\FuncListManager;
 use MSSLib\Essentials\VariableScope;
-use MSSLib\Helpers\StringHelper;
 use MSSLib\Tools\I18N;
 use MSSLib\Error\InputException;
 use MSSLib\Essentials\TypeClassReference;
+use MSSLib\Structure\Document;
 
 /**
  * Description of MySheet
@@ -51,16 +53,18 @@ class MySheet
     public $cacher = null;
 
     /** @var Autoload */
-    private $autoload;
-    private $hf;
-    private $flm;
-    private $vs;
+    private $_autoload;
+    private $_hf;
+    private $_flm;
+    private $_vs;
+    private $_activeDocument;
+    private $_activeDirectory;
     protected $settings;
     protected $plugins = array();
     protected $_parsedFilePath = null;
     
     private function __construct() {
-        $this->autoload = new Autoload();
+        $this->_autoload = new Autoload();
     }
 
     public static function Instance() {
@@ -71,9 +75,9 @@ class MySheet
         return $instance;
     }
 
-    public function init(MSSettings $settings = null) {
+    public function init(IMSSettings $settings = null) {
         try {
-            $this->autoload->registerAutoload();
+            $this->_autoload->registerAutoload();
             if (!$settings) {
                 $settings = new MSSettings();
             }
@@ -87,12 +91,12 @@ class MySheet
             } else {
                 $this->parser = $parserObj;
             }
-            $this->hf = new HandlerFactory();
-            $this->vs = new VariableScope();
+            $this->_hf = new HandlerFactory();
+            $this->_vs = new VariableScope();
             $this->getHandlerFactory()->registerHandler('Block', 'cssRenderingEnded', function () {
                 $this->getVars()->clean();
             });
-            $this->flm = new FuncListManager();
+            $this->_flm = new FuncListManager();
             $this->initMssClasses();
             $this->initExtensions();
             $this->initOperators();
@@ -205,7 +209,7 @@ class MySheet
     public function parseCode($code) {
         $autoload_enabled = $this->getSettings()->get('system.internal_autoload', false);
         if ($autoload_enabled) {
-            $this->autoload->registerAutoload();
+            $this->_autoload->registerAutoload();
         }
 
         $this->parser->setCode($code);
@@ -263,13 +267,13 @@ class MySheet
     }
 
     /**
-     * @return MSSettings Instance of MSSettings class
+     * @return IMSSettings Instance of MSSettings class
      */
     public function getSettings() {
         return $this->settings;
     }
 
-    public function setSettings(MSSettings $settings) {
+    public function setSettings(IMSSettings $settings) {
         $this->settings = $settings;
     }
 
@@ -279,7 +283,7 @@ class MySheet
      * @return HandlerFactory Instance of HandlerFactory class
      */
     public function getHandlerFactory() {
-        return $this->hf;
+        return $this->_hf;
     }
 
     /**
@@ -293,21 +297,47 @@ class MySheet
      * @return Autoload Instance of Autoload class
      */
     public function getAutoload() {
-        return $this->autoload;
+        return $this->_autoload;
     }
 
     /**
      * @return FuncListManager Instance of FuncListManager class
      */
     public function getListManager() {
-        return $this->flm;
+        return $this->_flm;
     }
 
     /**
      * @return VariableScope
      */
     public function getVars() {
-        return $this->vs;
+        return $this->_vs;
+    }
+    
+    /**
+     * Gets document currently being proccessed
+     * @return Document
+     */
+    public function getActiveDocument() {
+        return $this->_activeDocument;
+    }
+
+    /**
+     * Sets document currently being proccessed
+     * @return Document
+     */
+    public function setActiveDocument(Document $activeDocument = null) {
+        $this->_activeDocument = $activeDocument;
+        return $this;
+    }
+    
+    public function getActiveDirectory() {
+        return $this->_activeDirectory;
+    }
+
+    public function setActiveDirectory($activeDirectory) {
+        $this->_activeDirectory = $activeDirectory;
+        return $this;
     }
     
     public static function setDebugMode($debugMode) {

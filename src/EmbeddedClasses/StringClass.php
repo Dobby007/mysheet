@@ -14,6 +14,7 @@ namespace MSSLib\EmbeddedClasses;
 
 use MSSLib\Essentials\MssClass;
 use MSSLib\Essentials\VariableScope;
+use MSSLib\Essentials\MssClassInterfaces\IGenericString;
 
 /**
  * Class that represents a string in rule value (RuleValue). It is a rule parameter (MssClass).
@@ -21,7 +22,7 @@ use MSSLib\Essentials\VariableScope;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class StringClass extends MssClass {
+class StringClass extends MssClass implements IGenericString {
     protected $text;
     
     public function __construct($text) {
@@ -39,6 +40,14 @@ class StringClass extends MssClass {
 
     public function setText($text) {
         $this->text = $text;
+    }
+    
+    public function getNonQuotedString() {
+        return $this->getText();
+    }
+
+    public function getQuotedString() {
+        return $this->getQuotedText();
     }
 
     public function toRealCss(VariableScope $vars) {

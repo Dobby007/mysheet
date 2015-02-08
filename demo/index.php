@@ -7,13 +7,14 @@ set_time_limit(4);
 require_once '../src/MySheet.php';
 
 use MSSLib\MySheet;
-use MSSLib\Tools\MSSettings;
+use MSSLib\Essentials\MSSettings;
 
 MySheet::setDebugMode(true);
 
 
 
 $mysheet = MySheet::Instance();
+$mysheet->setActiveDirectory(realpath('./'));
 $mysheet->getAutoload()->registerAutoload();
 $settings = new MSSettings();
 $settings->setDependencies(['../../php_libs/nicmart-tree/manual-init.php']);
@@ -306,7 +307,10 @@ selector
     image url(my/image.png)
     font italic/glamour -1
     expression (4+3)
-    background url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQ5JREFUeNpi/P//PwMlgImBQjDwBrCgCxj1XGfg4OZmYGNnj2FgZCxg+P9/wq+fP5f8+PqV4VyJJnEuAAZsDFBTQZS7mDGIBvGJ9gJI8c9v3wri/OWMX/xgYIj2kzMG8XEZgmHAz+/fbb9/+cIwcdbps4+/MzBMmX36LIgPEicqDP7/+5f+++dPht+/fp55+JWB4dvnTwysbOwmrOzsxAXi148fGUA2gsDrn0ADPn0GsoD4zjYgbYo1wFAw2FRxLQbuyCVndA7+/w+iQXxsakGYBZuz/ry8pvH/8YVbN/q+Mfx/e+vW35fXjIDC14D4B7paRvS8wMjICKJEgJgN2aEgHwHV/iFowNDLCwABBgC9qJ54WqC2JwAAAABJRU5ErkJggg==)
+.testimage
+    width 80px
+    height 80px
+    background url(examples/images/testimage.png)
 TEXT;
 
 $result = $mysheet->parseCode($code12);
@@ -321,8 +325,14 @@ foreach ($resultRulesets as $resultRuleset) {
 
 //var_dump($result);
 
-echo "\n\n:::COMPILED:::\n\n" . $result->toRealCss();
+echo "\n\n:::COMPILED:::\n\n";
 
+$compiledCode = $result->toRealCss();
+echo $compiledCode;
 //var_dump($result);
 ?>
 </pre>
+<style><?php echo $compiledCode; ?></style>
+
+
+<div class="testimage"></div>

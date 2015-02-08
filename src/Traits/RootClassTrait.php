@@ -13,7 +13,7 @@
 namespace MSSLib\Traits;
 
 use MSSLib\MySheet;
-use MSSLib\Tools\MSSettings;
+use MSSLib\Essentials\IMSSettings;
 
 /**
  * Description of RootClassTrait
@@ -25,29 +25,22 @@ trait RootClassTrait {
     /**
      * @return MySheet Instance of MySheet class
      */
-    public function getRoot() {
-        return MySheet::Instance();
-    }
-    
-    /**
-     * @return MySheet Instance of MySheet class
-     */
     public static function getRootObj() {
         return MySheet::Instance();
     }
     
     /**
-     * @return MSSettings
+     * @return IMSSettings
      */
     public function getSettings() {
-        return $this->getRoot()->getSettings();
+        return self::getRootObj()->getSettings();
     }
     
     /**
      * @return mixed
      */
     public function getSetting($name, $default = null) {
-        return $this->getRoot()->getSettings()->get($name, $default);
+        return self::getRootObj()->getSettings()->get($name, $default);
     }
     
 }

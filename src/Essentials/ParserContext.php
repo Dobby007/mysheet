@@ -12,7 +12,7 @@
 
 namespace MSSLib\Essentials;
 
-use MSSLib\Tools\IParser;
+use MSSLib\Essentials\IParser;
 use MSSLib\Essentials\ParserExtension;
 use MSSLib\Essentials\SourceClosure;
 /**
