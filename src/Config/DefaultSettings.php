@@ -35,7 +35,7 @@ return [
         'paths' => [MySheet::WORKDIR . MSN\DS . 'Etc' . MSN\DS . 'MssTemplates'],
         'includeError' => 'exception'
     ],
-    'cssData' => [
+    'dataUrl' => [
         'autoConvert' => true,
         'sizeLimit' => 20
     ],

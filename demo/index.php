@@ -310,7 +310,9 @@ selector
 .testimage
     width 80px
     height 80px
+    background-image url(examples/images/logo.png)
     background url(examples/images/testimage.png)
+    ~background-image url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQ5JREFUeNpi/P//PwMlgImBQjDwBrCgCxj1XGfg4OZmYGNnj2FgZCxg+P9/wq+fP5f8+PqV4VyJJnEuAAZsDFBTQZS7mDGIBvGJ9gJI8c9v3wri/OWMX/xgYIj2kzMG8XEZgmHAz+/fbb9/+cIwcdbps4+/MzBMmX36LIgPEicqDP7/+5f+++dPht+/fp55+JWB4dvnTwysbOwmrOzsxAXi148fGUA2gsDrn0ADPn0GsoD4zjYgbYo1wFAw2FRxLQbuyCVndA7+/w+iQXxsakGYBZuz/ry8pvH/8YVbN/q+Mfx/e+vW35fXjIDC14D4B7paRvS8wMjICKJEgJgN2aEgHwHV/iFowNDLCwABBgC9qJ54WqC2JwAAAABJRU5ErkJggg==)
 TEXT;
 
 $result = $mysheet->parseCode($code12);
@@ -332,7 +334,10 @@ echo $compiledCode;
 //var_dump($result);
 ?>
 </pre>
-<style><?php echo $compiledCode; ?></style>
+<style>
+    <?php echo $compiledCode; ?>
+    
+</style>
 
 
 <div class="testimage"></div>

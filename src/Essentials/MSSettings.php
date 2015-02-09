@@ -51,7 +51,7 @@ class MSSettings implements IMSSettings
     public $language;
     public $system;
     public $dependencies;
-    public $cssData;
+    public $dataUrl;
     public $urlFunction;
     private $_mssClasses;
     private $_parserExtensions;

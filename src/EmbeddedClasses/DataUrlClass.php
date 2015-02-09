@@ -22,8 +22,10 @@ use MSSLib\Tools\Converters\DataEncoder;
   *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class FileDataClass extends MssClass {
+class DataUrlClass extends MssClass {
     const DEFAULT_CHARSET = 'US-ASCII';
+    const DEFAULT_MIME = 'text/plain';
+    const DEFAULT_ENCODE_METHOD = 'text/plain';
     
     protected $_mime;
     protected $_data;
@@ -34,6 +36,7 @@ class FileDataClass extends MssClass {
         $this->setMime($mime);
         $this->setEncodeMethod($encodeMethod);
         $this->setData($data);
+        $this->setCharset($charset);
     }
 
     public function getMime() {
@@ -53,7 +56,9 @@ class FileDataClass extends MssClass {
     }
 
     public function setMime($mime) {
-        $this->_mime = trim($mime);
+        $mime = trim($mime);
+        $this->_mime = empty($mime) ? self::DEFAULT_MIME : $mime;
+        
         return $this;
     }
 
@@ -63,16 +68,14 @@ class FileDataClass extends MssClass {
     }
 
     public function setEncodeMethod($encodeMethod = 'base64') {
-        // we can't yet work with anything else other than base64
-        if ($encodeMethod !== 'base64') {
-            $encodeMethod = 'base64';
-        }
-        $this->_encodeMethod = trim($encodeMethod);
+        $encodeMethod = trim($encodeMethod);
+        $this->_encodeMethod = empty($encodeMethod) ? self::DEFAULT_ENCODE_METHOD : $encodeMethod;
         return $this;
     }
 
     public function setCharset($charset) {
-        $this->_charset = $charset;
+        $charset = trim($charset);
+        $this->_charset = empty($charset) ? self::DEFAULT_CHARSET : $charset;
         return $this;
     }
     
@@ -87,7 +90,7 @@ class FileDataClass extends MssClass {
             $targetMimeType = $fileInfo->mimeType;
         }
         $encodedContent = DataEncoder::b64EncodeFile($filepath);
-        return new FileDataClass($targetMimeType, $encodedContent);
+        return new DataUrlClass($targetMimeType, $encodedContent);
     }
         
     public static function parse(&$string) {
@@ -95,9 +98,9 @@ class FileDataClass extends MssClass {
             return false;
         }
         
-        if (preg_match('/^data:([a-z0-9-_.+\/]+);([a-z0-9]+),(\S+)/i', $string, $matches)) {
+        if (preg_match('/^data:([a-z0-9-_.+\/]+)(?:;charset=(.+))?(?:;([a-z0-9]+))?,(\S+)/i', $string, $matches)) {
             parent::trimStringBy($string, strlen($matches[0]));
-            return new self($matches[1], $matches[3], $matches[2]);
+            return new self($matches[1], $matches[4], $matches[3], $matches[2]);
         }
         return false;
     }

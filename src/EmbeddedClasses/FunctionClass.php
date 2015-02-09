@@ -86,7 +86,7 @@ class FunctionClass extends MssClass {
         if (count($arguments) >= 1) {
             $firstArg = $arguments[0];
             if (!($firstArg instanceof MssClass)) {
-                $result = FileDataClass::parse($firstArg);
+                $result = DataUrlClass::parse($firstArg);
             }
             // parse with other registered classes
             if (!$result) {
@@ -144,12 +144,12 @@ class FunctionClass extends MssClass {
                 if ($fileUrl instanceof \MSSLib\Essentials\MssClassInterfaces\IGenericString) {
                     $fileUrlStr = $fileUrl->getNonQuotedString();
                     $prefix = $this->getSetting('urlFunction.autoPrefix', false);
-                    if (!filter_var($fileUrlStr, FILTER_VALIDATE_URL) && $this->getSetting('cssData.autoConvert')) {
+                    if (!filter_var($fileUrlStr, FILTER_VALIDATE_URL) && $this->getSetting('dataUrl.autoConvert')) {
                         $fileUrlStr =  $prefix ? $prefix . $fileUrlStr : $fileUrlStr;
                         $fullLocalPath = Document::makeRelativeFilePath(self::getRootObj()->getActiveDocument(), $fileUrlStr);
                         $fileInfo = new FileInfo($fullLocalPath);
-                        if ($fileInfo->fileExists && $fileInfo->fileSize / 1024 <= $this->getSetting('cssData.sizeLimit', 0)) {
-                            $arguments[] = FileDataClass::fromFile($fullLocalPath, $fileInfo->mimeType);
+                        if ($fileInfo->fileExists && $fileInfo->fileSize / 1024 <= $this->getSetting('dataUrl.sizeLimit', 0)) {
+                            $arguments[] = DataUrlClass::fromFile($fullLocalPath, $fileInfo->mimeType);
                             break;
                         }
                         

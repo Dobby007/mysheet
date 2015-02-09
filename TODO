@@ -22,6 +22,10 @@ Glossary:
 [-] Prefixes for the background-images
 [-] Embed internal mixins
 [-] Implement searching of all URL functions
+[-] Implement "raw" import of files without parsing
+[-] Implement parametrization of importted files in the code
+[-] Implement autoprefixing of CSS rules and its' values
+
 
 ============================================
 
