@@ -76,7 +76,7 @@ class BlockParser implements IParser
     }
 
     protected function removeComments() {
-        $this->processedCode = preg_replace(['#///[^\n]*#', '#/\*.*\*/#Us'], '', $this->processedCode);
+        $this->processedCode = preg_replace([/*'#///[^\n]*#',*/ '#/\*.*\*/#Us'], '', $this->processedCode);
     }
     
     protected function divideIntoLines() {

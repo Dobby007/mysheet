@@ -69,11 +69,14 @@ class SequenceClass extends MssClass {
     protected static function splitIntoList(&$string, &$metDelimiter) {
         $stringCopy = $string;
         $list = StringHelper::parseSplittedString($stringCopy, [',', '/'], true, $metDelimiter);
-        
-        if (count($list) > 1) {
+        $filteredList = array_filter($list, function ($item) {
+            return !empty($item);
+        });
+        unset($list);
+        if (count($filteredList) > 1) {
 //            var_dump('Source String: ', $string, 'Comma List: ', $commaList);
             $string = $stringCopy;
-            return $list;
+            return $filteredList;
         }
         
         return false;

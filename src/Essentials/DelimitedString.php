@@ -13,6 +13,7 @@
 namespace MSSLib\Essentials;
 
 use MSSLib\Helpers\StringHelper;
+use MSSLib\Helpers\ArrayHelper;
 
 /**
  * Description of SeparatedString
@@ -33,7 +34,7 @@ class DelimitedString {
     }
 
     public function setList(array $list) {
-        $this->list = array_map(array($this, 'processItem'), $list);
+        $this->list = ArrayHelper::map(array($this, 'processItem'), $list);
     }
     
     public function appendItem($item) {
@@ -52,7 +53,7 @@ class DelimitedString {
         $this->processCallback = $processCallback;
     }
     
-    protected function processItem($item) {
+    public function processItem($item) {
         if (is_callable($this->processCallback)) {
             return call_user_func($this->processCallback, $item);
         }

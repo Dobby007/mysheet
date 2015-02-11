@@ -143,7 +143,6 @@ class MathExprClass extends MssClass {
     }
        
     public static function parse(&$string) {
-        
         if (self::$registeredOperators === null) {
             self::$registeredOperators = self::getRootObj()->getListManager()->getList('Operator')->map(function (\MSSLib\Essentials\TypeClassReference $operatorClassRef) {
                 $class = $operatorClassRef->getFullClass();
@@ -154,6 +153,7 @@ class MathExprClass extends MssClass {
         // it's very likely that string contains mathematical expression if it contains operators
         // also one-operand expression is also valid MathExpr
         if (
+                strlen($string) > 1 &&
                 $string[0] === '(' || 
                 preg_match('/[' . implode('\\', self::$registeredOperators) . ']/', $string, $matches)
         ) {
