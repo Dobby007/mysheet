@@ -81,10 +81,17 @@ class Ruleset extends NodeBlock implements IMayContainRuleset {
         }
     }
 
+    /**
+     * Adds an array of selectors to ruleset
+     * @param string[] $selectors
+     * @return int Number of added selectors
+     */
     public function addSelectors(array $selectors) {
-        foreach ($selectors as $selector) {
+        $addSelectors = ArrayHelper::filterEmptyStrings($selectors);
+        foreach ($addSelectors as $selector) {
             $this->addSelector($selector);
         }
+        return count($addSelectors);
     }
     
     protected function parseSelectors() {

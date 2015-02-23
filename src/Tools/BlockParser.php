@@ -122,7 +122,6 @@ class BlockParser implements IParser
             $i = $offset;
             $handled = false;
             
-            Debugger::logString($lineLevel . ': ' . $line);
             $curBlock = $this->findAppropriateClosure($curBlock, $lineLevel );
             while ($i < $len) {
                 if ($line[$i] === '{') {
@@ -199,12 +198,13 @@ class BlockParser implements IParser
                 }
             }
             
+            $memento = $context->createMemento();
             foreach ($this->extensions as $extension) {
                 $result = $this->tryParse($context, $extension);
                 if ($result !== false) {
                     break;
                 }
-                $context->restoreCursorState();
+                $context->setMemento($memento);
             }
             
             if (
@@ -218,6 +218,7 @@ class BlockParser implements IParser
                 throw new ParseException(null, 'PARENT_NOT_FOUND', [$context->curLine()->getLine()]);
             }
             
+            $context->setUpperClosureLimit(null);
             //if current source closure has nested closures then we can guarantee that the next line is deeper than the current one
             if ($context->curClosure()->countChildren() > 0 && $result instanceof NodeBlock) {
                 $curBlock = $result;
@@ -228,11 +229,9 @@ class BlockParser implements IParser
     }
     
     protected function tryParse(ParserContext $context, ParserExtension $extension) {
+        $context->setCurrentClosureAsUpperLimit();
         $result = $context->parse($extension);
-        if (!$result) {
-            return false;
-        }
-        return $result;
+        return $result ?: false;
     }
 
     protected function getParentClosureForLevel(SourceClosure $block, $level) {

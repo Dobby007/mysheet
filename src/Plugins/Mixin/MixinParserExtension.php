@@ -52,7 +52,6 @@ class MixinParserExtension extends ParserExtension {
                 $mixin->addDeclarations($curLine->getLine());
             } else break;
         }
-        $context->prevLine(true);
         return $mixin;
     }
 }

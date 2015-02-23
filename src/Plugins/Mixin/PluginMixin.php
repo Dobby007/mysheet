@@ -26,7 +26,8 @@ class PluginMixin extends PluginBase {
     
     
     public function init() {
-        self::getRootObj()->getHandlerFactory()->registerHandler('Declaration', 'renderCss', [$this, 'mixinHandler'])
+        self::getRootObj()->getHandlerFactory()
+                          ->registerHandler('Declaration', 'renderCss', [$this, 'mixinHandler'])
                           ->registerHandler('Block', 'cssRenderingStarted', 
                                 function() {
                                     $this->cleanMixins();
@@ -52,7 +53,7 @@ class PluginMixin extends PluginBase {
         $this->mixins = [];
     }
     
-    public function mixinHandler(&$handled, Declaration $rule, VariableScope $userRuleScope = null) {
+    public function mixinHandler(&$handled, Declaration $rule, VariableScope $userRuleScope) {
         /* @var $mixin Mixin */
         $mixin = $this->getMixin($rule->getRuleName());
         if ($mixin) {

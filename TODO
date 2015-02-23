@@ -25,7 +25,7 @@ Glossary:
 [-] Implement "raw" import of files without parsing
 [-] Implement parametrization of importted files in the code
 [-] Implement autoprefixing of CSS rules and its' values
-
+[-] Enhance support of minimizing files on the fly (make better recognizing of relative paths)
 
 ============================================
 

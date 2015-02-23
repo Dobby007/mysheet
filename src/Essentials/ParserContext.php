@@ -15,6 +15,8 @@ namespace MSSLib\Essentials;
 use MSSLib\Essentials\IParser;
 use MSSLib\Essentials\ParserExtension;
 use MSSLib\Essentials\SourceClosure;
+use MSSLib\Essentials\ParserContextMemento;
+
 /**
  * Description of ParserContext
  *
@@ -24,27 +26,35 @@ class ParserContext {
     /**
      * @var IParser 
      */
-    private $parser;
+    private $_parser;
     
     /**
      * @var int
      */
-    private $lineIndex;
+    private $_lineIndex;
     
     /**
      * @var SourceClosure
      */
-    private $sourceClosure;
+    private $_sourceClosure;
     
     /**
      * @var SourceClosure
      */
-    private $rootSourceClosure;
+    private $_upperClosureLimit;
+    
+    /**
+     * @var SourceClosure
+     */
+    private $_rootSourceClosure;
+    
+    private $_savedCursor = null;
+    
     
     public function __construct(IParser $parser, SourceClosure $rootSourceClosure) {
-        $this->rootSourceClosure = $rootSourceClosure;
+        $this->_rootSourceClosure = $rootSourceClosure;
         $this->setParser($parser);
-        $this->setCursor($this->rootSourceClosure->getChildClosure(0), 0);
+        $this->setCursor($this->_rootSourceClosure->getChildClosure(0), 0);
     }
  
     /**
@@ -52,18 +62,18 @@ class ParserContext {
      * @return IParser
      */
     public function getParser() {
-        return $this->parser;
+        return $this->_parser;
     }
     
     public function setParser(IParser $parser) {
-        $this->parser = $parser;
+        $this->_parser = $parser;
     }
     
-    public function nextLine($jump = false) {
+    public function nextLine($jumpIn = false, $jumpOut = false) {
         if ($this->getLine($this->getCurrentLineIndex() + 1)) {
             $this->setCurrentLineIndex($this->getCurrentLineIndex() + 1);
             return $this->curLine();
-        } else if ($jump === true) {
+        } else if ($jumpIn === true) {
             do {
                 if (!$this->goToClosure(1)) {
                     return false;
@@ -86,7 +96,6 @@ class ParserContext {
                     return false;
                 }
             } while (!$this->getLine(0));
-//            echo($this->curClosure());
             $this->setCurrentLineIndex(-1);
             return $this->curLine();
         }
@@ -95,7 +104,7 @@ class ParserContext {
     
     public function curLine() {
         if ($this->curClosure()) {
-            return $this->curClosure()->getLine($this->lineIndex);
+            return $this->curClosure()->getLine($this->_lineIndex);
         }
         return false;
     }   
@@ -105,17 +114,17 @@ class ParserContext {
      * @return SourceClosure
      */
     public function curClosure() {
-        return $this->sourceClosure;
+        return $this->_sourceClosure;
     }
     
     public function goToClosure($offset) {
         $myClosure = $this->curClosure();
         while ($offset !== 0) {
             if ($offset > 0) {
-                $myClosure = $myClosure->getNextNeighbour();
+                $myClosure = $myClosure->getNextNeighbour($this->getUpperClosureLimit());
                 $offset--;
             } else {
-                $myClosure = $myClosure->getPrevNeighbour();
+                $myClosure = $myClosure->getPrevNeighbour($this->getUpperClosureLimit());
                 $offset++;
             }
         }
@@ -135,11 +144,11 @@ class ParserContext {
     }
     
     public function getCurrentLineIndex() {
-        return $this->lineIndex;
+        return $this->_lineIndex;
     }
     
     public function setCursor(SourceClosure $closure, $lineIndex) {
-        $this->sourceClosure = $closure;
+        $this->_sourceClosure = $closure;
         $this->setCurrentLineIndex($lineIndex);
     }
     
@@ -153,12 +162,30 @@ class ParserContext {
         }
         
         if ($lineIndex >= 0 && $lineIndex < $this->curClosure()->countLines()) {
-            $this->lineIndex = $lineIndex;
+            $this->_lineIndex = $lineIndex;
         }
         
         return false;
     }
     
+    public function getUpperClosureLimit() {
+        return $this->_upperClosureLimit;
+    }
+
+    public function setUpperClosureLimit(SourceClosure $upperClosureLimit = null) {
+        $this->_upperClosureLimit = $upperClosureLimit;
+        return $this;
+    }
+    
+    public function setCurrentClosureAsUpperLimit() {
+        return $this->setUpperClosureLimit($this->curClosure());
+    }
+        
+    /**
+     * 
+     * @param int $lineIndex
+     * @return false|SourceLine
+     */
     public function getLine($lineIndex) {
         if (!$this->curClosure()) {
             return false;
@@ -179,17 +206,25 @@ class ParserContext {
         return $extension->parse();
     }
     
-    private $savedCursor = null;
-    
-    public function saveCursorState() {
-        $this->savedCursor = [$this->curClosure(), $this->getCurrentLineIndex()];
+    /**
+     * Saves state into new Memento object and returns it
+     * @return ParserContextMemento
+     */
+    public function createMemento() {
+        $memento = new ParserContextMemento();
+        $memento->closure = $this->curClosure();
+        $memento->lineIndex = $this->getCurrentLineIndex();
+        $memento->upperClosureLimit = $this->getUpperClosureLimit();
+        return $memento;
     }
-
-    public function restoreCursorState() {
-        if ($this->savedCursor !== null) {
-            $this->setCursor($this->savedCursor[0], $this->savedCursor[1]);
-            return true;
-        }
-        return false;
+    
+    /**
+     * Restores state from Memento object
+     * @param ParserContextMemento $memento
+     */
+    public function setMemento(ParserContextMemento $memento) {
+        $memento->closure = $memento->closure;
+        $memento->lineIndex = $memento->lineIndex;
+        $memento->upperClosureLimit = $memento->upperClosureLimit;
     }
 }

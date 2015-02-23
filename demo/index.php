@@ -320,27 +320,36 @@ html
     width 50px /// this property is no longer usable
 TEXT;
 
-$result = $mysheet->parseCode($code1);
-//$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
+$result = null;
+try {
+    //$result = $mysheet->parseCode($code1);
+    //$result = $mysheet->parseFile(realpath('examples/bootstrap/bootstrap.css'));
+    $result = $mysheet->parseFile(realpath('examples/exm3/exam3.mss'));
+    //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
 
-$resultRulesets = \MSSLib\Tools\Finders\RulesetFinder::querySelectorAll('.wrapper, .header', $result);
 
-foreach ($resultRulesets as $resultRuleset) {
-    var_dump($resultRuleset ? $resultRuleset->toRealCss() : 'not found!');
+    $resultRulesets = \MSSLib\Tools\Finders\RulesetFinder::querySelectorAll('.wrapper, .header', $result);
+
+    foreach ($resultRulesets as $resultRuleset) {
+        var_dump($resultRuleset ? $resultRuleset->toRealCss() : 'not found!');
+    }
+
+
+    //var_dump($result);
+
+
+    $compiledCode = $result->toRealCss();
+    echo "\n\n:::COMPILED:::\n\n";
+    echo $compiledCode;
+} catch (\MSSLib\Error\MySheetException $ex) {
+    echo "\n" . $ex . "\n";
+    echo($ex->getTraceAsString());
+//    throw $ex;
 }
-
-
-//var_dump($result);
-
-echo "\n\n:::COMPILED:::\n\n";
-
-$compiledCode = $result->toRealCss();
-echo $compiledCode;
-//var_dump($result);
 ?>
 </pre>
 <style>
-    <?php echo $compiledCode; ?>
+    <?php // echo $compiledCode; ?>
     
 </style>
 

@@ -54,8 +54,12 @@ class SourceLine {
         return strlen($this->_line);
     }
     
-    public function startsWith($text) {
-        return strncmp($this->getLine(), $text, strlen($text)) === 0;
+    public function startsWith($needle) {
+        return strncmp($this->getLine(), $needle, strlen($needle)) === 0;
+    }
+    
+    public function endsWith($needle) {
+        return substr($this->getLine(), -strlen($needle))=== $needle;
     }
 
     public function __toString() {

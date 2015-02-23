@@ -114,4 +114,10 @@ abstract class ArrayHelper {
         }
         return true;
     }
+    
+    public static function filterEmptyStrings($array) {
+        return array_filter($array, function ($item) {
+            return !empty($item);
+        });
+    }
 }

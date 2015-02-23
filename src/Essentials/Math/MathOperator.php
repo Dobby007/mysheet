@@ -62,7 +62,7 @@ abstract class MathOperator
         if ($this instanceof UnaryOperator) {
             throw new \MSSLib\Error\CompileException(null, 'UNSUPPORTED_UNARY_OPERATION', [static::getOperatorSymbol(), $obj1->getShortDescription()]);
         } else {
-            throw new \MSSLib\Error\CompileException(null, 'UNSUPPORTED_BINARY_OPERATION', [static::getOperatorSymbol(), $obj1->getShortDescription(), $obj2->getShortDescription()]);
+            throw new \MSSLib\Error\CompileException(null, 'UNSUPPORTED_BINARY_OPERATION', [static::getOperatorSymbol(), $obj1 ? $obj1->getShortDescription() : null, $obj2 ? $obj2->getShortDescription() : null]);
         }
     }
     

@@ -56,7 +56,16 @@ class SourceClosure {
         return false;
     }
     
-    public function getPrevNeighbour() {
+    /**
+     * Gets left neighbour of this closure
+     * @param SourceClosure $upperLimit
+     * @return SourceClosure|null
+     */
+    public function getPrevNeighbour(SourceClosure $upperLimit = null) {
+        // if this closure is the limit we can't move on
+        if ($this === $upperLimit) {
+            return null;
+        }
         $parent = $this->getParent();
         if ($parent === null) {
             return null;
@@ -73,19 +82,24 @@ class SourceClosure {
         }
     }
     
-    public function getNextNeighbour() {
-        return $this->getNeighbour(true);
+    /**
+     * Gets right neighbour of this closure
+     * @param SourceClosure $upperLimit
+     * @return SourceClosure|null
+     */
+    public function getNextNeighbour(SourceClosure $upperLimit = null) {
+        return $this->getNeighbour(true, false, $upperLimit);
     }
     
-    protected function getDeepestElement() {
-        
-    }
-    
-    protected function getNeighbour($getNext, $ignoreChildren = false) {
+    protected function getNeighbour($getNext, $ignoreChildren = false, SourceClosure $upperLimit = null) {
         $neighbour = null;
         if (!$ignoreChildren && ($msb = $this->getChildClosure($getNext ? 0 : -1))) {
             $neighbour = $msb;
         } else {
+            // if this closure is the limit we can't move on
+            if ($this === $upperLimit) {
+                return null;
+            }
             $parent = $this->getParent();
             if ($parent === null) {
                 return null;
@@ -94,7 +108,7 @@ class SourceClosure {
             if ($index >= 0 && $index < $parent->countChildren()) {
                 return $parent->getChildClosure($index);
             } else {
-                return $parent->getNeighbour($getNext, true);
+                return $parent->getNeighbour($getNext, true, $upperLimit);
             }
         }
         return $neighbour;

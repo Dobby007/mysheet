@@ -38,17 +38,23 @@ class VariableClass extends MssClass {
         if (VariableScope::canBeVariable($varName)) {
             $this->varName = $varName;
         } else {
-            throw new ParseException(null, 'BAD_VARIABLE_NAME');
+            throw new ParseException(null, 'BAD_VARIABLE_NAME', [$varName]);
         }
     }
 
     public function getValue(VariableScope $vars) {
         $varValue = $vars[$this->getVarName()];
-        return $varValue instanceof MssClass ? $varValue->getValue($vars) : $varValue;
+        if (!($varValue instanceof MssClass)) {
+            throw new \MSSLib\Error\CompileException(null, 'UNKNOWN_VAR', [$this->getVarName()]);
+        }
+        return $varValue->getValue($vars);
     }
         
     public function toRealCss(VariableScope $vars) {
-        $varValue = $this->getValue($vars);
+        $varValue = $vars[$this->getVarName()];
+        if ($varValue === null) {
+            throw new \MSSLib\Error\CompileException(null, 'UNKNOWN_VAR', [$this->getVarName()]);
+        }
         if ($varValue instanceof MssClass) {
             $varValue = $varValue->toRealCss($vars);
         }
