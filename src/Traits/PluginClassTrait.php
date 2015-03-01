@@ -24,7 +24,7 @@ trait PluginClassTrait {
      *
      * @var PluginBase
      */
-    private $plugin = null;
+    protected $plugin = null;
     
     /**
      * @return PluginBase

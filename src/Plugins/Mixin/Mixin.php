@@ -32,11 +32,13 @@ class Mixin extends LeafBlock {
     protected $name;
     protected $locals = array();
     
-    public function __construct(PluginMixin $plugin, $name, array $locals = []) {
-        $this->setPlugin($plugin);
-        $this->setName($name);
-        $this->setLocals($locals);
-        
+    
+    /**
+     * Creates a new builder for Mixin
+     * @return \MSSLib\Plugins\Mixin\MixinBuilder
+     */
+    public static function builder() {
+        return new MixinBuilder();
     }
     
     public function getName() {
@@ -45,6 +47,7 @@ class Mixin extends LeafBlock {
 
     public function setName($name) {
         $this->name = $name;
+        return $this;
     }
     
     public function getLocals() {
@@ -55,10 +58,12 @@ class Mixin extends LeafBlock {
         if (!array_search($name, $this->locals))
             $this->locals[] = $name;
         //else //throw
+        return $this;
     }
     
     public function setLocals(array $locals) {
         $this->locals = array_unique($locals);
+        return $this;
     }
     
     /**
@@ -75,8 +80,13 @@ class Mixin extends LeafBlock {
     
     public function addDeclaration($declaration) {
         if (is_string($declaration)) {
-            $this->declarations[] = new Declaration($declaration);
+            $declaration = new Declaration($declaration);
         }
+        
+        if ($declaration instanceof Declaration) {
+            $this->declarations[] = $declaration;
+        }
+        return $this;
     }
     
     public function addDeclarations($declarations) {
@@ -89,6 +99,7 @@ class Mixin extends LeafBlock {
                 $this->addDeclaration($declaration);
             }
         }
+        return $this;
     }
     
     protected function compileRealCss(VariableScope $vars) {
@@ -115,4 +126,50 @@ class Mixin extends LeafBlock {
         }
         return $rendered_rules;
     }
+}
+
+
+class MixinBuilder
+{
+    private $_localParams = [];
+    private $_declarations = [];
+    private $_name;
+    
+    public function __construct() {
+        
+    }
+    
+    public function setName($name) {
+        $this->_name = $name;
+        return $this;
+    }
+    
+    public function addLocalParameter($name, $default = null) {
+        $this->_localParams[] = $name;
+        return $this;
+    }
+    
+    public function setLocalParameters(array $locals) {
+        $this->_localParams = $locals;
+        return $this;
+    }
+    
+    public function addDeclaration($declaration) {
+        $this->_declarations[] = $declaration;
+        return $this;
+    }
+    
+    public function addDeclarations($declarations) {
+        $this->_declarations = array_merge($this->_declarations, $declarations);
+        return $this;
+    }
+    
+    public function getResult() {
+        $mixin = new Mixin(null);
+        $mixin->setName($this->_name)
+              ->setLocals($this->_localParams)
+              ->addDeclarations($this->_declarations);
+        return $mixin;
+    }
+
 }

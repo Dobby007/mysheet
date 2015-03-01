@@ -45,7 +45,8 @@ class MixinParserExtension extends ParserExtension {
         
         preg_match_all('/(?:[a-z_][a-z0-9_]*)/i', $mixin_decl[2], $mixin_locals, PREG_PATTERN_ORDER);
         
-        $mixin = new Mixin($this->plugin, $mixin_decl[1], $mixin_locals[0]);
+        $mixin = new Mixin(null);
+        $mixin->setName($mixin_decl[1])->setLocals($mixin_locals[0])->setPlugin($this->getPlugin());
         
         while ($curLine = $context->nextLine(true)) {
             if ($curLine->getLevel() > $firstLine->getLevel()) {

@@ -60,8 +60,10 @@ class MySheet
     private $_activeDocument;
     private $_activeDirectory;
     protected $settings;
+    protected $_dataBagMap = array();
     protected $plugins = array();
     protected $_parsedFilePath = null;
+    
     
     private function __construct() {
         $this->_autoload = new Autoload();
@@ -156,7 +158,7 @@ class MySheet
             if ($classRef->classExists()) {
                 $this->getListManager()->getList('MssClass')->addFunctional($classRef);
                 
-                $implementedInterfaces = class_implements($classRef->getFullClass());
+                $implementedInterfaces = $classRef->getImplementedInterfaces();
                 if (isset($implementedInterfaces['MSSLib\Essentials\Math\IOperatorRegistrar'])) {
                     $class = $classRef->getFullClass();
                     $class::registerOperations();
@@ -276,8 +278,6 @@ class MySheet
     public function setSettings(IMSSettings $settings) {
         $this->settings = $settings;
     }
-
-    
     
     /**
      * @return HandlerFactory Instance of HandlerFactory class

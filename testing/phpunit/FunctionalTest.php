@@ -112,4 +112,24 @@ class FunctionalTest extends BaseTest
         return $tests;
     }
     
+    /**
+     * @dataProvider dataMixins
+     */
+    public function testMixins($mssSource, $expectedCss)
+    {
+        $doc = $this->mysheet->parseCode($mssSource);
+        $this->assertEquals( $expectedCss, trim($doc->toRealCss()) );
+    }
+    
+    public function dataMixins() {
+        $tests = array_map(function ($filePath) {
+            $test = self::getTest($filePath);
+            return [
+                $test['source'],
+                $test['expected']
+            ];
+        }, self::getAvailableTests('FunctionalTest', 'Mixins'));
+        return $tests;
+    }
+    
 }

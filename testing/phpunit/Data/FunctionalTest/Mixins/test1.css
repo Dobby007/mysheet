@@ -1,0 +1,12 @@
+html {
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-filter: grayscale(50%);
+    filter: grayscale(50%);
+    -ms-transform: scale(2);
+    -moz-transform: scale(2);
+    -o-transform: scale(2);
+    -webkit-transform: scale(2);
+    transform: scale(2)
+}

@@ -102,6 +102,10 @@ class TypeClassReference
     public function classExists($autoload = true) {
         return class_exists($this->getFullClass(), $autoload);
     }
+    
+    public function getImplementedInterfaces($autoload = true) {
+        return class_implements($this->getFullClass(), $autoload);
+    }
  
     public function compareShortName($shortName) {
         return strtolower($this->getShortName()) === strtolower($shortName);

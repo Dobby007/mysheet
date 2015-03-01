@@ -317,14 +317,17 @@ TEXT;
 
 $code13 = <<<TEXT
 html
-    width 50px /// this property is no longer usable
+    width 50px
+    border-radius 5px
+    filter-grayscale 50%
+    transform scale(2)
 TEXT;
 
 $result = null;
 try {
-    //$result = $mysheet->parseCode($code1);
-    //$result = $mysheet->parseFile(realpath('examples/bootstrap/bootstrap.css'));
-    $result = $mysheet->parseFile(realpath('examples/exm3/exam3.mss'));
+    $result = $mysheet->parseCode($code13);
+//    $result = $mysheet->parseFile(realpath('examples/bootstrap/bootstrap.css'));
+//    $result = $mysheet->parseFile(realpath('examples/exm3/exam3.mss'));
     //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
 
 

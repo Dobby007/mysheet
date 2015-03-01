@@ -19,7 +19,10 @@ return [
     'dependencies' => [
     ],
     'plugins' => [
-        'mixin', 'selectorExtensions'
+        'mixin' => [
+            'mixinSets' => ['basic']
+        ], 
+        'selectorExtensions'
     ],
     'cssRenderer' => [
 //        'prefixRule' => '',

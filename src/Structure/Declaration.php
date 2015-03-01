@@ -16,9 +16,8 @@ use MSSLib\Structure\RuleValue;
 use MSSLib\Traits\RootClassTrait;
 use MSSLib\Traits\HandlerCallTrait;
 use MSSLib\Error\ParseException;
-use MSSLib\Error\ErrorTable;
 use MSSLib\Essentials\VariableScope;
-
+use MSSLib\Etc\Constants;
 
 /**
  * Description of Selector
@@ -42,7 +41,9 @@ class Declaration {
     private $ruleEnabled = true;
     
     public function __construct($declaration) {
-        $this->setDeclaration($declaration);
+        if (!empty($declaration)) {
+            $this->setDeclaration($declaration);
+        }
     }
     
     public function getRuleName() {
@@ -85,7 +86,7 @@ class Declaration {
 
         
     public function setDeclaration($declaration) {
-        $right_declaration = is_string($declaration) && self::canBeDeclaration(trim($declaration), $matches);
+        $right_declaration = is_string($declaration) && !empty($declaration) && self::canBeDeclaration(trim($declaration), $matches);
         
         if ($right_declaration) {
             if ($matches[1] === '~') {
@@ -115,5 +116,45 @@ class Declaration {
         $res = !!preg_match('/^(~)?([-a-z][a-z\d_-]*)\s*(?::|\s)\s*([-#\d"\'.a-z($@].*)$/i', $string, $matches);
 //        var_dump('REGEX::: ', $string,$res, $matches);
         return $res;
+    }
+    
+    
+    public static function getBrowserPrefixesAsArray($browsersEnum) {
+        static $prefixMap = [
+            Constants::BROWSER_IE => '-ms-',
+            Constants::BROWSER_MOZILLA => '-moz-',
+            Constants::BROWSER_OPERA => '-o-',
+            Constants::BROWSER_WEBKIT => '-webkit-'
+        ];
+        $result = [];
+        foreach ($prefixMap as $browserId => $prefix) {
+            if ($browsersEnum & $browserId) {
+                $result[] = $prefix;
+            }
+        }
+        return $result;
+    }
+    
+    /**
+     * Creates and returns array of declarations based on the provided browser prefixes
+     * @param string $ruleName
+     * @param mixed $ruleValue
+     * @param string[] $prefixes
+     * @return Declaration[]
+     */
+    public static function createPrefixedDeclarations($ruleName, $ruleValue, $browsersEnum = Constants::BROWSER_ALL, $addNonPrefixedVersion = true) {
+        $result = [];
+        $prefixes = self::getBrowserPrefixesAsArray($browsersEnum);
+        if ($addNonPrefixedVersion) {
+            $prefixes[] = '';
+        }
+        
+        foreach ($prefixes as $prefix) {
+            $name = $prefix . $ruleName;
+            if ($ruleValue instanceof RuleValue) {
+                $result[] = (new Declaration(null))->setRuleName($name)->setRuleValue($ruleValue);
+            }
+        }
+        return $result;
     }
 }
