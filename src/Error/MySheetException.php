@@ -38,7 +38,7 @@ abstract class MySheetException extends \Exception {
      * @return string Full exception message in a language provided in the settings
      */
     public function getReason() {
-        return I18N::translate($this->getCategory(), $this->getErrorCode(), $this->getArguments());
+        return ($this->getCategory() ?: 'NO_CATEGORY') . '::' . $this->getErrorCode() . '(' . implode(', ', $this->getArguments()) . ')';
     }
     
     protected abstract function updateArguments($arguments);

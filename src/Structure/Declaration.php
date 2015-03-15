@@ -18,6 +18,7 @@ use MSSLib\Traits\HandlerCallTrait;
 use MSSLib\Error\ParseException;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Etc\Constants;
+use MSSLib\Helpers\RuleFlagHelper;
 
 /**
  * Description of Selector
@@ -65,11 +66,12 @@ class Declaration {
 
     public function setRuleValue($ruleValue) {
         if (is_string($ruleValue)) {
-            $ruleValue = new RuleValue($ruleValue);
+            $ruleValue = new RuleValue($ruleValue, $this);
         }
         
         if ($ruleValue instanceof RuleValue) {
             $this->ruleValue = $ruleValue;
+            $ruleValue->setParentDeclaration($this);
         }
         
         return $this;
@@ -99,10 +101,12 @@ class Declaration {
         }
     }
     
+        
     public function toRealCss(VariableScope $vars) {
         if (!$this->getRuleEnabled()) {
             return null;
         }
+        
         
         $result = $this->renderCssEvent($this, $vars);
         if ($result->handled()) {
@@ -111,6 +115,8 @@ class Declaration {
         
         return $this->getRuleName() . ': ' . $this->getRuleValue()->getValue($vars);
     }
+    
+    
     
     public static function canBeDeclaration($string, &$matches = null) {
         $res = !!preg_match('/^(~)?([-a-z][a-z\d_-]*)\s*(?::|\s)\s*([-#\d"\'.a-z($@].*)$/i', $string, $matches);

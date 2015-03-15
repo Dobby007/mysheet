@@ -14,7 +14,6 @@ namespace MSSLib\Plugins\Mixin;
 
 use MSSLib\Essentials\ParserExtension;
 use MSSLib\Error\ParseException;
-use MSSLib\Error\ErrorTable;
 use MSSLib\Traits\PluginClassTrait;
 
 /**
@@ -36,11 +35,11 @@ class MixinParserExtension extends ParserExtension {
             return false;
         }
         if ($firstLine->getLevel() !== 1) {
-            throw new ParseException(ErrorTable::E_BAD_INDENTATION);
+            throw new ParseException(null, 'E_BAD_INDENTATION');
         }
         
         if (!preg_match('/^@mixin\s+([-a-z][a-z\d_-]*)\s*\((.*)\)$/', $firstLine->getLine(), $mixin_decl)) {
-            throw new ParseException(ErrorTable::E_BAD_INDENTATION);
+            throw new ParseException(null, 'E_BAD_INDENTATION');
         }
         
         preg_match_all('/(?:[a-z_][a-z0-9_]*)/i', $mixin_decl[2], $mixin_locals, PREG_PATTERN_ORDER);
@@ -51,7 +50,9 @@ class MixinParserExtension extends ParserExtension {
         while ($curLine = $context->nextLine(true)) {
             if ($curLine->getLevel() > $firstLine->getLevel()) {
                 $mixin->addDeclarations($curLine->getLine());
-            } else break;
+            } else {
+                break;
+            }
         }
         return $mixin;
     }

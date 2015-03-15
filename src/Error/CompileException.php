@@ -20,7 +20,11 @@ class CompileException extends MySheetException {
     }
     
     public function getReason() {
-        return I18N::translate($this->getCategory(), $this->getErrorCode(), $this->getArguments());
+        $text = I18N::translate($this->getCategory(), $this->getErrorCode(), $this->getArguments());
+        if (!$text) {
+            return parent::getReason();
+        }
+        return $text;
     }
 
 }

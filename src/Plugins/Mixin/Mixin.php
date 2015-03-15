@@ -132,7 +132,7 @@ class Mixin extends LeafBlock {
 class MixinBuilder
 {
     private $_localParams = [];
-    private $_declarations = [];
+    private $_children = [];
     private $_name;
     
     public function __construct() {
@@ -155,12 +155,12 @@ class MixinBuilder
     }
     
     public function addDeclaration($declaration) {
-        $this->_declarations[] = $declaration;
+        $this->_children[] = $declaration;
         return $this;
     }
     
     public function addDeclarations($declarations) {
-        $this->_declarations = array_merge($this->_declarations, $declarations);
+        $this->_children = array_merge($this->_children, $declarations);
         return $this;
     }
     
@@ -168,7 +168,7 @@ class MixinBuilder
         $mixin = new Mixin(null);
         $mixin->setName($this->_name)
               ->setLocals($this->_localParams)
-              ->addDeclarations($this->_declarations);
+              ->addDeclarations($this->_children);
         return $mixin;
     }
 

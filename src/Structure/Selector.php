@@ -13,7 +13,6 @@
 namespace MSSLib\Structure;
 
 use MSSLib\Error\ParseException;
-use MSSLib\Error\ErrorTable;
 use MSSLib\Structure\Ruleset;
 use MSSLib\Structure\PathGroup;
 use MSSLib\Traits\RootClassTrait;

@@ -14,12 +14,13 @@ namespace MSSLib\Structure;
 
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Essentials\MssClass;
-use MSSLib\Essentials\FuncListManager;
 use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Traits\RootClassTrait;
 use MSSLib\Error\ParseException;
 use MSSLib\Helpers\MssClassHelper;
-
+use MSSLib\Helpers\RuleFlagHelper;
+use MSSLib\Structure\Declaration;
+use MSSLib\Essentials\RuleFlag\RuleFlag;
 /**
  * Class that represents rule value with its' rule parameters (MssClass)
  *
@@ -30,9 +31,21 @@ class RuleValue
     use RootClassTrait;
     
     private $params = array();
+    private $_parentDeclaration;
+    private $_flags = array();
     
-    function __construct($value) {
+    
+    function __construct($value, Declaration $parentDeclaration = null) {
         $this->setValue($value);
+        $this->setParentDeclaration($parentDeclaration);
+    }
+    
+    public function getParentDeclaration() {
+        return $this->_parentDeclaration;
+    }
+
+    public function setParentDeclaration($parentDeclaration) {
+        $this->_parentDeclaration = $parentDeclaration;
     }
     
     public function getParam($index) {
@@ -80,13 +93,68 @@ class RuleValue
         return $result;
     }
     
-    public function getValue(VariableScope $vars, $as_array = false) {
-        //we use our own array_map clone here because of php strange behaviour: exceptions can't get out of this function
-        $result = ArrayHelper::map(function(MssClass $item) use($vars) {
-            return $item->toRealCss($vars);
-        }, $this->params);
+    public function parseFlag(&$value) {
+        $result = RuleFlagHelper::parseRuleFlag($value);
+        if (!$result) {
+            throw new ParseException(null, 'FLAG_NOT_PARSED');
+        }
+        return $result;
+    }
+    
+    public function getFlags() {
+        return $this->_flags;
+    }
 
-        return $as_array ? $result : implode(' ', $result);
+    public function setFlags($flags) {
+        $this->_flags = $flags;
+        return $this;
+    }
+    
+    public function setFlag($index, $flag) {
+        if (is_string($flag)) {
+            $flag = $this->parseFlag($flag);
+        }
+        
+        if ($flag instanceof RuleFlag) {
+            if ($index === null) {
+                $this->_flags[] = $flag;
+            } else {
+                $this->_flags[$index] = $flag;
+            }
+            
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public function addFlag($flag) {
+        return $this->setFlag(null, $flag);
+    }
+    
+    public function getCompiledParams(VariableScope $vars) {
+        //we use our own array_map clone here because of php strange behaviour: exceptions can't get out of this function
+        $classes = array_filter(ArrayHelper::map(function(MssClass $item) use($vars) {
+            return $item->toRealCss($vars);
+        }, $this->params));
+        
+        return $classes;
+    }
+    
+    public function getCompiledFlags(VariableScope $vars) {
+        //we use our own array_map clone here because of php strange behaviour: exceptions can't get out of this function
+        $flags = array_filter(ArrayHelper::map(function(RuleFlag $item) use($vars) {
+            return $item->toRealCss($vars);
+        }, $this->_flags));
+        
+        return $flags;
+    }
+    
+    public function getValue(VariableScope $vars) {
+        $classes = $this->getCompiledParams($vars);
+        $flags = $this->getCompiledFlags($vars);
+
+        return implode(' ', $classes) . (count($flags) > 0 ? ' ' . implode(' ', $flags) : '');
     }
 
     public function setValue($value) {
@@ -98,11 +166,30 @@ class RuleValue
             $value = implode(' ', $matches[1]);
             
             while (is_string($value) && strlen($value) > 0) {
-                $this->addParam($this->parseParam($value));
+                if ($value[0] === '!') {
+                    $this->addFlag($this->parseFlag($value));
+                } else {
+                    $this->addParam($this->parseParam($value));
+                }
+                $value = ltrim($value);
             }
         }
     }
-    
+    /**
+     * Parses string and returns array of flags contained in it
+     * @param string $ruleFlagsStr
+     * @return RuleFlag[]
+     */
+    protected static function parseRuleFlagsString($ruleFlagsStr) {
+        $ruleFlags = [];
+        while (!empty($ruleFlagsStr)) {
+            $res = RuleFlagHelper::parseRuleFlag($ruleFlagsStr);
+            if (!$res) {
+                $ruleFlags[] = $res;
+            }
+        }
+        return $ruleFlags;
+    }
     public function toRealCss(VariableScope $vars) {
         return $this->getValue($vars);
     }

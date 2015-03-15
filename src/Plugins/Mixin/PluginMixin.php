@@ -103,8 +103,7 @@ class PluginMixin extends PluginBase
             $handled = true;
             $vs = new VariableScope();
             $vs->enableNumericVars(true);
-            $vs->setMap($rule->getRuleValue()->getValue($userRuleScope, true));
-            
+            $vs->setMap($rule->getRuleValue()->getCompiledParams($userRuleScope));
             return $mixin->render($vs);
         }
         

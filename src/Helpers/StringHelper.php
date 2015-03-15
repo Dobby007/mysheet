@@ -57,7 +57,7 @@ abstract class StringHelper
         $text = ltrim($input);
         $arguments = false;
         $funcName = self::parseStringUntil($text, '(');
-        if ($funcName === false) {
+        if (empty($funcName) === false) {
             return false;
         }
         
@@ -107,6 +107,61 @@ abstract class StringHelper
             }
         }
         return $arguments;
+    }
+    
+    /**
+     * Returns array containing info about rule flag. Array contains 3 items:
+     *      name - funciton name
+     *      arguments - parsed arguments
+     *      rawArgsString - raw string of function arguments
+     * @param string $input Input string
+     * @param bool $spaceInArgs If set to true, indicates that arguments may contain spaces. E.g. :not(.selector .wrapper)
+     * @param bool $parseArguments If set to true, array item with 'arguments' key will contain parsed arguments
+     * @return boolean
+     */
+    public static function parseRuleFlag(&$input, $spaceInArgs = false, $parseArguments = true) {
+        $text = ltrim($input);
+        if (substr($text, 0, 1) !== '!') {
+            return false;
+        }
+        
+        $flagName = null;
+        if (preg_match('/!([a-z_]+)\s*/i', $text, $matches)) {
+            $flagName = $matches[1];
+            $text = substr($text, strlen($matches[0]));
+        } else {
+            return false;
+        }
+        
+        if (substr($text, 0, 1) !== '(') {
+            $input = $text;
+            return [
+                'name' => $flagName,
+                'arguments' => false,
+                'rawArgsString' => false
+            ];
+        }
+        
+        $enclosedWithBrackets = StringHelper::parseEnclosedString($text);
+        $argString = null;
+        $arguments = false;
+        if ($enclosedWithBrackets) {
+            $argString = ltrim(substr($enclosedWithBrackets, 1, -1));
+            if ($parseArguments) {
+                $arguments = self::parseFunctionArguments($argString, $spaceInArgs);
+            }
+        }
+        
+        if ($argString !== null && !empty($flagName)) {
+            $text = substr($input, strlen($enclosedWithBrackets));
+            $input = $text;
+            return [
+                'name' => $flagName,
+                'arguments' => $arguments,
+                'rawArgsString' => $argString
+            ];
+        }
+        return false;
     }
     
     public static function parseMetric(&$input) {

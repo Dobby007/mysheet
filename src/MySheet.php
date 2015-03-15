@@ -35,6 +35,7 @@ use MSSLib\Tools\I18N;
 use MSSLib\Error\InputException;
 use MSSLib\Essentials\TypeClassReference;
 use MSSLib\Structure\Document;
+use MSSLib\Structure\Declaration;
 
 /**
  * Description of MySheet
@@ -100,6 +101,7 @@ class MySheet
             });
             $this->_flm = new FuncListManager();
             $this->initMssClasses();
+            $this->initRuleFlags();
             $this->initExtensions();
             $this->initOperators();
             $this->initFunctionModules();
@@ -123,6 +125,15 @@ class MySheet
             }
         }
     }
+
+    protected function initDependecies() {
+        foreach ($this->getSettings()->dependencies as $depFile) {
+            if ($depFile === false) {
+                continue;
+            }
+            require_once MySheet::WORKDIR . \MSSLib\DS . $depFile;
+        }
+    }
     
     protected function initFunctionModules() {
         $fmNs = 'MSSLib\\EmbeddedFunctions\\';
@@ -131,15 +142,6 @@ class MySheet
             if (class_exists($class)) {
                 $this->getListManager()->getList('FunctionModule')->addFunctional(new $class);
             }
-        }
-    }
-
-    protected function initDependecies() {
-        foreach ($this->getSettings()->dependencies as $depFile) {
-            if ($depFile === false) {
-                continue;
-            }
-            require_once MySheet::WORKDIR . \MSSLib\DS . $depFile;
         }
     }
     
@@ -151,6 +153,20 @@ class MySheet
         }
     }
 
+    protected function initRuleFlags() {
+        $availableRuleFlags = require(self::WORKDIR . DS . 'Etc' . DS . 'Includes' . DS . 'EmbeddedRuleFlags' . EXT);
+        foreach ($availableRuleFlags as $rfClass) {
+            $fullRfClass = 'MSSLib\Structure\RuleFlag\\' . ucfirst($rfClass) . 'Flag';
+            $creator = $fullRfClass::creator();
+            
+            $this->getListManager()->getList('RuleFlag')->addFunctional($creator);
+        }
+        
+        $this->getHandlerFactory()->registerHandler('Declaration', 'renderCss', function (Declaration $declaration, VariableScope $vars) {
+            
+        });
+    }
+    
     protected function initMssClasses() {
         $availableParams = require(self::WORKDIR . DS . 'Etc' . DS . 'Includes' . DS . 'EmbeddedClasses' . EXT);
         foreach ($availableParams as $paramClass) {

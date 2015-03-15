@@ -317,7 +317,7 @@ TEXT;
 
 $code13 = <<<TEXT
 html
-    width 50px
+    width 50px !prefixWith(ms, moz)
     border-radius 5px
     filter-grayscale 50%
     transform scale(2)
