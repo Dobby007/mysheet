@@ -16,9 +16,7 @@ use MSSLib\Essentials\MssClass;
 use MSSLib\Helpers\StringHelper;
 use MSSLib\Helpers\FunctionModuleHelper;
 use MSSLib\Essentials\VariableScope;
-use MSSLib\Helpers\MssClassHelper;
-use MSSLib\Structure\Document;
-use MSSLib\Tools\FileInfo;
+use MSSLib\Essentials\FunctionRenderers\IFunctionRenderer;
 
 /**
  * Internal class that allows using functions in rule values. It is a rule parameter (MssClass).
@@ -26,9 +24,15 @@ use MSSLib\Tools\FileInfo;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class FunctionClass extends MssClass {
+class FunctionClass extends MssClass
+{
     protected $name;
     protected $arguments;
+    /**
+     *
+     * @var IFunctionRenderer Function Renderer for current function
+     */
+    protected $_functionRenderer;
     
     public function __construct($name, array $arguments = []) {
         $this->setName($name);
@@ -63,40 +67,13 @@ class FunctionClass extends MssClass {
 
     public function setName($name) {
         $this->name = trim($name);
+        $this->_functionRenderer = self::getFunctionRenderer($name);
         return $this;
     }
 
     public function setArguments(array $arguments) {
-        switch ($this->getName()) {
-            case 'url':
-                $arguments = $this->parseArgumentsForUrlFunction($arguments);
-                break;
-            default:
-                $arguments = array_map(function ($item) {
-                    return MssClassHelper::parseMssClass($item, array('sequence'), true);
-                }, $arguments);
-                
-        }
-        $this->arguments = $arguments;
+        $this->arguments = $this->_functionRenderer->parseArguments($arguments);
         return $this;
-    }
-
-    protected function parseArgumentsForUrlFunction(array $arguments) {
-        $result = false;
-        if (count($arguments) >= 1) {
-            $firstArg = $arguments[0];
-            if (!($firstArg instanceof MssClass)) {
-                $result = DataUrlClass::parse($firstArg);
-            }
-            // parse with other registered classes
-            if (!$result) {
-                $result = MssClassHelper::parseMssClass($firstArg, array('sequence'), true);
-            }
-            if ($result instanceof MssClass) {
-                return [$result];
-            }
-        }
-        return [];
     }
     
     /**
@@ -104,14 +81,7 @@ class FunctionClass extends MssClass {
      * @param array $functionInfo Info returned by StringHelper::parseFunction() method
      */
     protected static function splitFunctionArguments(array $functionInfo) {
-        switch ($functionInfo['name']) {
-            case 'url':
-                $functionInfo['arguments'] = [$functionInfo['rawArgsString']];
-                break;
-            default:
-                $functionInfo['arguments'] = StringHelper::parseFunctionArguments($functionInfo['rawArgsString'], true);
-                break;
-        }
+        $functionInfo['arguments'] = self::getFunctionRenderer($functionInfo['name'])->splitFunctionArguments($functionInfo['rawArgsString']);
         return $functionInfo;
     }
     
@@ -133,37 +103,39 @@ class FunctionClass extends MssClass {
     }
 
     protected function renderArguments(VariableScope $vars) {
-        $arguments = [];
-        switch ($this->getName()) {
-            case 'url':
-                $fileUrl = $this->getArgument(0);
-                if ($fileUrl === null) {
-                    break;
-                }
-                $fileUrl = $fileUrl->getValue($vars);
-                if ($fileUrl instanceof \MSSLib\Essentials\MssClassInterfaces\IGenericString) {
-                    $fileUrlStr = $fileUrl->getNonQuotedString();
-                    $prefix = $this->getSetting('urlFunction.autoPrefix', false);
-                    if (!filter_var($fileUrlStr, FILTER_VALIDATE_URL) && $this->getSetting('dataUrl.autoConvert')) {
-                        $fileUrlStr =  $prefix ? $prefix . $fileUrlStr : $fileUrlStr;
-                        $fullLocalPath = Document::makeRelativeFilePath(self::msInstance()->getActiveDocument(), $fileUrlStr);
-                        $fileInfo = new FileInfo($fullLocalPath);
-                        if ($fileInfo->fileExists && $fileInfo->fileSize / 1024 <= $this->getSetting('dataUrl.sizeLimit', 0)) {
-                            $arguments[] = DataUrlClass::fromFile($fullLocalPath, $fileInfo->mimeType);
-                            break;
-                        }
-                        
-                    }
-                }
-                $arguments[] = $fileUrl->toRealCss($vars);
-                
-                break;
-            default:
-                foreach ($this->getArguments() as $name=>$argument) {
-                    $arguments[] = (is_string($name) ? $name . ' = ' : '') . $argument->toRealCss($vars);
-                }
+        $arguments = $this->_functionRenderer->renderArguments($this, $vars);
+        if (empty($arguments)) {
+            $arguments = [];
         }
         return  $this->getName() . '(' . implode(', ', $arguments) . ')';
+    }
+    
+    /**
+     * Returns associated renderer for the function
+     * @staticvar array $renderers
+     * @param string $name Name of the function
+     * @return IFunctionRenderer
+     */
+    protected static function getFunctionRenderer($name) {
+        static $renderers = [];
+        if (empty($renderers)) {
+            $renderers['url'] = new \MSSLib\Essentials\FunctionRenderers\UrlFunctionRenderer();
+            $renderers['default'] = new \MSSLib\Essentials\FunctionRenderers\DefaultFunctionRenderer();
+        }
+        if (isset($renderers[$name]) && $name !== 'default') {
+            return $renderers[$name];
+        } else {
+            switch ($name) {
+                case '-o-linear-gradient':
+                case '-ms-linear-gradient':
+                case '-webkit-linear-gradient':
+                case '-moz-linear-gradient':
+                case 'linear-gradient':
+                    break;
+            }
+            
+        }
+        return $renderers['default'];
     }
     
     public function toRealCss(VariableScope $vars) {
@@ -186,3 +158,4 @@ class FunctionClass extends MssClass {
         return false;
     }
 }
+
