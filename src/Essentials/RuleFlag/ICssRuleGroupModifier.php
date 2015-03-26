@@ -16,11 +16,17 @@
  * limitations under the License.
  */
 
+namespace MSSLib\Essentials\RuleFlag;
+
+use MSSLib\Structure\Declaration;
+use MSSLib\Structure\CssRuleGroup;
+use MSSLib\Essentials\VariableScope;
+
 /**
  *
  * @author dobby007
  */
-interface IDeclarationRenderer
+interface ICssRuleGroupModifier
 {
-    function renderDeclaration();
+    function modifyRuleGroup(CssRuleGroup $ruleGroup, Declaration $declaration, VariableScope $vars);
 }

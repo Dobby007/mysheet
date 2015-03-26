@@ -12,15 +12,15 @@
 
 namespace MSSLib\Structure;
 
-use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Traits\RootClassTrait;
-use MSSLib\Traits\HandlerCallTrait;
+use MSSLib\Traits\FireEventTrait;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Essentials\StringBuilder;
 
 abstract class Block {
 
-    use RootClassTrait, HandlerCallTrait;
+    use RootClassTrait,
+        FireEventTrait;
 
     private $parent = null;
 
@@ -73,22 +73,22 @@ abstract class Block {
      * @return StringBuilder Array of compiled lines
      */
     public function toRealCss(VariableScope $vars = null) {
-        $autoload_enabled = self::getRootObj()->getSettings()->get('system.internal_autoload', true);
+        $autoload_enabled = self::msInstance()->getSettings()->get('system.internal_autoload', true);
         if ($autoload_enabled === true) {
-            self::getRootObj()->getAutoload()->registerAutoload();
+            self::msInstance()->getAutoload()->registerAutoload();
         }
-        $this->cssRenderingStartedEvent($this);
         
+        $this->cssRenderingStartedEvent(new \MSSLib\Events\Block\CssRenderingStartedEventData($this));
         if ($vars) {
-            self::getRootObj()->getVars()->appendScope($vars);
+            self::msInstance()->getVars()->appendScope($vars);
         }
         /* @var $compiled StringBuilder */
-        $compiled = $this->compileRealCss(VariableScope::getInstantiatedScope($vars, self::getRootObj()->getVars())->createChildScope());
+        $compiled = $this->compileRealCss(VariableScope::getInstantiatedScope($vars, self::msInstance()->getVars())->createChildScope());
         if (!($compiled instanceof StringBuilder)) {
             return null;
         }
         
-        $this->cssRenderingEndedEvent($this);
+        $this->cssRenderingEndedEvent(new \MSSLib\Events\Block\CssRenderingEndedEventData($this));
         return $compiled->join();
     }
 }

@@ -56,7 +56,7 @@ class MssClassHelper
         }
         
         $inputString = ltrim($inputString);
-        return self::getRootObj()->getListManager()->getList('MssClass')->iterate(function(TypeClassReference $mssClass) use (&$inputString, $filter) {
+        return self::msInstance()->getListManager()->getList('MssClass')->iterate(function(TypeClassReference $mssClass) use (&$inputString, $filter) {
             if (!$filter($mssClass)) {
                 return;
             }

@@ -17,7 +17,8 @@ namespace MSSLib\Structure;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class RuleGroup {
+class CssRuleGroup
+{
     private $rules = array();
 
     public function addRule($name, $value) {
@@ -25,8 +26,19 @@ class RuleGroup {
         return $this;
     }
     
+    public function addRules(array $rules) {
+        foreach ($rules as $name=>$value) {
+            $this->addRule($name, $value);
+        }
+        return $this;
+    }
+    
     public function getRules() {
         return $this->rules;
+    }
+    
+    public function mergeWith(CssRuleGroup $ruleGroup) {
+        $this->rules = array_merge($this->rules, $ruleGroup->getRules());
     }
 
     public function join($ruleSeparator = ': ', $lineSeparator = ";\n", $linePrefix = '    ') {
@@ -44,10 +56,6 @@ class RuleGroup {
             $result[] = $value[0] . $ruleSeparator . $value[1];
         });
         return $result;
-    }
-    
-    public function __toString() {
-        return $this->join();
     }
 
 }

@@ -45,14 +45,14 @@ class Document extends NodeBlock implements IMayContainRuleset {
             $basedir = dirname($doc->getDocFilePath());
         }
         if (!$basedir) {
-            $basedir = self::getRootObj()->getActiveDirectory();
+            $basedir = self::msInstance()->getActiveDirectory();
         }
             
         return $basedir ? $basedir . DIRECTORY_SEPARATOR . $relativeFilePath : $relativeFilePath;
     }
     
     protected function compileRealCss(\MSSLib\Essentials\VariableScope $vars) {
-        self::getRootObj()->setActiveDocument($this);
+        self::msInstance()->setActiveDocument($this);
         return parent::compileRealCss($vars);
     }
 

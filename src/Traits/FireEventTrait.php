@@ -21,7 +21,8 @@ use MSSLib\Essentials\HandlerCallResult;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-trait HandlerCallTrait {
+trait FireEventTrait
+{
     private $_handlerMap = null;
     public function __call($name, array $arguments) {
         if (substr($name, -5) === 'Event') {
@@ -36,9 +37,7 @@ trait HandlerCallTrait {
             $class = __CLASS__;
         }
         
-        $result = self::getRootObj()->getHandlerFactory()->triggerEvent($class, $handlerName, $arguments, $handled);
-        
-        return new HandlerCallResult($handled, $result);
+        self::msInstance()->getEventRegistry()->triggerEvent($class, $handlerName, $arguments);
         
     }
 }

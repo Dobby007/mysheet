@@ -25,7 +25,7 @@ trait RootClassTrait {
     /**
      * @return MySheet Instance of MySheet class
      */
-    public static function getRootObj() {
+    public static function msInstance() {
         return MySheet::Instance();
     }
     
@@ -33,14 +33,14 @@ trait RootClassTrait {
      * @return IMSSettings
      */
     public function getSettings() {
-        return self::getRootObj()->getSettings();
+        return self::msInstance()->getSettings();
     }
     
     /**
      * @return mixed
      */
     public function getSetting($name, $default = null) {
-        return self::getRootObj()->getSettings()->get($name, $default);
+        return self::msInstance()->getSettings()->get($name, $default);
     }
     
 }

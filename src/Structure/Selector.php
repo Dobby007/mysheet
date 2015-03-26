@@ -14,9 +14,9 @@ namespace MSSLib\Structure;
 
 use MSSLib\Error\ParseException;
 use MSSLib\Structure\Ruleset;
-use MSSLib\Structure\PathGroup;
+use MSSLib\Structure\CssSelectorGroup;
 use MSSLib\Traits\RootClassTrait;
-use MSSLib\Traits\HandlerCallTrait;
+use MSSLib\Traits\FireEventTrait;
 
 
 /**
@@ -24,8 +24,10 @@ use MSSLib\Traits\HandlerCallTrait;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class Selector {
-    use RootClassTrait, HandlerCallTrait;
+class Selector
+{
+    use RootClassTrait,
+        FireEventTrait;
     
     private $_mssPath, $_cssPathGroup;
     private $_ruleset;
@@ -47,17 +49,17 @@ class Selector {
     
     /**
      * Creates a group of selectors and add source MSS selector to it
-     * @return PathGroup
+     * @return CssSelectorGroup
      */
     protected function createPathGroup() {
-        $pg = new PathGroup();
-        $pg->addPath($this->_mssPath);
+        $pg = new CssSelectorGroup();
+        $pg->addSelector($this->_mssPath);
         return $pg;
     }
     
     /**
      * Returns parsed input selector as a group of css selectors
-     * @return PathGroup
+     * @return CssSelectorGroup
      */
     public function getCssPathGroup() {
         return $this->_cssPathGroup;
@@ -75,7 +77,7 @@ class Selector {
     protected function fulfilPaths() {
         if (!$this->isFullSelector() && $this->getRuleset()) {
             $paths = Selector::unionSelectorWithParents($this->getRuleset()->getParentPaths(), $this);
-            $this->_cssPathGroup->setPaths($paths);
+            $this->_cssPathGroup->setSelectors($paths);
         }
     }
     
@@ -132,7 +134,7 @@ class Selector {
         $combined = [];
         $cssPathGroup = $selector->getCssPathGroup();
         foreach ($parentSelectors as $psel) {
-            foreach ($cssPathGroup->getPaths() as $path) {
+            foreach ($cssPathGroup->getSelectors() as $path) {
                 $combined[] = (empty($psel) ? '' : $psel . ' ') . $path;
             }
         }

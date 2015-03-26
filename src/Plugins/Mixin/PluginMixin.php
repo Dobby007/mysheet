@@ -15,6 +15,7 @@ namespace MSSLib\Plugins\Mixin;
 use MSSLib\Plugins\PluginBase;
 use MSSLib\Structure\Declaration;
 use MSSLib\Essentials\VariableScope;
+use MSSLib\Events\Declaration\RenderDeclarationCssEventData;
 
 /**
  * Description of Mixin
@@ -30,14 +31,14 @@ class PluginMixin extends PluginBase
     
     
     public function init() {
-        self::getRootObj()->getHandlerFactory()
+        self::msInstance()->getEventRegistry()
                           ->registerHandler('Declaration', 'renderCss', [$this, 'mixinHandler'])
                           ->registerHandler('Block', 'cssRenderingStarted', 
                                 function() {
                                     $this->cleanMixins();
                                 }
         );
-        self::getRootObj()->getParser()->addParserExtension(new MixinParserExtension($this));
+        self::msInstance()->getParser()->addParserExtension(new MixinParserExtension($this));
         foreach ($this->_enabledMixinSetClasses as $mixinSetClass) {
             if (strpos($mixinSetClass, '\\') === false) {
                 $mixinSetClass = ucfirst($mixinSetClass) . 'Set';
@@ -66,6 +67,7 @@ class PluginMixin extends PluginBase
         
         $mixin = $this->createSystemMixin($name);
         if ($mixin) {
+            $mixin->setPlugin($this);
             $this->registerMixin($mixin);
             return $this->_registeredMixins[$name];
         }
@@ -96,16 +98,16 @@ class PluginMixin extends PluginBase
         }
     }
     
-    public function mixinHandler(&$handled, Declaration $rule, VariableScope $userRuleScope) {
+    public function mixinHandler(RenderDeclarationCssEventData $eventData) {
         /* @var $mixin Mixin */
-        $mixin = $this->getMixin($rule->getRuleName());
+        $mixin = $this->getMixin($eventData->getDeclaration()->getRuleName());
         if ($mixin) {
-            $handled = true;
+            $eventData->handled(true);
+            $eventData->setRuleNeglection(true);
             $vs = new VariableScope();
             $vs->enableNumericVars(true);
-            $vs->setMap($rule->getRuleValue()->getCompiledParams($userRuleScope));
-            return $mixin->render($vs);
+            $vs->setMap($eventData->getDeclaration()->getRuleValue()->getCompiledParams($eventData->getVars()));
+            $eventData->getRuleGroup()->mergeWith($mixin->render($vs));
         }
-        
     }
 }

@@ -18,23 +18,23 @@ namespace MSSLib\Structure;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class PathGroup {
+class CssSelectorGroup {
     private $paths = array();
 
-    public function addPath($path) {
+    public function addSelector($path) {
         $this->paths[] = $path;
         return $this;
     }
     
-    public function getPaths() {
+    public function getSelectors() {
         return $this->paths;
     }
     
-    public function setPaths(array $paths) {
+    public function setSelectors(array $paths) {
         $this->paths = $paths;
     }
     
-    public function alterPath($index, $path) {
+    public function alterSelector($index, $path) {
         if (isset($this->paths[$index])) {
             $this->paths[$index] = $path;
         }

@@ -29,11 +29,11 @@ trait PluginClassTrait {
     /**
      * @return PluginBase
      */
-    protected function getPlugin() {
+    public function getPlugin() {
         return $this->plugin;
     }
 
-    protected function setPlugin(PluginBase $plugin) {
+    public function setPlugin(PluginBase $plugin) {
         $this->plugin = $plugin;
     }
 

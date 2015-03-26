@@ -26,6 +26,8 @@ Glossary:
 [-] Implement parametrization of importted files in the code
 [-] Implement autoprefixing of CSS rules and its' values
 [-] Enhance support of minimizing files on the fly (make better recognizing of relative paths)
+[-] Add support of delimiters in RuleValue (smart recognition of these delimiters by rule's name)
+
 
 ============================================
 

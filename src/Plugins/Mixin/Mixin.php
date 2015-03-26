@@ -17,7 +17,7 @@ use MSSLib\Structure\LeafBlock;
 use MSSLib\Traits\RootClassTrait;
 use MSSLib\Traits\PluginClassTrait;
 use MSSLib\Essentials\VariableScope;
-use MSSLib\Structure\RuleGroup;
+use MSSLib\Structure\CssRuleGroup;
 
 
 /**
@@ -26,7 +26,8 @@ use MSSLib\Structure\RuleGroup;
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
 class Mixin extends LeafBlock {
-    use RootClassTrait, PluginClassTrait;
+    use RootClassTrait,
+        PluginClassTrait;
     
     protected $declarations = array();
     protected $name;
@@ -115,12 +116,13 @@ class Mixin extends LeafBlock {
         
         foreach ($this->locals as $index => $local) {
             if (!isset($renderScope[$index])) {
-                break;
+                $renderScope[$local] = 'null';
+                continue;
             }
             $renderScope[$local] = $renderScope[$index];
         }
         
-        $rendered_rules = new RuleGroup();
+        $rendered_rules = new CssRuleGroup();
         foreach ($this->getDeclarations() as $declaration) {
             $rendered_rules->addRule($declaration->getRuleName(), $declaration->getRuleValue()->getValue($renderScope));
         }

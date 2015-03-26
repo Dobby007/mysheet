@@ -27,7 +27,7 @@ abstract class OperatorHelper
     use RootClassTrait;
     
     public static function parseOperator(&$inputString) {
-        return self::getRootObj()->getListManager()->getList('Operator')->iterate(function(TypeClassReference $operatorClassRef) use (&$inputString) {
+        return self::msInstance()->getListManager()->getList('Operator')->iterate(function(TypeClassReference $operatorClassRef) use (&$inputString) {
             $operatorClass = $operatorClassRef->getFullClass();
             $res = null;
             if (class_exists($operatorClass) && method_exists($operatorClass, 'parse')) {

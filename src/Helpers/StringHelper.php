@@ -57,7 +57,7 @@ abstract class StringHelper
         $text = ltrim($input);
         $arguments = false;
         $funcName = self::parseStringUntil($text, '(');
-        if (empty($funcName) === false) {
+        if (empty($funcName)) {
             return false;
         }
         
@@ -153,7 +153,6 @@ abstract class StringHelper
         }
         
         if ($argString !== null && !empty($flagName)) {
-            $text = substr($input, strlen($enclosedWithBrackets));
             $input = $text;
             return [
                 'name' => $flagName,

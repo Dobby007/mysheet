@@ -25,7 +25,7 @@ require_once WORKDIR . DS . 'Essentials' . DS . 'Autoload' . EXT;
 require_once WORKDIR . DS . 'Tools' . DS . 'Debugger' . EXT;
 
 use MSSLib\Essentials\Autoload;
-use MSSLib\Essentials\HandlerFactory;
+use MSSLib\Essentials\EventRegistry;
 use MSSLib\Essentials\IParser;
 use MSSLib\Essentials\IMSSettings;
 use MSSLib\Essentials\MSSettings;
@@ -94,9 +94,9 @@ class MySheet
             } else {
                 $this->parser = $parserObj;
             }
-            $this->_hf = new HandlerFactory();
+            $this->_hf = new EventRegistry();
             $this->_vs = new VariableScope();
-            $this->getHandlerFactory()->registerHandler('Block', 'cssRenderingEnded', function () {
+            $this->getEventRegistry()->registerHandler('Block', 'cssRenderingEnded', function () {
                 $this->getVars()->clean();
             });
             $this->_flm = new FuncListManager();
@@ -162,8 +162,18 @@ class MySheet
             $this->getListManager()->getList('RuleFlag')->addFunctional($creator);
         }
         
-        $this->getHandlerFactory()->registerHandler('Declaration', 'renderCss', function (Declaration $declaration, VariableScope $vars) {
-            
+        $this->getEventRegistry()->registerHandler('Declaration', 'renderCss', function (Events\Declaration\RenderDeclarationCssEventData $eventData) {
+            $declaration = $eventData->getDeclaration();
+            if (empty($declaration) || empty($declaration->getRuleValue())) {
+                return;
+            }
+            $flags = $declaration->getRuleValue()->getFlags();
+            foreach ($flags as $ruleFlag) {
+                if ($ruleFlag instanceof Essentials\RuleFlag\ICssRuleGroupModifier) {
+                    $ruleFlag->modifyRuleGroup($eventData->getRuleGroup(), $eventData->getDeclaration(), $eventData->getVars());
+                }
+            }
+            $eventData->handled(count($flags) > 0);
         });
     }
     
@@ -296,9 +306,9 @@ class MySheet
     }
     
     /**
-     * @return HandlerFactory Instance of HandlerFactory class
+     * @return EventRegistry Instance of HandlerFactory class
      */
-    public function getHandlerFactory() {
+    public function getEventRegistry() {
         return $this->_hf;
     }
 

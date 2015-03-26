@@ -28,7 +28,7 @@ abstract class MssClass
     use RootClassTrait;
 
     public function __toString() {
-        return $this->toRealCss(self::getRootObj()->getVars());
+        return $this->toRealCss(self::msInstance()->getVars());
     }
 
     public function getShortDescription() {

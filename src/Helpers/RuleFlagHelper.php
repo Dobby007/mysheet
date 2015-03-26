@@ -43,7 +43,7 @@ class RuleFlagHelper
             return false;
         }
         $inputString = ltrim($inputCopy);
-        return self::getRootObj()->getListManager()->getList('RuleFlag')->iterate(function(RuleFlagCreator $ruleFlagCreator) use ($flagArray) {
+        return self::msInstance()->getListManager()->getList('RuleFlag')->iterate(function(RuleFlagCreator $ruleFlagCreator) use ($flagArray) {
             $res = $ruleFlagCreator->createFromArray($flagArray);
             return $res instanceof RuleFlag ? $res : null;
         });

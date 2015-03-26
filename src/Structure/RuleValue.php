@@ -132,11 +132,15 @@ class RuleValue
         return $this->setFlag(null, $flag);
     }
     
+    private function isNonEmptyString($str) {
+        return is_string($str) && $str !== '';
+    }
+    
     public function getCompiledParams(VariableScope $vars) {
         //we use our own array_map clone here because of php strange behaviour: exceptions can't get out of this function
         $classes = array_filter(ArrayHelper::map(function(MssClass $item) use($vars) {
             return $item->toRealCss($vars);
-        }, $this->params));
+        }, $this->params), [$this, 'isNonEmptyString']);
         
         return $classes;
     }
@@ -145,7 +149,7 @@ class RuleValue
         //we use our own array_map clone here because of php strange behaviour: exceptions can't get out of this function
         $flags = array_filter(ArrayHelper::map(function(RuleFlag $item) use($vars) {
             return $item->toRealCss($vars);
-        }, $this->_flags));
+        }, $this->_flags), [$this, 'isNonEmptyString']);
         
         return $flags;
     }

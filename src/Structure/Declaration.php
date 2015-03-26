@@ -14,20 +14,20 @@ namespace MSSLib\Structure;
 
 use MSSLib\Structure\RuleValue;
 use MSSLib\Traits\RootClassTrait;
-use MSSLib\Traits\HandlerCallTrait;
+use MSSLib\Traits\FireEventTrait;
 use MSSLib\Error\ParseException;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Etc\Constants;
-use MSSLib\Helpers\RuleFlagHelper;
 
 /**
  * Description of Selector
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class Declaration {
+class Declaration
+{
     use RootClassTrait,
-        HandlerCallTrait;
+        FireEventTrait;
     
     /**
      * @var string
@@ -101,22 +101,19 @@ class Declaration {
         }
     }
     
-        
     public function toRealCss(VariableScope $vars) {
         if (!$this->getRuleEnabled()) {
             return null;
         }
-        
-        
-        $result = $this->renderCssEvent($this, $vars);
-        if ($result->handled()) {
-            return $result->result();
+        $ruleGroup = new CssRuleGroup();
+        $eventData = new \MSSLib\Events\Declaration\RenderDeclarationCssEventData($this, $ruleGroup, $vars);
+        $this->renderCssEvent($eventData);
+        if (!$eventData->getRuleNeglection()) {
+            $ruleGroup->addRule($this->getRuleName(), $this->getRuleValue()->toRealCss($vars));
         }
-        
-        return $this->getRuleName() . ': ' . $this->getRuleValue()->getValue($vars);
+        unset($eventData);
+        return $ruleGroup;
     }
-    
-    
     
     public static function canBeDeclaration($string, &$matches = null) {
         $res = !!preg_match('/^(~)?([-a-z][a-z\d_-]*)\s*(?::|\s)\s*([-#\d"\'.a-z($@].*)$/i', $string, $matches);

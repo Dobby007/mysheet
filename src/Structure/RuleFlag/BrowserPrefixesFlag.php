@@ -20,13 +20,17 @@ namespace MSSLib\Structure\RuleFlag;
 
 use MSSLib\Essentials\RuleFlag\RuleFlagCreator;
 use MSSLib\Essentials\RuleFlag\RuleFlag;
+use MSSLib\Essentials\VariableScope;
+use MSSLib\Essentials\RuleFlag\ICssRuleGroupModifier;
+use MSSLib\Structure\CssRuleGroup;
+use MSSLib\Structure\Declaration;
 
 /**
  * Description of ImportantFlag
  *
  * @author dobby007
  */
-class BrowserPrefixesFlag extends RuleFlag
+class BrowserPrefixesFlag extends RuleFlag implements ICssRuleGroupModifier
 {
     private $_prefixes = array();
     
@@ -34,8 +38,19 @@ class BrowserPrefixesFlag extends RuleFlag
         $this->_prefixes = $prefixes;
     }
     
-    public function toRealCss(\MSSLib\Essentials\VariableScope $vars) {
+    public function toRealCss(VariableScope $vars) {
         return null;
+    }
+    
+    public function modifyRuleGroup(CssRuleGroup $ruleGroup, Declaration $declaration, VariableScope $vars) {
+        if (count($this->_prefixes) < 1) {
+            return false;
+        }
+        $renderedRuleValue = $declaration->getRuleValue()->getValue($vars);
+        foreach ($this->_prefixes as $prefix) {
+            $ruleGroup->addRule('-' . $prefix . '-' . $declaration->getRuleName(), $renderedRuleValue);
+        }
+        return true;
     }
     
     public static function creator() {

@@ -14,7 +14,7 @@ namespace MSSLib\Structure;
 
 use MSSLib\Structure\Selector;
 use MSSLib\Structure\Declaration;
-use MSSLib\Structure\RuleGroup;
+use MSSLib\Structure\CssRuleGroup;
 use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Essentials\StringBuilder;
 use MSSLib\Essentials\VariableScope;

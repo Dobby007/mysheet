@@ -14,7 +14,7 @@ namespace MSSLib\Structure;
 
 use MSSLib\Structure\Selector;
 use MSSLib\Structure\Declaration;
-use MSSLib\Structure\RuleGroup;
+use MSSLib\Structure\CssRuleGroup;
 use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Essentials\StringBuilder;
 use MSSLib\Essentials\VariableScope;
@@ -177,7 +177,7 @@ class Ruleset extends NodeBlock implements IMayContainRuleset {
 
         foreach ($mySelectors as $selector) {
             // we consider full selectors here because they do not need to be merged with their parent
-            $combined = array_merge($combined, $selector->getCssPathGroup()->getPaths());
+            $combined = array_merge($combined, $selector->getCssPathGroup()->getSelectors());
         }
 
         return $combined;
@@ -206,7 +206,7 @@ class Ruleset extends NodeBlock implements IMayContainRuleset {
             
             $result = $decl->toRealCss($vars);
 
-            if ($result instanceof RuleGroup) {
+            if ($result instanceof CssRuleGroup) {
                 foreach ($result->getLines(': ') as $line) {
                     $compiled_declarations[] = (string) $line;
                 }

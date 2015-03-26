@@ -146,7 +146,7 @@ class FunctionClass extends MssClass {
                     $prefix = $this->getSetting('urlFunction.autoPrefix', false);
                     if (!filter_var($fileUrlStr, FILTER_VALIDATE_URL) && $this->getSetting('dataUrl.autoConvert')) {
                         $fileUrlStr =  $prefix ? $prefix . $fileUrlStr : $fileUrlStr;
-                        $fullLocalPath = Document::makeRelativeFilePath(self::getRootObj()->getActiveDocument(), $fileUrlStr);
+                        $fullLocalPath = Document::makeRelativeFilePath(self::msInstance()->getActiveDocument(), $fileUrlStr);
                         $fileInfo = new FileInfo($fullLocalPath);
                         if ($fileInfo->fileExists && $fileInfo->fileSize / 1024 <= $this->getSetting('dataUrl.sizeLimit', 0)) {
                             $arguments[] = DataUrlClass::fromFile($fullLocalPath, $fileInfo->mimeType);

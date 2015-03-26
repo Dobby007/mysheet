@@ -144,7 +144,7 @@ class MathExprClass extends MssClass {
        
     public static function parse(&$string) {
         if (self::$registeredOperators === null) {
-            self::$registeredOperators = self::getRootObj()->getListManager()->getList('Operator')->map(function (\MSSLib\Essentials\TypeClassReference $operatorClassRef) {
+            self::$registeredOperators = self::msInstance()->getListManager()->getList('Operator')->map(function (\MSSLib\Essentials\TypeClassReference $operatorClassRef) {
                 $class = $operatorClassRef->getFullClass();
                 return $class::getOperatorSymbol();
             });

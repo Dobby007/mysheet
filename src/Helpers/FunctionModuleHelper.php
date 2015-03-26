@@ -39,7 +39,7 @@ abstract class FunctionModuleHelper
      * @return FunctionModule Reference to a function in a string representation or false if function can not be found
      */
     public static function findModule($functionName, $arguments) {
-        return self::getRootObj()->getListManager()->getList('FunctionModule')->iterate(function($functionModule) use ($functionName, $arguments) {
+        return self::msInstance()->getListManager()->getList('FunctionModule')->iterate(function($functionModule) use ($functionName, $arguments) {
             if ($functionModule->hasDeclaredFunction($functionName, $arguments)) {
                 return $functionModule;
             }

@@ -13,19 +13,28 @@
 namespace MSSLib\Essentials;
 
 /**
- * Description of HandlerFactory
+ * Description of EventRegistry
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class HandlerFactory {
+class EventRegistry
+{
     private $map = array();
     
+    public function triggerEvent($class, $eventName, array $arguments) {
+        if (isset($this->map[$class][$eventName])) {
+            foreach ($this->map[$class][$eventName] as $callback) {
+                call_user_func_array($callback, $arguments);
+            }
+            return true;
+        }
+        return false;
+    }
+    /*
     public function triggerEvent($class, $eventName, $arguments = null, &$handled = null) {
         $handled = false;
-//        var_dump('asad', $class, $name);
         if (isset($this->map[$class][$eventName])) {
             $arguments = array_merge([&$handled], is_array($arguments) ? $arguments : []);
-//            var_dump($arguments);
             foreach ($this->map[$class][$eventName] as $callback) {
                 $result = call_user_func_array($callback, $arguments);
                 if ($handled !== false) {
@@ -33,10 +42,9 @@ class HandlerFactory {
                 }
             }
         }
-        
         return false;
     }
-    
+    */
     public function registerHandler($class, $eventName, callable $callback) {
         if (!isset($this->map[$class])) {
             $this->map[$class] = [];

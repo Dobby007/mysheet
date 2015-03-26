@@ -33,7 +33,7 @@ class VariableScope implements \ArrayAccess {
     }
 
     public function getParentScope() {
-        return $this->parentScope ? $this->parentScope : self::getRootObj()->getVars();
+        return $this->parentScope ? $this->parentScope : self::msInstance()->getVars();
     }
 
     public function setParentScope($parentScope) {

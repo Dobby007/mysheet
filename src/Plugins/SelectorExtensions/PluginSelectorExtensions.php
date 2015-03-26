@@ -15,7 +15,7 @@ namespace MSSLib\Plugins\SelectorExtensions;
 use MSSLib\Plugins\PluginBase;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Helpers\StringHelper;
-use MSSLib\Structure\PathGroup;
+use MSSLib\Structure\CssSelectorGroup;
 use MSSLib\Structure\Selector;
 
 
@@ -29,7 +29,7 @@ class PluginSelectorExtensions extends PluginBase {
     
     
     public function init() {
-        self::getRootObj()->getHandlerFactory()->registerHandler('Selector', 'cssSelectorParsing', function(&$handled, Selector $selector, PathGroup $pathGroup) {
+        self::msInstance()->getEventRegistry()->registerHandler('Selector', 'cssSelectorParsing', function(Selector $selector, CssSelectorGroup $pathGroup) {
             foreach ($this->handlers as $handler) {
                 $method_name = 'parse' . ucfirst($handler) . 'Handler';
                 $this->$method_name($selector, $pathGroup);
@@ -37,7 +37,7 @@ class PluginSelectorExtensions extends PluginBase {
         });
     }
     
-    public function parseParentHandler(Selector $selector, PathGroup $pathGroup) {
+    public function parseParentHandler(Selector $selector, CssSelectorGroup $pathGroup) {
         $newPaths = [];
         $parentPaths = $selector->getRuleset()->getParentPaths();
         
@@ -45,7 +45,7 @@ class PluginSelectorExtensions extends PluginBase {
             $parentPaths = [''];
         }
         
-        foreach ($pathGroup->getPaths() as $path) {
+        foreach ($pathGroup->getSelectors() as $path) {
             foreach ($parentPaths as $parentPath) {
                 $newPath = str_replace('&', (string)$parentPath, $path, $count);
                 if ($count > 0) {
@@ -57,10 +57,10 @@ class PluginSelectorExtensions extends PluginBase {
                 $newPaths[] = $path;
             }
         }
-        $pathGroup->setPaths($newPaths);
+        $pathGroup->setSelectors($newPaths);
     }
     
-    public function parseAnyHandler(Selector $selector, PathGroup $pathGroup) {
+    public function parseAnyHandler(Selector $selector, CssSelectorGroup $pathGroup) {
         $findAnyMatches = function ($path, &$position, &$pattern) {
             $position = strpos($path, ':any');
             if ($position !== false) {
@@ -80,7 +80,7 @@ class PluginSelectorExtensions extends PluginBase {
         $parentPaths = $selector->getRuleset()->getParentPaths();
         
         $queue = new \SplQueue();
-        foreach ($pathGroup->getPaths() as $path) {
+        foreach ($pathGroup->getSelectors() as $path) {
             $leftAnyCount = substr_count($path, ':any');
             // if there are no ':any' substrings we just skip this iteration
             if ($leftAnyCount < 1) {
@@ -109,6 +109,6 @@ class PluginSelectorExtensions extends PluginBase {
                 }
             } while (!$queue->isEmpty());
         }
-        $pathGroup->setPaths($newPaths);
+        $pathGroup->setSelectors($newPaths);
     }
 }
