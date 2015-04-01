@@ -24,7 +24,8 @@ use MSSLib\Essentials\DelimitedString;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class SequenceClass extends MssClass {
+class SequenceClass extends MssClass
+{
     protected $delimitedString;
     protected $delimiter;
     
@@ -42,8 +43,10 @@ class SequenceClass extends MssClass {
     }
 
     public function setItemList($list) {
-        //call protected function from outside
         $this->delimitedString = new DelimitedString($list, function ($item) {
+            if ($item instanceof MssClass) {
+                return $item;
+            }
             return $this->parseNestedParam($item);
         });
         return $this;

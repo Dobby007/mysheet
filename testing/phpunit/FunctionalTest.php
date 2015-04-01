@@ -132,4 +132,25 @@ class FunctionalTest extends BaseTest
         return $tests;
     }
     
+    
+    /**
+     * @dataProvider dataGradient
+     */
+    public function testGradient($mssSource, $expectedCss)
+    {
+        $doc = $this->mysheet->parseCode($mssSource);
+        $this->assertEquals( $expectedCss, trim($doc->toRealCss()) );
+    }
+    
+    public function dataGradient() {
+        $tests = array_map(function ($filePath) {
+            $test = self::getTest($filePath);
+            return [
+                $test['source'],
+                $test['expected']
+            ];
+        }, self::getAvailableTests('FunctionalTest', 'Gradient'));
+        return $tests;
+    }
+    
 }

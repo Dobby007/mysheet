@@ -92,7 +92,7 @@ class DataUrlClass extends MssClass {
         $encodedContent = DataEncoder::b64EncodeFile($filepath);
         return new DataUrlClass($targetMimeType, $encodedContent);
     }
-        
+    
     public static function parse(&$string) {
         if (strncmp($string, 'data:', 5) !== 0) {
             return false;

@@ -12,7 +12,7 @@ Glossary:
 [+] Add list of reserved keywords to UnaryOperator class
 [+] Bug with parsing of functions that contains dash symbol
 [+] DXImage filters
-[-] Chrome gradient functions
+[+] Chrome gradient functions
 [+] Possibility of setting prefix for url functions: -webkit-url()
 [-] Add support of at-rules in the end!
 [+] background-image with base64 encoded images
@@ -28,6 +28,7 @@ Glossary:
 [-] Enhance support of minimizing files on the fly (make better recognizing of relative paths)
 [-] Add support of delimiters in RuleValue (smart recognition of these delimiters by rule's name)
 [-] Save comments as in a source file
+[-] Mixins without any parameters
 
 ============================================
 

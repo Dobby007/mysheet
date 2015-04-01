@@ -308,7 +308,7 @@ selector
     font italic/glamour -1
     expression (4+3)
 .testimage
-    width 80px color-stop(#fff)
+    width 80px radial-gradient(ellipse farthest-corner, 90deg)
     height 80px !important !prefixWith(ms, moz)
     border-radius 4px
     background-image url(examples/images/logo.png)
@@ -325,9 +325,31 @@ html
     transform scale(2)
 TEXT;
 
+$code14 = <<<TEXT
+html
+    background: -moz-linear-gradient(45deg, rgba(153,218,255,1) 0%, rgba(0,128,128,1) 100%); /* ff3.6+ */
+    background: -webkit-gradient(linear, left bottom, right top, color-stop(0%, rgba(153,218,255,1)), color-stop(100%, rgba(0,128,128,1))); /* safari4+,chrome */
+    background: -webkit-linear-gradient(45deg, rgba(153,218,255,1) 0%, rgba(0,128,128,1) 100%); /* safari5.1+,chrome10+ */
+    background: -o-linear-gradient(45deg, rgba(153,218,255,1) 0%, rgba(0,128,128,1) 100%); /* opera 11.10+ */
+    background: -ms-linear-gradient(45deg, rgba(153,218,255,1) 0%, rgba(0,128,128,1) 100%); /* ie10+ */
+    background: linear-gradient(45deg, rgba(153,218,255,1) 0%, rgba(0,128,128,1) 100%);
+TEXT;
+
+$code15 = <<<TEXT
+html
+    background: -moz-radial-gradient(center, ellipse cover, rgba(153,218,255,1) 0%, rgba(0,128,128,1) 100%); /* ff3.6+ */
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(153,218,255,1)), color-stop(100%, rgba(0,128,128,1))); /* safari4+,chrome */
+    background:-webkit-radial-gradient(center, ellipse cover, rgba(153,218,255,1) 0%, rgba(0,128,128,1) 100%); /* safari5.1+,chrome10+ */
+    background: -o-radial-gradient(center, ellipse cover, rgba(153,218,255,1) 0%, rgba(0,128,128,1) 100%); /* opera 11.10+ */
+    background: -ms-radial-gradient(center, ellipse cover, rgba(153,218,255,1) 0%, rgba(0,128,128,1) 100%); /* ie10+ */
+    background:radial-gradient(ellipse at center, rgba(153,218,255,1) 0%, rgba(0,128,128,1) 100%); /* w3c */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#99DAFF', endColorstr='#008080',GradientType=1 ); /* ie6-9 */
+
+TEXT;
+
 $result = null;
 try {
-    $result = $mysheet->parseCode($code12);
+    $result = $mysheet->parseCode($code15);
 //    $result = $mysheet->parseFile(realpath('examples/bootstrap/bootstrap.css'));
 //    $result = $mysheet->parseFile(realpath('examples/exm3/exam3.mss'));
     //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
