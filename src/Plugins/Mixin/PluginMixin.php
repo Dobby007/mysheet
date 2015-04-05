@@ -13,7 +13,6 @@
 namespace MSSLib\Plugins\Mixin;
 
 use MSSLib\Plugins\PluginBase;
-use MSSLib\Structure\Declaration;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Events\Declaration\RenderDeclarationCssEventData;
 

@@ -349,7 +349,7 @@ TEXT;
 
 $result = null;
 try {
-    $result = $mysheet->parseCode($code15);
+    $result = $mysheet->parseCode($code1);
 //    $result = $mysheet->parseFile(realpath('examples/bootstrap/bootstrap.css'));
 //    $result = $mysheet->parseFile(realpath('examples/exm3/exam3.mss'));
     //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');

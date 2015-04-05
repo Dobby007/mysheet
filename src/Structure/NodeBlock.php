@@ -16,9 +16,14 @@ use MSSLib\Structure\Block;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Essentials\StringBuilder;
 
-abstract class NodeBlock extends Block {
 
-    private $children = array();
+/**
+ * Block that can contain children
+ */
+abstract class NodeBlock extends Block
+{
+
+    protected $children = array();
 
     public function addChild(Block $item) {
         $this->children[] = $item;
@@ -29,6 +34,10 @@ abstract class NodeBlock extends Block {
         unset($this->children[$index]);
     }
 
+    /**
+     * Returns the collection of Blocks belonging to this one
+     * @return Block[]
+     */
     public function getChildren() {
         return $this->children;
     }

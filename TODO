@@ -20,15 +20,16 @@ Glossary:
 [-] Implement Base64-encoding of the images on the fly
 [+] Implement more accurate parsing of CSS functions. E.g. url()
 [-] Prefixes for the background-images
-[-] Embed internal mixins
+[+] Embed internal mixins
 [-] Implement searching of all URL functions
 [-] Implement "raw" import of files without parsing
-[-] Implement parametrization of importted files in the code
+[-] Implement parametrization of imported files in the code
 [-] Implement autoprefixing of CSS rules and its' values
 [-] Enhance support of minimizing files on the fly (make better recognizing of relative paths)
 [-] Add support of delimiters in RuleValue (smart recognition of these delimiters by rule's name)
 [-] Save comments as in a source file
 [-] Mixins without any parameters
+[-] Optimize rendering of CSS by passing StringBuilder instance as a parameter to compileRealCss method
 
 ============================================
 

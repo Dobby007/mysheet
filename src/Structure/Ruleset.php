@@ -22,6 +22,8 @@ use MSSLib\Helpers\StringHelper;
 use MSSLib\Error\CompileException;
 use MSSLib\Tools\Finders\RulesetFinder;
 use MSSLib\Essentials\BlockInterfaces\IMayContainRuleset;
+use MSSLib\Essentials\BlockInterfaces\ICssRulesRenderer;
+
 /**
  * Class that represents CSS ruleset that consists of selectors (Selector) and declarations (Declaration)
  *
@@ -30,7 +32,6 @@ use MSSLib\Essentials\BlockInterfaces\IMayContainRuleset;
 class Ruleset extends NodeBlock implements IMayContainRuleset {
 
     private $_selectors = array();
-    private $_declarations = array();
     protected $_parentRuleset = null;
     
     public function __construct($parent) {
@@ -99,20 +100,20 @@ class Ruleset extends NodeBlock implements IMayContainRuleset {
             $selector->parse();
         }
     }
-
+/*
     public function getDeclarations() {
-        return $this->_declarations;
+        return $this->children;
     }
 
     public function countDeclarations() {
-        return count($this->_declarations);
+        return count($this->children);
     }
-
+*/
     public function addDeclaration($declaration) {
         if (is_string($declaration)) {
-            $this->_declarations[] = (new Declaration($declaration));
+            $this->children[] = (new Declaration($declaration));
         } else if ($declaration instanceof Declaration) {
-            $this->_declarations[] = $declaration;
+            $this->children[] = $declaration;
         }
     }
 
@@ -186,19 +187,29 @@ class Ruleset extends NodeBlock implements IMayContainRuleset {
     protected function compileRealCss(VariableScope $vars) {
         $lines = new StringBuilder();
         $selectors = $this->getFullCssSelectors();
-        $declarations = $this->getDeclarations();
+        //$declarations = $this->getDeclarations();
 
         if (empty($selectors)) {
             throw new CompileException(null, 'NO_SELECTORS_FOUND');
         }
-
+        
+        /*
         // if there are no rules and no children return nothing
         if (empty($declarations) && empty($this->getChildren())) {
             return [];
         }
+        */
 
-        $compiled_declarations = [];
-
+        $rules = [];
+        foreach ($this->getChildren() as $childBlock) {
+            if ($childBlock instanceof ICssRulesRenderer) {
+                $cssRuleGroup = $childBlock->renderCssRuleGroup($vars);
+                if ($cssRuleGroup instanceof CssRuleGroup) {
+                    $rules = array_merge($rules, $cssRuleGroup->getLines(': '));
+                }
+            }
+        }
+        /*
         array_walk($declarations, function(Declaration $decl) use (&$compiled_declarations, $vars) {
             if (!$decl->getRuleEnabled()) {
                 return;
@@ -213,38 +224,34 @@ class Ruleset extends NodeBlock implements IMayContainRuleset {
             } else {
                 $compiled_declarations[] = (string) $result;
             }
-        });
+        });*/
 
         //nothing to render if there are no declarations
-        if (!empty($compiled_declarations)) {
+        if (!empty($rules)) {
             $selectors = implode($this->getSetting('cssRenderer.sepSelectors', ', '), $selectors);
             $lines->addLine($selectors);
 
-            $compiled_declarations = ArrayHelper::implodeLines(
-                            $compiled_declarations, $this->getSetting('cssRenderer.prefixRule', '    '), $this->getSetting('cssRenderer.suffixRule', ''), $this->getSetting('cssRenderer.sepRules', ";\n")
+            $compiled_rules = ArrayHelper::implodeLines(
+                    $rules, $this->getSetting('cssRenderer.prefixRule', '    '), $this->getSetting('cssRenderer.suffixRule', ''), $this->getSetting('cssRenderer.sepRules', ";\n")
             );
 
             $lines->appendText(
-                            $this->getSetting('cssRenderer.prefixOCB', ' ') .
-                            '{' .
-                            $this->getSetting('cssRenderer.suffixOCB', "\n")
-                    )
-                    ->appendText(
-                            $this->getSetting('cssRenderer.prefixDeclBlock', "") .
-                            $compiled_declarations .
-                            $this->getSetting('cssRenderer.suffixDeclBlock', "")
-                    )
-                    ->appendText(
-                            $this->getSetting('cssRenderer.prefixCCB', "\n") .
-                            '}' .
-                            $this->getSetting('cssRenderer.suffixCCB', "\n")
+                    $this->getSetting('cssRenderer.prefixOCB', ' ') .
+                    '{' .
+                    $this->getSetting('cssRenderer.suffixOCB', "\n")
+            )
+            ->appendText(
+                    $this->getSetting('cssRenderer.prefixDeclBlock', "") .
+                    $compiled_rules .
+                    $this->getSetting('cssRenderer.suffixDeclBlock', "")
+            )
+            ->appendText(
+                    $this->getSetting('cssRenderer.prefixCCB', "\n") .
+                    '}' .
+                    $this->getSetting('cssRenderer.suffixCCB', "\n")
             );
-//            ArrayHelper::concat($lines, $selectors, '{', $compiled_declarations, '}');
         }
-
         $lines->addLines(parent::compileRealCss($vars));
-
-
         return $lines;
     }
 

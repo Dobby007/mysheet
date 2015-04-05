@@ -53,20 +53,20 @@ class MediaRequest extends NodeBlock implements IMayContainRuleset {
             $lines = new StringBuilder();
             $lines->addLine('@media ' . $request);
             $lines->appendText(
-                    $this->getSetting('cssRenderer.prefixOCB', ' ') .
-                    '{' .
-                    $this->getSetting('cssRenderer.suffixOCB', "\n")
+                $this->getSetting('cssRenderer.prefixOCB', ' ') .
+                '{' .
+                $this->getSetting('cssRenderer.suffixOCB', "\n")
+            )
+            ->appendText(
+                $childrenLines->processLines(
+                    $this->getSetting('cssRenderer.prefixMediaLine', '    '), 
+                    $this->getSetting('cssRenderer.suffixMediaLine', '')
                 )
-                ->appendText(
-                    $childrenLines->processLines(
-                        $this->getSetting('cssRenderer.prefixMediaLine', '    '), 
-                        $this->getSetting('cssRenderer.suffixMediaLine', '')
-                    )
-                )
-                ->appendText(
-                    $this->getSetting('cssRenderer.prefixCCB', "\n") .
-                    '}' .
-                    $this->getSetting('cssRenderer.suffixCCB', "\n")
+            )
+            ->appendText(
+                $this->getSetting('cssRenderer.prefixCCB', "\n") .
+                '}' .
+                $this->getSetting('cssRenderer.suffixCCB', "\n")
             );
             return $lines;
         } else {

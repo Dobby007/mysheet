@@ -18,13 +18,15 @@ use MSSLib\Traits\FireEventTrait;
 use MSSLib\Error\ParseException;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Etc\Constants;
+use MSSLib\Essentials\BlockInterfaces\ICssRulesRenderer;
+
 
 /**
  * Description of Selector
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class Declaration
+class Declaration extends LeafBlock implements ICssRulesRenderer
 {
     use RootClassTrait,
         FireEventTrait;
@@ -101,26 +103,30 @@ class Declaration
         }
     }
     
-    public function toRealCss(VariableScope $vars) {
+    public function renderCssRuleGroup(VariableScope $vars, $triggerEvent = true) {
         if (!$this->getRuleEnabled()) {
             return null;
         }
         $ruleGroup = new CssRuleGroup();
-        $eventData = new \MSSLib\Events\Declaration\RenderDeclarationCssEventData($this, $ruleGroup, $vars);
-        $this->renderCssEvent($eventData);
-        if (!$eventData->getRuleNeglection()) {
+        if ($triggerEvent === true) {
+            $eventData = new \MSSLib\Events\Declaration\RenderDeclarationCssEventData($this, $ruleGroup, $vars);
+            $this->renderCssEvent($eventData);
+            if (!$eventData->getRuleNeglection()) {
+                $ruleGroup->addRule($this->getRuleName(), $this->getRuleValue()->toRealCss($vars));
+            }
+        } else {
             $ruleGroup->addRule($this->getRuleName(), $this->getRuleValue()->toRealCss($vars));
         }
         unset($eventData);
         return $ruleGroup;
     }
     
+    
+    // static functions
     public static function canBeDeclaration($string, &$matches = null) {
         $res = !!preg_match('/^(~)?([-a-z][a-z\d_-]*)\s*(?::|\s)\s*([-#\d"\'.a-z($@].*)$/i', $string, $matches);
-//        var_dump('REGEX::: ', $string,$res, $matches);
         return $res;
     }
-    
     
     public static function getBrowserPrefixesAsArray($browsersEnum) {
         static $prefixMap = [

@@ -13,11 +13,12 @@
 namespace MSSLib\Plugins\Mixin;
 
 use MSSLib\Structure\Declaration;
-use MSSLib\Structure\LeafBlock;
+use MSSLib\Structure\NodeBlock;
 use MSSLib\Traits\RootClassTrait;
 use MSSLib\Traits\PluginClassTrait;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Structure\CssRuleGroup;
+use MSSLib\Essentials\BlockInterfaces\ICssRulesRenderer;
 
 
 /**
@@ -25,11 +26,11 @@ use MSSLib\Structure\CssRuleGroup;
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class Mixin extends LeafBlock {
+class Mixin extends NodeBlock
+{
     use RootClassTrait,
         PluginClassTrait;
     
-    protected $declarations = array();
     protected $name;
     protected $locals = array();
     
@@ -67,29 +68,22 @@ class Mixin extends LeafBlock {
         return $this;
     }
     
-    /**
-     * 
-     * @return Declaration[]
-     */
-    public function getDeclarations() {
-        return $this->declarations;
-    }
-    
-    public function countDeclarations() {
-        return count($this->declarations);
-    }
-    
     public function addDeclaration($declaration) {
         if (is_string($declaration)) {
             $declaration = new Declaration($declaration);
         }
         
         if ($declaration instanceof Declaration) {
-            $this->declarations[] = $declaration;
+            $this->children[] = $declaration;
         }
         return $this;
     }
     
+    /**
+     * 
+     * @param string|string[]|Declaration[] $declarations
+     * @return \MSSLib\Plugins\Mixin\Mixin
+     */
     public function addDeclarations($declarations) {
         if (is_string($declarations)) {
             $declarations = preg_split('/(?![\s;]+$);/', $declarations);
@@ -123,10 +117,23 @@ class Mixin extends LeafBlock {
         }
         
         $rendered_rules = new CssRuleGroup();
-        foreach ($this->getDeclarations() as $declaration) {
-            $rendered_rules->addRule($declaration->getRuleName(), $declaration->getRuleValue()->getValue($renderScope));
+        foreach ($this->getChildren() as $childBlock) {
+            if ($childBlock instanceof ICssRulesRenderer) {
+                $cssRuleGroup = $this->renderCssRuleGroupForBlock($childBlock, $renderScope);
+                if ($cssRuleGroup instanceof CssRuleGroup) {
+                    $rendered_rules->mergeWith($cssRuleGroup);
+                }
+            }
         }
         return $rendered_rules;
+    }
+    
+    private function renderCssRuleGroupForBlock($block, $renderScope) {
+        if ($block instanceof Declaration) {
+            return $block->renderCssRuleGroup($renderScope, false);
+        } else {
+            return $block->renderCssRuleGroup($renderScope);
+        }
     }
 }
 
