@@ -16,6 +16,7 @@ use MSSLib\Structure\RuleValue;
 use MSSLib\EmbeddedClasses\StringClass;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Tools\Debugger;
+use MSSLib\Essentials\StringBuilder;
 
 /**
  * Description of Ruleset
@@ -39,7 +40,7 @@ class ImportDirective extends LeafBlock {
         return $this->importValue;
     }
         
-    protected function compileRealCss(VariableScope $vars) {
+    protected function compileRealCss(VariableScope $vars, StringBuilder $output) {
         $value = $this->getValue();
         
         if ($value instanceof RuleValue) {
@@ -53,11 +54,10 @@ class ImportDirective extends LeafBlock {
                 $url = str_replace('..', '', $url->getText());
                 $resultDoc = self::msInstance()->parseImportFile($url);
                 if ($resultDoc instanceof Block) {
-                    return $resultDoc->compileRealCss($vars);
+                    return $resultDoc->compileRealCss($vars, $output);
                 }
-                
             } else {
-                return '@import ' . $value->toRealCss($vars) . ';';
+                $output->addLine('@import ' . $value->toRealCss($vars) . ';');
             }
         }
         

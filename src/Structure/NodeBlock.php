@@ -63,16 +63,17 @@ abstract class NodeBlock extends Block
         return $size > 0;
     }
 
+    public function compileChildren(VariableScope $vars, StringBuilder $output) {
+        foreach ($this->getChildren() as $child) {
+            $output->addLines($child->compileRealCss($vars, $output));
+        }
+    }
+    
     /**
      * @return array Array of compiled lines
      */
-    protected function compileRealCss(VariableScope $vars) {
-        $lines = new StringBuilder();
-        foreach ($this->getChildren() as $child) {
-            $lines->addLines($child->compileRealCss($vars));
-        }
-        
-        return $lines;
+    protected function compileRealCss(VariableScope $vars, StringBuilder $output) {
+        $this->compileChildren($vars, $output);
     }
 
 }

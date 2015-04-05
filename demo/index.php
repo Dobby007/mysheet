@@ -344,12 +344,11 @@ html
     background: -ms-radial-gradient(center, ellipse cover, rgba(153,218,255,1) 0%, rgba(0,128,128,1) 100%); /* ie10+ */
     background:radial-gradient(ellipse at center, rgba(153,218,255,1) 0%, rgba(0,128,128,1) 100%); /* w3c */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#99DAFF', endColorstr='#008080',GradientType=1 ); /* ie6-9 */
-
 TEXT;
 
 $result = null;
 try {
-    $result = $mysheet->parseCode($code1);
+    $result = $mysheet->parseCode($code7);
 //    $result = $mysheet->parseFile(realpath('examples/bootstrap/bootstrap.css'));
 //    $result = $mysheet->parseFile(realpath('examples/exm3/exam3.mss'));
     //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');

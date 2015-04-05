@@ -60,7 +60,7 @@ abstract class Block {
     /**
      * @return StringBuilder Array of compiled lines
      */
-    protected function compileRealCss(VariableScope $vars) {
+    protected function compileRealCss(VariableScope $vars, StringBuilder $output) {
         return null;
     }
 
@@ -82,13 +82,14 @@ abstract class Block {
         if ($vars) {
             self::msInstance()->getVars()->appendScope($vars);
         }
-        /* @var $compiled StringBuilder */
-        $compiled = $this->compileRealCss(VariableScope::getInstantiatedScope($vars, self::msInstance()->getVars())->createChildScope());
-        if (!($compiled instanceof StringBuilder)) {
-            return null;
-        }
+        
+        $output = new StringBuilder();
+        $this->compileRealCss(
+                VariableScope::getInstantiatedScope($vars, self::msInstance()->getVars())->createChildScope(),
+                $output
+        );
         
         $this->cssRenderingEndedEvent(new \MSSLib\Events\Block\CssRenderingEndedEventData($this));
-        return $compiled->join();
+        return $output->join();
     }
 }

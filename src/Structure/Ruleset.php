@@ -184,8 +184,7 @@ class Ruleset extends NodeBlock implements IMayContainRuleset {
         return $combined;
     }
 
-    protected function compileRealCss(VariableScope $vars) {
-        $lines = new StringBuilder();
+    protected function compileRealCss(VariableScope $vars, StringBuilder $output) {
         $selectors = $this->getFullCssSelectors();
         //$declarations = $this->getDeclarations();
 
@@ -229,13 +228,13 @@ class Ruleset extends NodeBlock implements IMayContainRuleset {
         //nothing to render if there are no declarations
         if (!empty($rules)) {
             $selectors = implode($this->getSetting('cssRenderer.sepSelectors', ', '), $selectors);
-            $lines->addLine($selectors);
+            $output->addLine($selectors);
 
             $compiled_rules = ArrayHelper::implodeLines(
                     $rules, $this->getSetting('cssRenderer.prefixRule', '    '), $this->getSetting('cssRenderer.suffixRule', ''), $this->getSetting('cssRenderer.sepRules', ";\n")
             );
 
-            $lines->appendText(
+            $output->appendText(
                     $this->getSetting('cssRenderer.prefixOCB', ' ') .
                     '{' .
                     $this->getSetting('cssRenderer.suffixOCB', "\n")
@@ -251,8 +250,7 @@ class Ruleset extends NodeBlock implements IMayContainRuleset {
                     $this->getSetting('cssRenderer.suffixCCB', "\n")
             );
         }
-        $lines->addLines(parent::compileRealCss($vars));
-        return $lines;
+        $output->addLines($this->compileChildren($vars, $output));
     }
 
 }

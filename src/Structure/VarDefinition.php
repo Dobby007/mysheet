@@ -13,10 +13,6 @@
 
 namespace MSSLib\Structure;
 
-use MSSLib\Structure\Selector;
-use MSSLib\Structure\Declaration;
-use MSSLib\Structure\CssRuleGroup;
-use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Essentials\StringBuilder;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Tools\Debugger;
@@ -59,7 +55,7 @@ class VarDefinition extends LeafBlock {
         return $this;
     }
         
-    protected function compileRealCss(VariableScope $vars) {
+    protected function compileRealCss(VariableScope $vars, StringBuilder $output) {
         Debugger::logString('DEFINE VAR: ' . $this->getVarName() . ' = ' . $this->getVarExpression()->toRealCss($vars));
         $vars->set($this->getVarName(), $this->getVarExpression());
     }

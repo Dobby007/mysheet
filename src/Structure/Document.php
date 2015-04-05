@@ -13,13 +13,16 @@
 namespace MSSLib\Structure;
 
 use MSSLib\Essentials\BlockInterfaces\IMayContainRuleset;
+use MSSLib\Essentials\VariableScope;
+use MSSLib\Essentials\StringBuilder;
 
 /**
  * Description of Document
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class Document extends NodeBlock implements IMayContainRuleset {
+class Document extends NodeBlock implements IMayContainRuleset
+{
     protected $_docFilePath;
     
     public function __construct() {
@@ -51,9 +54,9 @@ class Document extends NodeBlock implements IMayContainRuleset {
         return $basedir ? $basedir . DIRECTORY_SEPARATOR . $relativeFilePath : $relativeFilePath;
     }
     
-    protected function compileRealCss(\MSSLib\Essentials\VariableScope $vars) {
+    protected function compileRealCss(VariableScope $vars, StringBuilder $output) {
         self::msInstance()->setActiveDocument($this);
-        return parent::compileRealCss($vars);
+        return parent::compileRealCss($vars, $output);
     }
 
     

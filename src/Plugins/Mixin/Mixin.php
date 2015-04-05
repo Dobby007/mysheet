@@ -19,7 +19,7 @@ use MSSLib\Traits\PluginClassTrait;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Structure\CssRuleGroup;
 use MSSLib\Essentials\BlockInterfaces\ICssRulesRenderer;
-
+use MSSLib\Essentials\StringBuilder;
 
 /**
  * Description of Mixin
@@ -97,9 +97,8 @@ class Mixin extends NodeBlock
         return $this;
     }
     
-    protected function compileRealCss(VariableScope $vars) {
+    protected function compileRealCss(VariableScope $vars, StringBuilder $output) {
         $this->plugin->registerMixin($this);
-        return [];
     }
     
     public function render(VariableScope $arguments = null) {

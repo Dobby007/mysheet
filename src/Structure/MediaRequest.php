@@ -12,10 +12,6 @@
 
 namespace MSSLib\Structure;
 
-use MSSLib\Structure\Selector;
-use MSSLib\Structure\Declaration;
-use MSSLib\Structure\CssRuleGroup;
-use MSSLib\Helpers\ArrayHelper;
 use MSSLib\Essentials\StringBuilder;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Tools\Debugger;
@@ -45,20 +41,20 @@ class MediaRequest extends NodeBlock implements IMayContainRuleset {
     }
 
         
-    protected function compileRealCss(VariableScope $vars) {
+    protected function compileRealCss(VariableScope $vars, StringBuilder $output) {
         $request = $this->getRequest();
-        $childrenLines = parent::compileRealCss($vars);
+        $innerContent = new StringBuilder();
+        $this->compileChildren($vars, $innerContent);
         if ($request) {
             Debugger::logString('MEDIA REQUEST COMPILATION: '. $request);
-            $lines = new StringBuilder();
-            $lines->addLine('@media ' . $request);
-            $lines->appendText(
+            $output->addLine('@media ' . $request);
+            $output->appendText(
                 $this->getSetting('cssRenderer.prefixOCB', ' ') .
                 '{' .
                 $this->getSetting('cssRenderer.suffixOCB', "\n")
             )
             ->appendText(
-                $childrenLines->processLines(
+                $innerContent->processLines(
                     $this->getSetting('cssRenderer.prefixMediaLine', '    '), 
                     $this->getSetting('cssRenderer.suffixMediaLine', '')
                 )
@@ -68,9 +64,8 @@ class MediaRequest extends NodeBlock implements IMayContainRuleset {
                 '}' .
                 $this->getSetting('cssRenderer.suffixCCB', "\n")
             );
-            return $lines;
         } else {
-            return $childrenLines;
+            $output->addLines($innerContent);
         }
         
     }

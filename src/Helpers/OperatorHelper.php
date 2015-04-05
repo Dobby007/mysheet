@@ -12,9 +12,7 @@
 
 namespace MSSLib\Helpers;
 
-use MSSLib\MySheet;
 use MSSLib\Essentials\Math\MathOperator;
-use MSSLib\Essentials\FuncListManager;
 use MSSLib\Traits\RootClassTrait;
 use MSSLib\Essentials\TypeClassReference;
 /**
