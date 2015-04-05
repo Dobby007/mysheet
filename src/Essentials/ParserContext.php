@@ -102,6 +102,10 @@ class ParserContext {
         return false;
     }
     
+    /**
+     * 
+     * @return SourceLine|false
+     */
     public function curLine() {
         if ($this->curClosure()) {
             return $this->curClosure()->getLine($this->_lineIndex);

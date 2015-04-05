@@ -346,9 +346,20 @@ html
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#99DAFF', endColorstr='#008080',GradientType=1 ); /* ie6-9 */
 TEXT;
 
+$code16 = <<<TEXT
+@charset 'utf-8'
+@document url(http://www.w3.org/), url-prefix(http://www.w3.org/Style/), domain(mozilla.org), regexp("https:.*") {
+    h1
+        color red
+}
+html
+    height 0
+    width 100%
+TEXT;
+
 $result = null;
 try {
-    $result = $mysheet->parseCode($code7);
+    $result = $mysheet->parseCode($code16);
 //    $result = $mysheet->parseFile(realpath('examples/bootstrap/bootstrap.css'));
 //    $result = $mysheet->parseFile(realpath('examples/exm3/exam3.mss'));
     //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');

@@ -102,13 +102,13 @@ class RulesetParserExtension extends ParserExtension
                 $lastClosure = $context->curClosure();
             }
         } while (
-                    (
-                        ($lastLineIndex !== false && $context->getCurrentLineIndex() < $lastLineIndex) || ($lastLineIndex === false)
-                    ) && 
-                    (
-                        $curLine = $context->nextLine(true)
-                    )
-                );
+            (
+                ($lastLineIndex !== false && $context->getCurrentLineIndex() < $lastLineIndex) || ($lastLineIndex === false)
+            ) && 
+            (
+                $curLine = $context->nextLine(true)
+            )
+        );
         
         return $ruleset;
     }
