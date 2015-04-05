@@ -29,7 +29,8 @@ Glossary:
 [-] Add support of delimiters in RuleValue (smart recognition of these delimiters by rule's name)
 [-] Save comments as in a source file
 [-] Mixins without any parameters
-[-] Optimize rendering of CSS by passing StringBuilder instance as a parameter to compileRealCss method
+[+] Optimize rendering of CSS by passing StringBuilder instance as a parameter to compileRealCss method
+[-] Implement support for variables' definition directly in a declaration
 
 ============================================
 
