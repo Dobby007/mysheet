@@ -103,9 +103,12 @@ class PluginMixin extends PluginBase
         if ($mixin) {
             $eventData->handled(true);
             $eventData->setRuleNeglection(true);
-            $vs = new VariableScope();
+            $vs = new VariableScope($eventData->getVars());
             $vs->enableNumericVars(true);
-            $vs->setMap($eventData->getDeclaration()->getRuleValue()->getCompiledParams($eventData->getVars()));
+            $params = array_map(function (\MSSLib\Essentials\MssClass $param) use ($eventData) {
+                return $param->getValue($eventData->getVars());
+            }, $eventData->getDeclaration()->getRuleValue()->getParams());
+            $vs->setMap($params);
             $eventData->getRuleGroup()->mergeWith($mixin->render($vs));
         }
     }

@@ -15,7 +15,7 @@ namespace MSSLib\Structure;
 use MSSLib\Essentials\StringBuilder;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Tools\Debugger;
-use MSSLib\Essentials\BlockInterfaces\IMayContainRuleset;
+use MSSLib\Helpers\ArrayHelper;
 
 /**
  * Description of Ruleset
@@ -51,20 +51,33 @@ class AtRule extends NodeBlock {
             $this->compileChildren($vars, $innerContent);
         }
         
-        Debugger::logString('AT-RULE REQUEST COMPILATION: '. $this->getName());
+        Debugger::logString('COMPILATION OF AT-RULE: '. $this->getName());
         $output->addLine('@' . $this->getName() . ' ' . $this->getParameters() . ($innerContent === null ? ';' : ''));
-        if ($innerContent !== null) {
+        $rules = $this->renderChildrensCssRuleGroup($vars);
+        if (!empty($rules) || $innerContent !== null) {
             $output->appendText(
                 $this->getSetting('cssRenderer.prefixOCB', ' ') .
                 '{' .
                 $this->getSetting('cssRenderer.suffixOCB', "\n")
             );
-            $output->appendText(
-                $innerContent->processLines(
-                    $this->getSetting('cssRenderer.prefixMediaLine', '    '), 
-                    $this->getSetting('cssRenderer.suffixMediaLine', '')
-                )
-            );
+            if (!empty($rules)) {
+                $compiled_rules = ArrayHelper::implodeLines(
+                    $rules, $this->getSetting('cssRenderer.prefixRule', '    '), $this->getSetting('cssRenderer.suffixRule', ''), $this->getSetting('cssRenderer.sepRules', ";\n")
+                );
+                $output->appendText(
+                    $this->getSetting('cssRenderer.prefixDeclBlock', "") .
+                    $compiled_rules .
+                    $this->getSetting('cssRenderer.suffixDeclBlock', "")
+                );
+            } else {
+                $output->appendText(
+                    $innerContent->processLines(
+                        $this->getSetting('cssRenderer.prefixAtRuleLine', '    '), 
+                        $this->getSetting('cssRenderer.suffixAtRuleLine', '')
+                    )
+                );
+            }
+            
             $output->appendText(
                 $this->getSetting('cssRenderer.prefixCCB', "\n") .
                 '}' .

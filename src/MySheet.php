@@ -147,7 +147,7 @@ class MySheet
     
     protected function initExtensions() {
         $peNs = 'MSSLib\\ParserExtensions\\';
-        foreach ($this->getSettings()->parserExtensions as $peClass) {
+        foreach (array_reverse($this->getSettings()->parserExtensions) as $peClass) {
             $class = $peNs . ucfirst($peClass) . 'ParserExtension';
             $this->parser->addParserExtension($class);
         }

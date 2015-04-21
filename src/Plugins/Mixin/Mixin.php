@@ -20,6 +20,7 @@ use MSSLib\Essentials\VariableScope;
 use MSSLib\Structure\CssRuleGroup;
 use MSSLib\Essentials\BlockInterfaces\ICssRulesRenderer;
 use MSSLib\Essentials\StringBuilder;
+use MSSLib\Tools\Debugger;
 
 /**
  * Description of Mixin
@@ -99,9 +100,11 @@ class Mixin extends NodeBlock
     
     protected function compileRealCss(VariableScope $vars, StringBuilder $output) {
         $this->plugin->registerMixin($this);
+        Debugger::logString('MIXIN REGISTERED: '. $this->getName());
     }
     
     public function render(VariableScope $arguments = null) {
+        Debugger::logString('COMPILATION OF MIXIN: '. $this->getName());
         $renderScope = VariableScope::merge($arguments);
         $renderScope['arguments'] = $renderScope->asArray(function($varname) {
             return is_int($varname);

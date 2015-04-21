@@ -199,15 +199,7 @@ class Ruleset extends NodeBlock implements IMayContainRuleset {
         }
         */
 
-        $rules = [];
-        foreach ($this->getChildren() as $childBlock) {
-            if ($childBlock instanceof ICssRulesRenderer) {
-                $cssRuleGroup = $childBlock->renderCssRuleGroup($vars);
-                if ($cssRuleGroup instanceof CssRuleGroup) {
-                    $rules = array_merge($rules, $cssRuleGroup->getLines(': '));
-                }
-            }
-        }
+        $rules = $this->renderChildrensCssRuleGroup($vars);
         /*
         array_walk($declarations, function(Declaration $decl) use (&$compiled_declarations, $vars) {
             if (!$decl->getRuleEnabled()) {

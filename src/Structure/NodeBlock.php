@@ -15,7 +15,7 @@ namespace MSSLib\Structure;
 use MSSLib\Structure\Block;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Essentials\StringBuilder;
-
+use MSSLib\Essentials\BlockInterfaces\ICssRulesRenderer;
 
 /**
  * Block that can contain children
@@ -67,6 +67,23 @@ abstract class NodeBlock extends Block
         foreach ($this->getChildren() as $child) {
             $output->addLines($child->compileRealCss($vars, $output));
         }
+    }
+    
+    /**
+     * Calls renderCssRuleGroup method on all children belonging to this Block and returns result as array
+     * @return string[]
+     */
+    public function renderChildrensCssRuleGroup(VariableScope $vars) {
+        $rules = [];
+        foreach ($this->getChildren() as $childBlock) {
+            if ($childBlock instanceof ICssRulesRenderer) {
+                $cssRuleGroup = $childBlock->renderCssRuleGroup($vars);
+                if ($cssRuleGroup instanceof CssRuleGroup) {
+                    $rules = array_merge($rules, $cssRuleGroup->getLines(': '));
+                }
+            }
+        }
+        return $rules;
     }
     
     /**

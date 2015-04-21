@@ -26,6 +26,7 @@ return [
     ],
     'cssRenderer' => [
 //        'prefixRule' => '',
+//        'suffixRule' => ' /* this is a CSS rule */',
 //        'sepSelectors' => ', ',
 //        'sepRules' => '; ',
 //        'prefixCCB' => '',
@@ -45,6 +46,6 @@ return [
     'urlFunction' => [
         'autoPrefix' => false
     ],
-    'parser' => '\MSSLib\Tools\BlockParser',
+    'parser' => '\MSSLib\Essentials\BlockParser',
     'language' => 'en_us'
 ];

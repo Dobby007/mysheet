@@ -44,8 +44,11 @@ class VariableClass extends MssClass {
 
     public function getValue(VariableScope $vars) {
         $varValue = $vars[$this->getVarName()];
-        if (!($varValue instanceof MssClass)) {
+        if ($varValue === null) {
             throw new \MSSLib\Error\CompileException(null, 'UNKNOWN_VAR', [$this->getVarName()]);
+        }
+        if (!($varValue instanceof MssClass)) {
+            throw new \MSSLib\Error\CompileException(null, 'INCORRECT_VAR_VALUE', [$this->getVarName()]);
         }
         return $varValue->getValue($vars);
     }

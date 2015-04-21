@@ -17,6 +17,16 @@ $mysheet = MySheet::Instance();
 $mysheet->setActiveDirectory(realpath('./'));
 $mysheet->getAutoload()->registerAutoload();
 $settings = new MSSettings();
+//$settings->set('cssRenderer', [
+//    'prefixRule' => '   ',
+//    'suffixRule' => ' /* this is a real CSS rule */',
+//    'sepSelectors' => ', ',
+//    'sepRules' => '; ',
+//    'prefixOCB' => ' ',
+//    'suffixOCB' => "\n",
+//    'prefixCCB' => "\n",
+//    'suffixCCB' => ''
+//]);
 $settings->setDependencies(['../../php_libs/nicmart-tree/manual-init.php']);
 $settings->set('color.lib.libPath', '../../mrcolor');
 $mysheet->init($settings);
@@ -81,14 +91,14 @@ TEXT;
         
 $code2 = <<<TEXT
 html { color false; h1: true; hi: #333}
-body {   
+body  
     rule: red
     .wrapper
         decl value
         set h1
             color high-definition
     
-}
+
 
 .wrapper
     font-size 23px
@@ -352,19 +362,60 @@ $code16 = <<<TEXT
     h1
         color red
 }
+@font-face {
+    font-family: "Bitstream Vera Serif Bold";
+    src: url("https://mdn.mozillademos.org/files/2468/VeraSeBd.ttf");
+}
 html
     height 0
     width 100%
 TEXT;
 
+$code17 = <<<TEXT
+
+
+@mixin border-radiuss(topleft, topright, bottomright, bottomleft)
+    border-radius \$topleft \$topright \$arguments
+
+img
+    filter-grayscale 100%
+    width 1
+    boder-radiuss 4px 3px 5px 6px
+img:hover
+    filter-grayscale 0%
+TEXT;
+
+
+$code18 = <<<TEXT
+html { color red; text-align: center; margin: 0 auto; }
+@mixin rounded-corners (top, right, bottom, left)
+    -webkit-border-radius \$left + \$right \$top + \$bottom
+    -moz-border-radius \$arguments
+    border-radius \$arguments \$left \$right \$left \$right
+        
+@mixin diagonal-border-radius(left, right)
+    border-radius \$arguments \$right \$left
+        
+@page 
+    padding 5px
+body
+    rounded-corners 1 2 3 4 
+    .wrapper
+        diagonal-border-radius 6px 10px
+        h1 span
+            color blue
+
+TEXT;
+
 $result = null;
 try {
-    $result = $mysheet->parseCode($code16);
+    $result = $mysheet->parseCode($code18);
 //    $result = $mysheet->parseFile(realpath('examples/bootstrap/bootstrap.css'));
 //    $result = $mysheet->parseFile(realpath('examples/exm3/exam3.mss'));
     //$result = $mysheet->parseFicle(__DIR__ . '/examples/main.mss');
 
-
+    var_dump($result);
+    
     $resultRulesets = \MSSLib\Tools\Finders\RulesetFinder::querySelectorAll('.wrapper, .header', $result);
 
     foreach ($resultRulesets as $resultRuleset) {

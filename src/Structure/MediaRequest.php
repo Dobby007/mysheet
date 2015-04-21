@@ -55,8 +55,8 @@ class MediaRequest extends NodeBlock implements IMayContainRuleset {
             )
             ->appendText(
                 $innerContent->processLines(
-                    $this->getSetting('cssRenderer.prefixMediaLine', '    '), 
-                    $this->getSetting('cssRenderer.suffixMediaLine', '')
+                    $this->getSetting('cssRenderer.prefixAtRuleLine', '    '), 
+                    $this->getSetting('cssRenderer.suffixAtRuleLine', '')
                 )
             )
             ->appendText(

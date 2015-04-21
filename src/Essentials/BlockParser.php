@@ -1,6 +1,6 @@
 <?php
 
-namespace MSSLib\Tools;
+namespace MSSLib\Essentials;
 
 use MSSLib\Essentials\IParser;
 use MSSLib\Structure\Block;
@@ -13,6 +13,7 @@ use MSSLib\Essentials\SourceLine;
 use MSSLib\Essentials\SourceClosure;
 use MSSLib\Traits\RootClassTrait;
 use MSSLib\Helpers\StringHelper;
+use MSSLib\Tools\Debugger;
 
 /**
  * Parser class is used to parse a MSS or CSS text into a document.
@@ -48,30 +49,21 @@ class BlockParser implements IParser
         }
         
         if ($extension instanceof ParserExtension) {
-            $this->extensions[] = $extension;
+            array_unshift($this->extensions, $extension);
         }
     }
 
     public function comeon() {
         $this->doc = new Document();
         $this->curBlock = $this->doc;
-        $start_time = microtime(true);
         $this->processedCode = $this->getCode();
         $this->removeComments();
         $this->divideIntoLines();
-        $end_time = microtime(true);
-        Debugger::logString("\nElapsed time 1:" . ($end_time - $start_time));
-        
-        $start_time = microtime(true);
         $context = new ParserContext($this, $this->sourceClosure);
         $parsedBlocks = $this->parseContext($context);
         foreach ($parsedBlocks as $parsedBlock) {
             $this->doc->addChild($parsedBlock);
         }
-        $end_time = microtime(true);
-        Debugger::logString("\nElapsed time 2:" . ($end_time - $start_time));
-        
-        Debugger::logObjects("Document", $this->doc, "\n");
         return $this->doc;
     }
 
@@ -212,6 +204,15 @@ class BlockParser implements IParser
                 $result instanceof Block
             ) {
                 $curBlock->addChild($result);
+            } else if (
+                $curBlock instanceof NodeBlock && 
+                is_array($result)
+            ) {
+                foreach ($result as $parsedBlock) {
+                    if ($parsedBlock instanceof Block) {
+                        $curBlock->addChild($parsedBlock);
+                    }
+                }
             } else if (!($result instanceof Block)) {
                 throw new ParseException(null, 'UNRECOGNIZED_SEQUENCE', [$context->curLine()->getLine()]);
             } else {
