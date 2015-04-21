@@ -396,10 +396,11 @@ html { color red; text-align: center; margin: 0 auto; }
 @mixin diagonal-border-radius(left, right)
     border-radius \$arguments \$right \$left
         
-@page 
+@page   
     padding 5px
 body
     rounded-corners 1 2 3 4 
+    transform rotasste(-5deg)
     .wrapper
         diagonal-border-radius 6px 10px
         h1 span

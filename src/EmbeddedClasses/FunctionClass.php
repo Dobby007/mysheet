@@ -93,10 +93,18 @@ class FunctionClass extends MssClass
         return $module;
     }
     
+    public function executeFunction() {
+        $module = $this->getModuleForFunction($vars);
+        if ($module === false) {
+            throw new \MSSLib\Error\CompileException(null, 'FUNCTION_NOT_FOUND', [$this->getName()]);
+        }
+        return call_user_func_array([$module, $this->getName()], $this->getArguments());
+    }
+    
     public function getValue(VariableScope $vars) {
         $module = $this->getModuleForFunction($vars);
-        if ($module=== false) {
-            throw new \MSSLib\Error\CompileException(null, 'FUNCTION_NOT_FOUND', [$this->getName()]);
+        if ($module === false) {
+            return $this;
         }
         
         return call_user_func_array([$module, $this->getName()], $this->getArguments());
@@ -131,6 +139,7 @@ class FunctionClass extends MssClass
                 case '-webkit-linear-gradient':
                 case '-moz-linear-gradient':
                 case 'linear-gradient':
+                    /** @todo Implement FunctionRenderer to improve performance and efficiency */
                     break;
             }
             
