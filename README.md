@@ -1,6 +1,6 @@
 MySheet - CSS Preprocessor and Parser written in PHP
 =======
-[![Latest Stable Version](https://poser.pugx.org/mysheet/mysheet/v/stable.svg)](https://packagist.org/packages/mysheet/mysheet) [![Total Downloads](https://poser.pugx.org/mysheet/mysheet/downloads.svg)](https://packagist.org/packages/mysheet/mysheet) [![Monthly Downloads](https://poser.pugx.org/mysheet/mysheet/d/monthly.png)](https://packagist.org/packages/mysheet/mysheet) [![Latest Unstable Version](https://poser.pugx.org/mysheet/mysheet/v/unstable.svg)](https://packagist.org/packages/mysheet/mysheet) [![License](https://poser.pugx.org/mysheet/mysheet/license.svg)](https://packagist.org/packages/mysheet/mysheet)
+[![Latest Stable Version](https://poser.pugx.org/mysheet/mysheet/v/stable.svg)](https://packagist.org/packages/mysheet/mysheet) [![Total Downloads](https://poser.pugx.org/mysheet/mysheet/downloads)](https://packagist.org/packages/mysheet/mysheet) [![Monthly Downloads](https://poser.pugx.org/mysheet/mysheet/d/monthly.png)](https://packagist.org/packages/mysheet/mysheet) [![Latest Unstable Version](https://poser.pugx.org/mysheet/mysheet/v/unstable.svg)](https://packagist.org/packages/mysheet/mysheet) [![License](https://poser.pugx.org/mysheet/mysheet/license.svg)](https://packagist.org/packages/mysheet/mysheet)
 
 **Official website**: http://mss.flydigo.com
 
