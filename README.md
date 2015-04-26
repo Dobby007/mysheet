@@ -19,7 +19,7 @@ MySheet Library is the open-source CSS preprocessor and parser written in PHP. I
 Advantages
 ---
 
-- Simplicity and flexibility of writting web-site styles for designer
+- Simplicity and flexibility of writing web-site styles for designer
 - Styles can be adjusted from backend making it easy to control styles of your site even without proffessional knowledge of CSS
 - Extensibility and support of plugins
 - Compatibility with pure CSS
