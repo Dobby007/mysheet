@@ -95,7 +95,21 @@ abstract class MathOperator
         $operatorName = static::$operatorSymbol;
         return $operatorName;
     }
-    
+
+
+    public static function registerMathOperation(MathOperation $operation) {
+        MySheet::Instance()->getListManager()->getList('operator' . static::getOperatorName())
+            ->addFunctional($operation);
+    }
+
+    /**
+     * Creates a MathOperation based on current operator name and given arguments
+     * @return MathOperation
+     */
+    public static function createMathOperation($operandType1, $operandType2, callable $calcFunc = null) {
+        return new MathOperation(static::getOperatorName(), $operandType1, $operandType2, $calcFunc);
+    }
+
     /**
      * Registers calculation function for two types of operands
      * @param type $operandType1

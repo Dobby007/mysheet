@@ -21,22 +21,24 @@ use MSSLib\Essentials\ColorLib\ColorLib;
 use MSSLib\Error\SystemException;
 use MSSLib\Error\InputException;
 use MSSLib\Essentials\VariableScope;
-use MSSLib\Essentials\Math\IOperatorRegistrar;
+use MSSLib\Operators\PlusOperator;
+use MSSLib\Operators\MinusOperator;
+use MSSLib\Etc\Constants;
 
 /**
  * Class that represents a color in both MSS and CSS. It is a rule parameter (MssClass).
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class ColorClass extends MssClass implements IOperatorRegistrar
+class ColorClass extends MssClass
 {    
     protected static $allowed_types = ['html', 'hex', 'rgb', 'rgba', 'hsl', 'hsla'];
-    protected static $css_supported_types = ['html', 'hex', 'rgbs', 'rgba', 'hsl', 'hsla'];
+    protected static $css_supported_types = ['html', 'hex', 'rgba', 'rgba', 'hsl', 'hsla'];
     protected $type;
     protected $color;
     protected $_colorLib;
     protected static $html_colors = null;
-    
+
     public function __construct($type, array $color = []) {
         $this->setType($type);
         $this->setColor($color);
@@ -132,7 +134,7 @@ class ColorClass extends MssClass implements IOperatorRegistrar
                 $channelValue = ColorLib::fixColorChannel($channelName, $channelValue);
             }
         }
-            $this->color = $color;
+        $this->color = $color;
     }
     
     protected function setResultColor() {
@@ -151,8 +153,8 @@ class ColorClass extends MssClass implements IOperatorRegistrar
     
     protected static function fixValueOfMetricClass(MetricClass $instance) {
         switch ($instance->getUnit()) {
-            case 'lt':
-            case 'sat':
+            case Constants::CHANNEL_LIGHTNESS:
+            case Constants::CHANNEL_SATURATION:
                 return $instance->getMetric() / 100;
             default:
                 return $instance->getMetric();
@@ -171,7 +173,11 @@ class ColorClass extends MssClass implements IOperatorRegistrar
      * Sets a value to the specific channel $channel and ss current color
      * @param string $channel
      */
-    public function setColorChannel($channel, $value) {
+    public function setColorChannel($channel, $value, $convertToAbsolute = false) {
+        if ($convertToAbsolute) {
+            $value = ColorLib::getChannelAbsoluteValue($channel, $value);
+        }
+
         $result = $this->getColorLib()->setColor($this->getSafeType(), $this->getSafeColor())->setChannel($channel, $value);
         if ($result === true) {
             $this->setResultColor();
@@ -180,9 +186,23 @@ class ColorClass extends MssClass implements IOperatorRegistrar
     
     /**
      * Adds a delta-value to specific channel of the color and updates current color
+     * @param $channel Channel name
+     * @param $delta Delta-value which should be added to current channel value. Is must specified as follows:
+        * - Values for RGB channels must be between -255 to 255
+        * - Value for hue channel must be between -360 to 360
+        * - Values for alpha, saturation and lightness channels must be between -1 to 1
      */
-    public function addDeltaToColorChannel($channel, $value) {
-        $result = $this->getColorLib()->setColor($this->getSafeType(), $this->getSafeColor())->addChannel($channel, $value);
+    public function addDeltaToColorChannel($channel, $delta, $convertDeltaToAbsoluteValue = false) {
+        /*
+        if (!$this->hasChannel($channel)) {
+            throw new \MSSLib\Error\CompileException(null, 'COLOR_OPERATION_NOT_SUPPORTED', [$this->getType(), $channel]);
+        }
+        */
+        if ($convertDeltaToAbsoluteValue) {
+            $delta = ($delta < 0 ? -1 : 1) * ColorLib::getChannelAbsoluteValue($channel, abs($delta));
+        }
+        var_dump($delta);
+        $result = $this->getColorLib()->setColor($this->getSafeType(), $this->getSafeColor())->addChannel($channel, $delta);
         if ($result === true) {
             $this->setResultColor();
         }
@@ -192,7 +212,27 @@ class ColorClass extends MssClass implements IOperatorRegistrar
      * Checks whether current color type has an alpha channel
      */
     public function hasAlphaChannel() {
-        return substr($this->getType(), -1) === 'a';
+        return $this->hasChannel(Constants::CHANNEL_ALPHA);
+    }
+
+    /**
+     * Checks whether current color type has an alpha channel
+     */
+    public function hasChannel($channel) {
+        $type = $this->getType();
+        switch (strtolower($channel)) {
+            case Constants::CHANNEL_RED:
+            case Constants::CHANNEL_GREEN:
+            case Constants::CHANNEL_BLUE:
+                return $type === ColorLib::THEX || $type === ColorLib::TRGB || $type === ColorLib::TRGBA || $type === ColorLib::THTML;
+            case Constants::CHANNEL_HUE:
+            case Constants::CHANNEL_SATURATION:
+            case Constants::CHANNEL_LIGHTNESS:
+                return $type === ColorLib::THSL || $type === ColorLib::THSLA;
+            case Constants::CHANNEL_ALPHA:
+                return $type === ColorLib::TRGBA || $type === ColorLib::THSLA;
+        }
+        return false;
     }
     
     /**
@@ -241,22 +281,49 @@ class ColorClass extends MssClass implements IOperatorRegistrar
         
         return self::colorToString($targetType, $newcolor);
     }
-    
-    public function __toString() {
-        return $this->toRealCss();
+
+    protected static function getChannelNameBySynonym($channelSynonym) {
+        switch ($channelSynonym) {
+            case 'r':
+                return Constants::CHANNEL_RED;
+            case 'g':
+                return Constants::CHANNEL_GREEN;
+            case 'b':
+                return Constants::CHANNEL_BLUE;
+            case 'h':
+                return Constants::CHANNEL_HUE;
+            case 's':
+            case 'sat':
+                return Constants::CHANNEL_SATURATION;
+            case 'lt':
+                return Constants::CHANNEL_LIGHTNESS;
+            default:
+                return $channelSynonym;
+        }
     }
-    
+
+    public static function operatorPlus(ColorClass $obj1, MssClass $obj2) {
+        if ($obj2 instanceof MetricClass) {
+            $resultColor = clone $obj1;
+            $resultColor->addDeltaToColorChannel(self::getChannelNameBySynonym($obj2->getUnit()), self::fixValueOfMetricClass($obj2));
+            return $resultColor;
+        }
+    }
+
+    public static function operatorMinus(MssClass $obj1, MssClass $obj2) {
+        if ($obj2 instanceof MetricClass) {
+            $resultColor = clone $obj1;
+            $resultColor->addDeltaToColorChannel(self::getChannelNameBySynonym($obj2->getUnit()), -self::fixValueOfMetricClass($obj2));
+            return $resultColor;
+        }
+    }
+
     public static function registerOperations() {
-        \MSSLib\Operators\PlusOperator::registerCalculationFunction(get_class(), 'MSSLib\EmbeddedClasses\MetricClass', function (ColorClass $obj1, MetricClass $obj2) {
-            $resultColor = clone $obj1;
-            $resultColor->addDeltaToColorChannel($obj2->getUnit(), self::fixValueOfMetricClass($obj2));
-            return $resultColor;
-        });
-        \MSSLib\Operators\MinusOperator::registerCalculationFunction(get_class(), 'MSSLib\EmbeddedClasses\MetricClass', function (ColorClass $obj1, MetricClass $obj2) {
-            $resultColor = clone $obj1;
-            $resultColor->addDeltaToColorChannel($obj2->getUnit(), -self::fixValueOfMetricClass($obj2));
-            return $resultColor;
-        });
+        $operation = PlusOperator::createMathOperation(get_class(), MetricClass::class, self::class . '::operatorPlus');
+        PlusOperator::registerMathOperation($operation);
+
+        $operation = MinusOperator::createMathOperation(get_class(), MetricClass::class, self::class . '::operatorMinus');
+        MinusOperator::registerMathOperation($operation);
     }
     
     /**
@@ -269,15 +336,15 @@ class ColorClass extends MssClass implements IOperatorRegistrar
         switch ($type) {
             case ColorLib::TRGB:
             case ColorLib::TRGBA:
-                $arr = [$color['r'], $color['g'], $color['b']];
+                $arr = [$color[Constants::CHANNEL_RED], $color[Constants::CHANNEL_GREEN], $color[Constants::CHANNEL_BLUE]];
                 if ($type === ColorLib::TRGBA) {
-                    $arr[] = $color['a'];
+                    $arr[] = $color[Constants::CHANNEL_ALPHA];
                 }
                 return $type . '(' . implode(', ', $arr) . ')';
             case ColorLib::THSL:
-                return sprintf('hsl(%d, %d%%, %d%%)', $color['hue'], $color['sat'], $color['lt']);
+                return sprintf('hsl(%d, %d%%, %d%%)', $color[Constants::CHANNEL_HUE], $color[Constants::CHANNEL_SATURATION], $color[Constants::CHANNEL_LIGHTNESS]);
             case ColorLib::THSLA:
-                return sprintf('hsla(%d, %d%%, %d%%, %.2f)', $color['hue'], $color['sat'], $color['lt'], $color['a']);
+                return sprintf('hsla(%d, %d%%, %d%%, %.2f)', $color[Constants::CHANNEL_HUE], $color[Constants::CHANNEL_SATURATION], $color[Constants::CHANNEL_LIGHTNESS], $color[Constants::CHANNEL_ALPHA]);
             case ColorLib::THEX:
                 return '#' . $color[0];
             case ColorLib::THTML:
@@ -353,32 +420,32 @@ class ColorClass extends MssClass implements IOperatorRegistrar
         switch ($function['name']) {
             case 'rgb':
                 $color = [
-                    'r' => $arguments[0],
-                    'g' => $arguments[1],
-                    'b' => $arguments[2]
+                    Constants::CHANNEL_RED => $arguments[0],
+                    Constants::CHANNEL_GREEN => $arguments[1],
+                    Constants::CHANNEL_BLUE => $arguments[2]
                 ];
                 break;
             case 'rgba':
                 $color = [
-                    'r' => $arguments[0],
-                    'g' => $arguments[1],
-                    'b' => $arguments[2],
-                    'a' => $arguments[3]
+                    Constants::CHANNEL_RED => $arguments[0],
+                    Constants::CHANNEL_GREEN => $arguments[1],
+                    Constants::CHANNEL_BLUE => $arguments[2],
+                    Constants::CHANNEL_ALPHA => $arguments[3]
                 ];
                 break;
             case 'hsl':
                 $color = [
-                    'hue' => $arguments[0],
-                    'sat' => $arguments[1],
-                    'lt' => $arguments[2]
+                    Constants::CHANNEL_HUE => $arguments[0],
+                    Constants::CHANNEL_SATURATION => $arguments[1],
+                    Constants::CHANNEL_LIGHTNESS => $arguments[2]
                 ];
                 break;
             case 'hsla':
                 $color = [
-                    'hue' => $arguments[0],
-                    'sat' => $arguments[1],
-                    'lt' => $arguments[2],
-                    'a' => $arguments[3]
+                    Constants::CHANNEL_HUE => $arguments[0],
+                    Constants::CHANNEL_SATURATION => $arguments[1],
+                    Constants::CHANNEL_LIGHTNESS => $arguments[2],
+                    Constants::CHANNEL_ALPHA => $arguments[3]
                 ];
                 break;
         }

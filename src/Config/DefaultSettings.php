@@ -5,7 +5,7 @@ use MSSLib\MySheet;
 return [
     'mssClasses' => 'sequence mathExpr string variable color function metric nonQuotedString',
     'parserExtensions' => 'import media variable atRule ruleset',
-    'functionModules' => 'metric',
+    'functionModules' => 'metric color',
     'color' => [
         'lib' => [
             'class' => '\MSSLib\Essentials\ColorLib\MrColorLib',

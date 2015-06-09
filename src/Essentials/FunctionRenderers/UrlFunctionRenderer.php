@@ -34,8 +34,11 @@ use MSSLib\Essentials\MssClass;
 class UrlFunctionRenderer implements IFunctionRenderer
 {
     use \MSSLib\Traits\RootClassTrait;
-    
-    public function parseArguments(array $arguments) {
+
+    /**
+     * @inheritdoc
+     */
+    public function parseArguments(FunctionClass $function, array $arguments) {
         $result = false;
         if (count($arguments) >= 1) {
             $firstArg = $arguments[0];
@@ -53,6 +56,9 @@ class UrlFunctionRenderer implements IFunctionRenderer
         return [];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function renderArguments(FunctionClass $function, VariableScope $vars) {
         $fileUrl = $function->getArgument(0);
         if ($fileUrl === null) {
@@ -75,8 +81,21 @@ class UrlFunctionRenderer implements IFunctionRenderer
         return [$fileUrl->toRealCss($vars)];
     }
 
+
+    /**
+     * @inheritdoc
+     */
     public function splitFunctionArguments($rawArgsString) {
         return [$rawArgsString];
     }
+
+    /**
+     * @inheritdoc
+     */
+    function prepareArguments(FunctionClass $function, array $arguments)
+    {
+        return $arguments;
+    }
+
 
 }

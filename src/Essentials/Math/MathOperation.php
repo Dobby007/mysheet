@@ -27,8 +27,8 @@ class MathOperation {
     private $operandType1, $operandType2;
     private $operator;
     private $calculationFunction;
-    
-    public function __construct($operator, $operandType1, $operandType2, $calculationFunction) {
+
+    public function __construct($operator, $operandType1 = null, $operandType2 = null, $calculationFunction = null) {
         $this->operandType1 = $operandType1;
         $this->operandType2 = $operandType2;
         $this->operator = $operator;

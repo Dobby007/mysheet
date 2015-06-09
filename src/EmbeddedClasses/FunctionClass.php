@@ -33,6 +33,10 @@ class FunctionClass extends MssClass
      * @var IFunctionRenderer Function Renderer for current function
      */
     protected $_functionRenderer;
+    /**
+     * @var array Optional data for this function instance
+     */
+    public $data = array();
     
     public function __construct($name, array $arguments = []) {
         $this->setName($name);
@@ -56,7 +60,7 @@ class FunctionClass extends MssClass
     }
     
     /**
-     * Gets single funciton's argument if it exists and $default otherwise
+     * Gets single function's argument if it exists and $default otherwise
      * @param mixed $id
      * @param mixed $default
      * @return MssClass
@@ -72,7 +76,7 @@ class FunctionClass extends MssClass
     }
 
     public function setArguments(array $arguments) {
-        $this->arguments = $this->_functionRenderer->parseArguments($arguments);
+        $this->arguments = $this->_functionRenderer->parseArguments($this, $arguments);
         return $this;
     }
     
@@ -93,7 +97,7 @@ class FunctionClass extends MssClass
         return $module;
     }
     
-    public function executeFunction() {
+    public function executeFunction(VariableScope $vars) {
         $module = $this->getModuleForFunction($vars);
         if ($module === false) {
             throw new \MSSLib\Error\CompileException(null, 'FUNCTION_NOT_FOUND', [$this->getName()]);
@@ -106,8 +110,9 @@ class FunctionClass extends MssClass
         if ($module === false) {
             return $this;
         }
-        
-        return call_user_func_array([$module, $this->getName()], $this->getArguments());
+        $arguments = $this->_functionRenderer->prepareArguments($this, $this->getArguments());
+        /* @var MssClass $result */
+        return call_user_func_array([$module, $this->getName()], $arguments);
     }
 
     protected function renderArguments(VariableScope $vars) {
@@ -128,6 +133,7 @@ class FunctionClass extends MssClass
         static $renderers = [];
         if (empty($renderers)) {
             $renderers['url'] = new \MSSLib\Essentials\FunctionRenderers\UrlFunctionRenderer();
+            $renderers['changeColor'] = new \MSSLib\Essentials\FunctionRenderers\ChangeColorRenderer();
             $renderers['default'] = new \MSSLib\Essentials\FunctionRenderers\DefaultFunctionRenderer();
         }
         if (isset($renderers[$name]) && $name !== 'default') {
@@ -152,7 +158,10 @@ class FunctionClass extends MssClass
         if ($module=== false) {
             return $this->renderArguments($vars);
         }
-        return call_user_func_array([$module, $this->getName()], $this->getArguments());
+        $arguments = $this->_functionRenderer->prepareArguments($this, $this->getArguments());
+        /* @var MssClass $result */
+        $result = call_user_func_array([$module, $this->getName()], $arguments);
+        return $result->toRealCss($vars);
     }
     
         

@@ -28,6 +28,7 @@ use MSSLib\Essentials\Autoload;
 use MSSLib\Essentials\EventRegistry;
 use MSSLib\Essentials\IParser;
 use MSSLib\Essentials\IMSSettings;
+use MSSLib\Essentials\Math\MathConfigurator;
 use MSSLib\Essentials\MSSettings;
 use MSSLib\Essentials\FuncListManager;
 use MSSLib\Essentials\VariableScope;
@@ -35,7 +36,6 @@ use MSSLib\Tools\I18N;
 use MSSLib\Error\InputException;
 use MSSLib\Essentials\TypeClassReference;
 use MSSLib\Structure\Document;
-use MSSLib\Structure\Declaration;
 
 /**
  * Description of MySheet
@@ -183,14 +183,10 @@ class MySheet
             $classRef = new TypeClassReference($paramClass, 'Class', 'MSSLib\\EmbeddedClasses');
             if ($classRef->classExists()) {
                 $this->getListManager()->getList('MssClass')->addFunctional($classRef);
-                
-                $implementedInterfaces = $classRef->getImplementedInterfaces();
-                if (isset($implementedInterfaces['MSSLib\Essentials\Math\IOperatorRegistrar'])) {
-                    $class = $classRef->getFullClass();
-                    $class::registerOperations();
-                }
             }
         }
+
+        MathConfigurator::registerOperations();
     }
     
     protected function setRightOrder() {
@@ -276,7 +272,7 @@ class MySheet
             }
             
             if (class_exists($pluginClass)) {
-                /* @var $pi \MySheet\Plugins\PluginBase */
+                /* @var $pi \MSSLib\Plugins\PluginBase */
                 $pi = new $pluginClass();
                 foreach ($settings as $name => $value) {
                     $pi->$name = $value;
@@ -341,7 +337,7 @@ class MySheet
     }
     
     /**
-     * Gets document currently being proccessed
+     * Gets document currently being processed
      * @return Document
      */
     public function getActiveDocument() {
@@ -349,7 +345,7 @@ class MySheet
     }
 
     /**
-     * Sets document currently being proccessed
+     * Sets document currently being processed
      * @return Document
      */
     public function setActiveDocument(Document $activeDocument = null) {

@@ -34,12 +34,22 @@ interface IFunctionRenderer
      * @return string[] Array of arguments
      */
     function splitFunctionArguments($rawArgsString);
+
     /**
      * Parses given array of string arguments into array of correspondent MssClasses
+     * @param FunctionClass $function
+     * @param array $arguments
+     * @return
      */
-    function parseArguments(array $arguments);
+    function parseArguments(FunctionClass $function, array $arguments);
+
     /**
      * Compiles arguments of given function into CSS
      */
     function renderArguments(FunctionClass $function, VariableScope $vars);
+
+    /**
+     * Prepares arguments of given function instance for execution
+     */
+    function prepareArguments(FunctionClass $function, array $arguments);
 }

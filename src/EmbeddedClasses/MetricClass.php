@@ -12,16 +12,21 @@
 
 namespace MSSLib\EmbeddedClasses;
 
+
 use MSSLib\Essentials\MssClass;
-use MSSLib\Essentials\Math\IOperatorRegistrar;
 use MSSLib\Essentials\VariableScope;
+use MSSLib\Operators\DivideOperator;
+use MSSLib\Operators\MinusOperator;
+use MSSLib\Operators\PlusOperator;
+use MSSLib\Operators\UnaryMinusOperator;
+use MSSLib\Operators\UnaryPlusOperator;
 
 /**
  * Class that represents a metric (with its' type) in both MSS and CSS. It is a rule parameter (MssClass).
  *
  * @author dobby007 (Alexander Gilevich, alegil91@gmail.com)
  */
-class MetricClass extends MssClass implements IOperatorRegistrar
+class MetricClass extends MssClass
 {
     const DEFAULT_UNIT = '%';
     
@@ -80,68 +85,82 @@ class MetricClass extends MssClass implements IOperatorRegistrar
         }
         return false;
     }
-    
+
+    public static function operatorPlus(MetricClass $obj1, MetricClass $obj2) {
+        return self::sumTwoMetrics($obj1, $obj2, true);
+    }
+
+    public static function operatorMinus(MetricClass $obj1, MetricClass $obj2) {
+        return self::sumTwoMetrics($obj1, $obj2, true);
+    }
+
+    public static function operatorMultiply(MetricClass $obj1, MetricClass $obj2) {
+        $resultMetric = false;
+        $resultUnit = false;
+
+        if ($obj1->getUnit() === $obj2->getUnit()) {
+            $resultMetric = $obj2->getMetric() * $obj1->getMetric();
+            $resultUnit = $obj2->getUnit();
+        } else if (!$obj1->isUnitSet() || !$obj2->isUnitSet()) {
+            $resultMetric = $obj1->getMetric() * $obj2->getMetric();
+            $resultUnit = $obj1->isUnitSet() ? $obj1->getUnit() : $obj2->getUnit();
+        } else if ($obj2->getUnit() === '%') {
+            $resultMetric = $obj1->getMetric() * ($obj1->getMetric() * $obj2->getFloatMetric());
+            $resultUnit = $obj1->getUnit();
+        } else if ($obj1->getUnit() === '%') {
+            $resultMetric = $obj2->getMetric() * ($obj2->getMetric() * $obj1->getFloatMetric());
+            $resultUnit = $obj2->getUnit();
+        }
+
+        return $resultMetric === false ? null : new self($resultMetric, $resultUnit);
+    }
+
+    public static function operatorDivide(MetricClass $obj1, MetricClass $obj2) {
+        $resultMetric = false;
+        $resultUnit = false;
+
+        if ($obj1->getUnit() === $obj2->getUnit()) {
+            $resultMetric = $obj2->getMetric() / $obj1->getMetric();
+            $resultUnit = $obj2->getUnit();
+        } else if (!$obj1->isUnitSet() || !$obj2->isUnitSet()) {
+            $resultMetric = $obj1->getMetric() / $obj2->getMetric();
+            $resultUnit = $obj1->isUnitSet() ? $obj1->getUnit() : $obj2->getUnit();
+        } else if ($obj2->getUnit() === '%') {
+            $resultMetric = $obj1->getMetric() / ($obj1->getMetric() * $obj2->getFloatMetric());
+            $resultUnit = $obj1->getUnit();
+        }
+
+        return $resultMetric === false ? null : new self($resultMetric, $resultUnit);
+    }
+
     public static function registerOperations() {
-        \MSSLib\Operators\PlusOperator::registerCalculationFunction(get_class(), get_class(), function (MetricClass $obj1, MetricClass $obj2) {
-            return self::sumTwoMetrics($obj1, $obj2, true);
-        });
-        
-        \MSSLib\Operators\MinusOperator::registerCalculationFunction(get_class(), get_class(), function (MetricClass $obj1, MetricClass $obj2) {
-            return self::sumTwoMetrics($obj1, $obj2, false);
-        });
-        
-        \MSSLib\Operators\MultiplyOperator::registerCalculationFunction(get_class(), get_class(), function (MetricClass $obj1, MetricClass $obj2) {
-            $resultMetric = false;
-            $resultUnit = false;
+        $operation = PlusOperator::createMathOperation(get_class(), get_class(), get_class() . '::operatorPlus');
+        PlusOperator::registerMathOperation($operation);
 
-            if ($obj1->getUnit() === $obj2->getUnit()) {
-                $resultMetric = $obj2->getMetric() * $obj1->getMetric();
-                $resultUnit = $obj2->getUnit();
-            } else if (!$obj1->isUnitSet() || !$obj2->isUnitSet()) {
-                $resultMetric = $obj1->getMetric() * $obj2->getMetric();
-                $resultUnit = $obj1->isUnitSet() ? $obj1->getUnit() : $obj2->getUnit();
-            } else if ($obj2->getUnit() === '%') {
-                $resultMetric = $obj1->getMetric() * ($obj1->getMetric() * $obj2->getFloatMetric());
-                $resultUnit = $obj1->getUnit();
-            } else if ($obj1->getUnit() === '%') {
-                $resultMetric = $obj2->getMetric() * ($obj2->getMetric() * $obj1->getFloatMetric());
-                $resultUnit = $obj2->getUnit();
-            }
+        $operation = MinusOperator::createMathOperation(get_class(), get_class(), get_class() . '::operatorMinus');
+        MinusOperator::registerMathOperation($operation);
 
-            return $resultMetric === false ? null : new self($resultMetric, $resultUnit);
+
+        $operation = DivideOperator::createMathOperation(get_class(), get_class(), get_class() . '::operatorMinus');
+        DivideOperator::registerMathOperation($operation);
+
+        $operation = UnaryMinusOperator::createMathOperation(get_class(), get_class(), function (MetricClass $obj) {
+            return new self(-$obj->getMetric(), $obj->getUnit());
         });
-        
-        \MSSLib\Operators\DivideOperator::registerCalculationFunction(get_class(), get_class(), function (MetricClass $obj1, MetricClass $obj2) {
-            $resultMetric = false;
-            $resultUnit = false;
+        UnaryMinusOperator::registerMathOperation($operation);
 
-            if ($obj1->getUnit() === $obj2->getUnit()) {
-                $resultMetric = $obj2->getMetric() / $obj1->getMetric();
-                $resultUnit = $obj2->getUnit();
-            } else if (!$obj1->isUnitSet() || !$obj2->isUnitSet()) {
-                $resultMetric = $obj1->getMetric() / $obj2->getMetric();
-                $resultUnit = $obj1->isUnitSet() ? $obj1->getUnit() : $obj2->getUnit();
-            } else if ($obj2->getUnit() === '%') {
-                $resultMetric = $obj1->getMetric() / ($obj1->getMetric() * $obj2->getFloatMetric());
-                $resultUnit = $obj1->getUnit();
-            }
-
-            return $resultMetric === false ? null : new self($resultMetric, $resultUnit);
-        });
-        
         \MSSLib\Operators\UnaryMinusOperator::registerCalculationFunction(get_class(), null, function (MetricClass $obj) {
             return new self(-$obj->getMetric(), $obj->getUnit());
         });
-        
-        \MSSLib\Operators\UnaryPlusOperator::registerCalculationFunction(get_class(), null, function (MetricClass $obj) {
-            return new self($obj->getMetric(), $obj->getUnit());
+
+        $operation = UnaryPlusOperator::createMathOperation(get_class(), get_class(), function (MetricClass $obj) {
+            return $obj;
         });
-        
-        return true;
+        UnaryPlusOperator::registerMathOperation($operation);
     }
     
     /**
-     * Sums two metric objects
+     * Sums two metric objects and returns new one as a result
      * @param \MSSLib\EmbeddedClasses\MetricClass $obj1 First operand
      * @param \MSSLib\EmbeddedClasses\MetricClass $obj2 Second operand
      * @param bool $doSum True to get sum of two metric objects and False to get difference between them

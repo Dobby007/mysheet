@@ -31,11 +31,11 @@ use MSSLib\Essentials\MssClass;
  *
  * @author dobby007
  */
-class GradientFunctionRenderer implements IFunctionRenderer
+class GradientFunctionRenderer extends DefaultFunctionRenderer
 {
     use \MSSLib\Traits\RootClassTrait;
     
-    public function parseArguments(array $arguments) {
+    public function parseArguments(FunctionClass $function, array $arguments) {
         $result = false;
         if (count($arguments) >= 1) {
             $firstArg = $arguments[0];
@@ -54,29 +54,18 @@ class GradientFunctionRenderer implements IFunctionRenderer
     }
 
     public function renderArguments(FunctionClass $function, VariableScope $vars) {
-        $fileUrl = $function->getArgument(0);
-        if ($fileUrl === null) {
-            return false;
-        }
-        $fileUrl = $fileUrl->getValue($vars);
-        if ($fileUrl instanceof \MSSLib\Essentials\MssClassInterfaces\IGenericString) {
-            $fileUrlStr = $fileUrl->getNonQuotedString();
-            $prefix = $this->getSetting('urlFunction.autoPrefix', false);
-            if (!filter_var($fileUrlStr, FILTER_VALIDATE_URL) && $this->getSetting('dataUrl.autoConvert')) {
-                $fileUrlStr =  $prefix ? $prefix . $fileUrlStr : $fileUrlStr;
-                $fullLocalPath = Document::makeRelativeFilePath(self::msInstance()->getActiveDocument(), $fileUrlStr);
-                $fileInfo = new FileInfo($fullLocalPath);
-                if ($fileInfo->fileExists && $fileInfo->fileSize / 1024 <= $this->getSetting('dataUrl.sizeLimit', 0)) {
-                    return [DataUrlClass::fromFile($fullLocalPath, $fileInfo->mimeType)];
-                }
-
-            }
-        }
-        return [$fileUrl->toRealCss($vars)];
     }
 
     public function splitFunctionArguments($rawArgsString) {
         return [$rawArgsString];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function prepareArguments(FunctionClass $function, array $arguments)
+    {
+        return $arguments;
     }
 
 }

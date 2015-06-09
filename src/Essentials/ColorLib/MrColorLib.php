@@ -14,6 +14,7 @@ namespace MSSLib\Essentials\ColorLib;
 
 use MSSLib as MSN;
 use MSSLib\MySheet;
+use MSSLib\Etc\Constants;
 use SyHolloway\MrColor\Color;
 
 /**
@@ -29,14 +30,14 @@ class MrColorLib extends ColorLib
      */
     private $color;
     private static $msMap = [
-        'red' => 'r',
-        'green' => 'g',
-        'blue' => 'b',
-        'alpha' => 'a',
-        'hue' => 'hue',
-        'saturation' => 'sat',
-        'lightness' => 'lt',
-        'brightness' => 'bt'
+        'red' => Constants::CHANNEL_RED,
+        'green' => Constants::CHANNEL_GREEN,
+        'blue' => Constants::CHANNEL_BLUE,
+        'alpha' => Constants::CHANNEL_RED,
+        'hue' => Constants::CHANNEL_HUE,
+        'saturation' => Constants::CHANNEL_SATURATION,
+        'lightness' => Constants::CHANNEL_LIGHTNESS,
+        'brightness' => 'bt' //TODO: Add support of brightness
     ];
     
     
@@ -72,19 +73,19 @@ class MrColorLib extends ColorLib
             case self::TRGB:
             case self::TRGBA:
                 $this->color = Color::create([
-                    'red' => $this->getSourceChannel('r'),
-                    'green' => $this->getSourceChannel('g'),
-                    'blue' => $this->getSourceChannel('b'),
-                    'alpha' => $this->getSourceChannel('a', 1)
+                    'red' => $this->getSourceChannel(Constants::CHANNEL_RED),
+                    'green' => $this->getSourceChannel(Constants::CHANNEL_GREEN),
+                    'blue' => $this->getSourceChannel(Constants::CHANNEL_GREEN),
+                    'alpha' => $this->getSourceChannel(Constants::CHANNEL_ALPHA, 1)
                 ]);
                 break;
             case self::THSL:
             case self::THSLA:
                 $this->color = Color::create([
-                    'hue' => $this->getSourceChannel('hue'),
-                    'saturation' => $this->getSourceChannel('sat'),
-                    'lightness' => $this->getSourceChannel('lt'),
-                    'alpha' => $this->getSourceChannel('a', 1)
+                    'hue' => $this->getSourceChannel(Constants::CHANNEL_HUE),
+                    'saturation' => $this->getSourceChannel(Constants::CHANNEL_SATURATION),
+                    'lightness' => $this->getSourceChannel(Constants::CHANNEL_LIGHTNESS),
+                    'alpha' => $this->getSourceChannel(Constants::CHANNEL_ALPHA, 1)
                 ]);
                 break;
             case self::THEX:

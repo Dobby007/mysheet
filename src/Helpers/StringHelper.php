@@ -175,8 +175,8 @@ abstract class StringHelper
             if ($unit_found === false) {
                 if (
                     ($input[$i] >= '0' && $input[$i] <= '9') ||
-                    ($input[$i] == '.') ||
-                    ($input[$i] == '-' && $i === 0)
+                    ($input[$i] === '.') ||
+                    (($input[$i] === '-' || $input[$i] === '+') && $i === 0)
                 ) {
                     $metric .= $input[$i];
                     $i++;
@@ -196,7 +196,7 @@ abstract class StringHelper
             }
         }
         
-        return ['metric' => floatval($metric), 'unit' => $unit];
+        return ['metric' => floatval($metric), 'unit' => $unit, 'explicitSign' => $input[0] === '+' || $input[0] === '-'];
     }
     
     public static function parseEnclosedString(&$string, $allowedStartChars = null) {

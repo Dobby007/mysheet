@@ -32,7 +32,10 @@ use MSSLib\EmbeddedClasses\SequenceClass;
  */
 class DefaultFunctionRenderer implements IFunctionRenderer
 {
-    public function parseArguments(array $arguments) {
+    /**
+     * @inheritdoc
+     */
+    public function parseArguments(FunctionClass $function, array $arguments) {
         $resultArguments = array();
         foreach ($arguments as $name=>$arg) {
             $multiArg = false;
@@ -55,6 +58,9 @@ class DefaultFunctionRenderer implements IFunctionRenderer
         return $resultArguments;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function renderArguments(FunctionClass $function, VariableScope $vars) {
         $arguments = [];
         foreach ($function->getArguments() as $name=>$argument) {
@@ -66,8 +72,19 @@ class DefaultFunctionRenderer implements IFunctionRenderer
         return $arguments;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function splitFunctionArguments($rawArgsString) {
         return StringHelper::parseFunctionArguments($rawArgsString, true);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function prepareArguments(FunctionClass $function, array $arguments)
+    {
+        return $arguments;
     }
 
 }

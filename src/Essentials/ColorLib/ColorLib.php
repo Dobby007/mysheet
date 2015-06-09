@@ -12,6 +12,7 @@
 
 namespace MSSLib\Essentials\ColorLib;
 
+use MSSLib\Etc\Constants;
 use MSSLib\Traits\MagicPropsTrait;
 
 /**
@@ -30,7 +31,7 @@ abstract class ColorLib {
           THTML = 'html';
     
     protected $type;
-    protected $source_color;
+            protected $source_color;
         
     /**
      * Tranforms color to specific type
@@ -103,27 +104,51 @@ abstract class ColorLib {
      * Fixes specific channel of color based on its' fixed min and max values
      * @param string $channel
      * @param float $value
-     * @return type
+     * @return float
      */
     public static function fixColorChannel($channel, $value) {
         switch ($channel) {
-            case 'r':
-            case 'g':
-            case 'b':
+            case Constants::CHANNEL_RED:
+            case Constants::CHANNEL_GREEN:
+            case Constants::CHANNEL_BLUE:
                 $value = min([max([$value, 0]), 255]);
                 break;
-            case 'hue':
+            case Constants::CHANNEL_HUE:
                 $value = min([max([$value, 0]), 360]);
                 if ($value === 360) {
                     $value = 0;
                 }
                 break;
-            case 'sat':
-            case 'lt':
-            case 'a':
+            case Constants::CHANNEL_SATURATION:
+            case Constants::CHANNEL_LIGHTNESS:
+            case Constants::CHANNEL_ALPHA:
                 $value = min([max([$value, 0]), 1]);
                 break;
         }
         return $value;
+    }
+
+    /**
+     * Converts relative channel value specified in percents to absolute one
+     * @param string $channel Channel name
+     * @param float $percentage Relative channel value (must be specified from 0 to 1)
+     * @return float
+     */
+    public static function getChannelAbsoluteValue($channel, $percentage) {
+        $percentage = min([max([$percentage, 0]), 1]);
+        switch ($channel) {
+            case Constants::CHANNEL_RED:
+            case Constants::CHANNEL_GREEN:
+            case Constants::CHANNEL_BLUE:
+                return $percentage * 255;
+            case Constants::CHANNEL_HUE:
+                return $percentage * 360;
+            case Constants::CHANNEL_SATURATION:
+            case Constants::CHANNEL_LIGHTNESS:
+            case Constants::CHANNEL_ALPHA:
+            default:
+                return $percentage;
+        }
+
     }
 }

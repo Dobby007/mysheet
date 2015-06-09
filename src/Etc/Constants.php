@@ -30,5 +30,14 @@ abstract class Constants {
     const BROWSER_WEBKIT = 0b1000;
     const BROWSER_BLINK = 0b10000;
     const BROWSER_ALL = 0b11111;
-    
+
+
+    const CHANNEL_RED = 'red';
+    const CHANNEL_GREEN = 'green';
+    const CHANNEL_BLUE = 'blue';
+    const CHANNEL_HUE = 'hue';
+    const CHANNEL_SATURATION = 'saturation';
+    const CHANNEL_LIGHTNESS = 'lightness';
+    const CHANNEL_ALPHA = 'alpha';
+
 }
