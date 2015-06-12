@@ -133,7 +133,7 @@ class FunctionClass extends MssClass
         static $renderers = [];
         if (empty($renderers)) {
             $renderers['url'] = new \MSSLib\Essentials\FunctionRenderers\UrlFunctionRenderer();
-            $renderers['changeColor'] = new \MSSLib\Essentials\FunctionRenderers\ChangeColorRenderer();
+            $renderers['alterColor'] = new \MSSLib\Essentials\FunctionRenderers\AlterColorRenderer();
             $renderers['default'] = new \MSSLib\Essentials\FunctionRenderers\DefaultFunctionRenderer();
         }
         if (isset($renderers[$name]) && $name !== 'default') {

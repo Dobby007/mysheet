@@ -404,7 +404,7 @@ body
     .wrapper
         diagonal-border-radius 6px 10px
         h1 span
-            color changeColor(#a00 > red(+9%) > red(-9%) > red(99%) > blue(5%) > lightness(+5%))
+            color alterColor(#a00 > red(+9%) > red(-9%) > red(99%) > blue(5%) > lightness(+5%))
             size negate(5px)
 
 TEXT;

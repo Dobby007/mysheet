@@ -29,7 +29,7 @@ use MSSLib\Helpers\StringHelper;
  *
  * @author dobby007
  */
-class ChangeColorRenderer implements IFunctionRenderer
+class AlterColorRenderer implements IFunctionRenderer
 {
     use \MSSLib\Traits\RootClassTrait;
 

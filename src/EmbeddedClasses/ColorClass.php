@@ -201,7 +201,6 @@ class ColorClass extends MssClass
         if ($convertDeltaToAbsoluteValue) {
             $delta = ($delta < 0 ? -1 : 1) * ColorLib::getChannelAbsoluteValue($channel, abs($delta));
         }
-        var_dump($delta);
         $result = $this->getColorLib()->setColor($this->getSafeType(), $this->getSafeColor())->addChannel($channel, $delta);
         if ($result === true) {
             $this->setResultColor();
@@ -254,7 +253,7 @@ class ColorClass extends MssClass
     
     public function toRealCss(VariableScope $vars) {
         $targetType = null;
-        $newcolor = $this->getColor();
+        $newColor = $this->getColor();
         $transformMode = $this->getSetting('color.transform', 'unknown');
         if (
             self::isCssSupportedType($this->getType()) && 
@@ -270,16 +269,16 @@ class ColorClass extends MssClass
             }
             if ($cur_type === ColorLib::THTML && !$this->getSetting('color.allowHtmlColorOutput', false)) {
                 $cur_type = ColorLib::THEX;
-                $newcolor = [self::transformHtmlToHexColor($newcolor[0])];
+                $newColor = [self::transformHtmlToHexColor($newColor[0])];
             } else if ($cur_type === ColorLib::THTML) {
                 $targetType = ColorLib::THTML;
             }
             if ($targetType !== $cur_type) {
-                $newcolor = $this->getColorLib()->setColor($cur_type, $newcolor)->transformTo($targetType);
+                $newColor = $this->getColorLib()->setColor($cur_type, $newColor)->transformTo($targetType);
             }
         }
         
-        return self::colorToString($targetType, $newcolor);
+        return self::colorToString($targetType, $newColor);
     }
 
     protected static function getChannelNameBySynonym($channelSynonym) {

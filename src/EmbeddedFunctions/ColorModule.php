@@ -30,7 +30,7 @@ use MSSLib\Essentials\MssClass;
  */
 class ColorModule extends FunctionModule
 {
-    public function changeColor(ColorClass $color, array $modifiers) {
+    public function alterColor(ColorClass $color, array $modifiers) {
         $color = clone $color;
         foreach ($modifiers as $modifier) {
             $value = $modifier['value'];
