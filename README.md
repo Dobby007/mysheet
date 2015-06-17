@@ -1,6 +1,6 @@
 MySheet - CSS Preprocessor and Parser written in PHP
 =======
-[![Latest Stable Version](https://poser.pugx.org/mysheet/mysheet/v/stable.svg)](https://packagist.org/packages/mysheet/mysheet) [![Total Downloads](https://poser.pugx.org/mysheet/mysheet/downloads.svg)](https://packagist.org/packages/mysheet/mysheet) [![Monthly Downloads](https://poser.pugx.org/mysheet/mysheet/d/monthly.png)](https://packagist.org/packages/mysheet/mysheet) [![Latest Unstable Version](https://poser.pugx.org/mysheet/mysheet/v/unstable.svg)](https://packagist.org/packages/mysheet/mysheet) [![License](https://poser.pugx.org/mysheet/mysheet/license.svg)](https://packagist.org/packages/mysheet/mysheet)
+[![Latest Stable Version](https://poser.pugx.org/mysheet/mysheet/v/stable.svg)](https://packagist.org/packages/mysheet/mysheet) [![Total Downloads](https://poser.pugx.org/mysheet/mysheet/downloads)](https://packagist.org/packages/mysheet/mysheet) [![Monthly Downloads](https://poser.pugx.org/mysheet/mysheet/d/monthly.png)](https://packagist.org/packages/mysheet/mysheet) [![Latest Unstable Version](https://poser.pugx.org/mysheet/mysheet/v/unstable.svg)](https://packagist.org/packages/mysheet/mysheet) [![License](https://poser.pugx.org/mysheet/mysheet/license.svg)](https://packagist.org/packages/mysheet/mysheet)
 
 **Official website**: http://mss.flydigo.com
 
@@ -19,7 +19,7 @@ MySheet Library is the open-source CSS preprocessor and parser written in PHP. I
 Advantages
 ---
 
-- Simplicity and flexibility of writting web-site styles for designer
+- Simplicity and flexibility of writing web-site styles for designer
 - Styles can be adjusted from backend making it easy to control styles of your site even without proffessional knowledge of CSS
 - Extensibility and support of plugins
 - Compatibility with pure CSS
