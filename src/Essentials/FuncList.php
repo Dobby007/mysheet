@@ -75,6 +75,13 @@ class FuncList {
 
         return $default;
     }
+
+    public function getIterator() {
+        $this->ensureEnabledItems();
+        foreach ($this->enabled_items as $functional) {
+            yield $functional;
+        }
+    }
     
     public function map(callable $callback) {
         $this->ensureEnabledItems();

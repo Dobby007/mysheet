@@ -30,7 +30,7 @@ use MSSLib\EmbeddedClasses\SequenceClass;
  *
  * @author dobby007
  */
-class DefaultFunctionRenderer implements IFunctionRenderer
+class DefaultRenderer implements IFunctionRenderer
 {
     /**
      * @inheritdoc
@@ -82,9 +82,18 @@ class DefaultFunctionRenderer implements IFunctionRenderer
     /**
      * @inheritdoc
      */
-    function prepareArguments(FunctionClass $function, array $arguments)
+    public function prepareArguments(FunctionClass $function, array $arguments)
     {
         return $arguments;
     }
+
+    /**
+     * @inheritdoc
+     */
+    function isFittedForFunction($functionName)
+    {
+        return true;
+    }
+
 
 }

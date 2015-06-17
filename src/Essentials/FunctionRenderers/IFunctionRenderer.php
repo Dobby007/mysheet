@@ -52,4 +52,9 @@ interface IFunctionRenderer
      * Prepares arguments of given function instance for execution
      */
     function prepareArguments(FunctionClass $function, array $arguments);
+
+    /**
+     * Checks whether renderer is fitted for function with $functionName name
+     */
+    function isFittedForFunction($functionName);
 }

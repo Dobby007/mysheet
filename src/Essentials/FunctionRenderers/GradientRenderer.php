@@ -31,7 +31,7 @@ use MSSLib\Essentials\MssClass;
  *
  * @author dobby007
  */
-class GradientFunctionRenderer extends DefaultFunctionRenderer
+class GradientRenderer extends DefaultFunctionRenderer
 {
     use \MSSLib\Traits\RootClassTrait;
     
@@ -58,14 +58,6 @@ class GradientFunctionRenderer extends DefaultFunctionRenderer
 
     public function splitFunctionArguments($rawArgsString) {
         return [$rawArgsString];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    function prepareArguments(FunctionClass $function, array $arguments)
-    {
-        return $arguments;
     }
 
 }

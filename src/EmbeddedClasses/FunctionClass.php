@@ -12,11 +12,13 @@
 
 namespace MSSLib\EmbeddedClasses;
 
+use MSSLib\Essentials\FunctionRenderers\DefaultRenderer;
 use MSSLib\Essentials\MssClass;
 use MSSLib\Helpers\StringHelper;
 use MSSLib\Helpers\FunctionModuleHelper;
 use MSSLib\Essentials\VariableScope;
 use MSSLib\Essentials\FunctionRenderers\IFunctionRenderer;
+use MSSLib\MySheet;
 
 /**
  * Internal class that allows using functions in rule values. It is a rule parameter (MssClass).
@@ -130,32 +132,23 @@ class FunctionClass extends MssClass
      * @return IFunctionRenderer
      */
     protected static function getFunctionRenderer($name) {
-        static $renderers = [];
-        if (empty($renderers)) {
-            $renderers['url'] = new \MSSLib\Essentials\FunctionRenderers\UrlFunctionRenderer();
-            $renderers['alterColor'] = new \MSSLib\Essentials\FunctionRenderers\AlterColorRenderer();
-            $renderers['default'] = new \MSSLib\Essentials\FunctionRenderers\DefaultFunctionRenderer();
+        static $defaultRenderer = null;
+        if (!$defaultRenderer) {
+            $defaultRenderer = new DefaultRenderer();
         }
-        if (isset($renderers[$name]) && $name !== 'default') {
-            return $renderers[$name];
-        } else {
-            switch ($name) {
-                case '-o-linear-gradient':
-                case '-ms-linear-gradient':
-                case '-webkit-linear-gradient':
-                case '-moz-linear-gradient':
-                case 'linear-gradient':
-                    /** @todo Implement FunctionRenderer to improve performance and efficiency */
-                    break;
+
+        foreach (MySheet::Instance()->getListManager()->getList('FunctionRenderer')->getIterator() as $renderer)  {
+            /* @var $renderer IFunctionRenderer */
+            if ($renderer->isFittedForFunction($name)) {
+                return $renderer;
             }
-            
         }
-        return $renderers['default'];
+        return $defaultRenderer;
     }
     
     public function toRealCss(VariableScope $vars) {
         $module = $this->getModuleForFunction($vars);
-        if ($module=== false) {
+        if ($module === false) {
             return $this->renderArguments($vars);
         }
         $arguments = $this->_functionRenderer->prepareArguments($this, $this->getArguments());

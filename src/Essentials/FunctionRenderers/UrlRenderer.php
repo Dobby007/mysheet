@@ -31,7 +31,7 @@ use MSSLib\Essentials\MssClass;
  *
  * @author dobby007
  */
-class UrlFunctionRenderer implements IFunctionRenderer
+class UrlRenderer implements IFunctionRenderer
 {
     use \MSSLib\Traits\RootClassTrait;
 
@@ -95,6 +95,14 @@ class UrlFunctionRenderer implements IFunctionRenderer
     function prepareArguments(FunctionClass $function, array $arguments)
     {
         return $arguments;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function isFittedForFunction($functionName)
+    {
+        return $functionName === 'url';
     }
 
 

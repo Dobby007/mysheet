@@ -94,5 +94,11 @@ class AlterColorRenderer implements IFunctionRenderer
         return $arguments;
     }
 
-
+    /**
+     * @inheritdoc
+     */
+    function isFittedForFunction($functionName)
+    {
+        return $functionName === 'alterColor';
+    }
 }

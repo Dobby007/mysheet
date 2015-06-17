@@ -105,6 +105,7 @@ class MySheet
             $this->initExtensions();
             $this->initOperators();
             $this->initFunctionModules();
+            $this->initFunctionRenderers();
             $this->initPlugins();
             
             $this->setRightOrder();
@@ -134,17 +135,7 @@ class MySheet
             require_once MySheet::WORKDIR . \MSSLib\DS . $depFile;
         }
     }
-    
-    protected function initFunctionModules() {
-        $fmNs = 'MSSLib\\EmbeddedFunctions\\';
-        foreach ($this->getSettings()->functionModules as $functionModuleClass) {
-            $class = $fmNs . ucfirst($functionModuleClass) . 'Module';
-            if (class_exists($class)) {
-                $this->getListManager()->getList('FunctionModule')->addFunctional(new $class);
-            }
-        }
-    }
-    
+
     protected function initExtensions() {
         $peNs = 'MSSLib\\ParserExtensions\\';
         foreach (array_reverse($this->getSettings()->parserExtensions) as $peClass) {
@@ -158,10 +149,10 @@ class MySheet
         foreach ($availableRuleFlags as $rfClass) {
             $fullRfClass = 'MSSLib\Structure\RuleFlag\\' . ucfirst($rfClass) . 'Flag';
             $creator = $fullRfClass::creator();
-            
+
             $this->getListManager()->getList('RuleFlag')->addFunctional($creator);
         }
-        
+
         $this->getEventRegistry()->registerHandler('Declaration', 'renderCss', function (Events\Declaration\RenderDeclarationCssEventData $eventData) {
             $declaration = $eventData->getDeclaration();
             if (empty($declaration) || empty($declaration->getRuleValue())) {
@@ -176,7 +167,7 @@ class MySheet
             $eventData->handled(count($flags) > 0);
         });
     }
-    
+
     protected function initMssClasses() {
         $availableParams = require(self::WORKDIR . DS . 'Etc' . DS . 'Includes' . DS . 'EmbeddedClasses' . EXT);
         foreach ($availableParams as $paramClass) {
@@ -188,7 +179,7 @@ class MySheet
 
         MathConfigurator::registerOperations();
     }
-    
+
     protected function setRightOrder() {
         $this->getListManager()->getList('MssClass')->setOrder(array_map(function ($mssClass) {
             return strtolower($mssClass);
@@ -196,12 +187,12 @@ class MySheet
             return strtolower($mssClassRef->getShortName());
         });
     }
-    
+
     protected function initOperators() {
         $availableOperators = require(self::WORKDIR . DS . 'Etc' . DS . 'Includes' . DS . 'OperatorsPrecedence' . EXT);
         $this->processOperatorsGroup($availableOperators);
     }
-    
+
     private function processOperatorsGroup($operatorsGroup) {
         foreach ($operatorsGroup as $item) {
             if (is_string($item)) {
@@ -212,6 +203,25 @@ class MySheet
             } else if (is_array($item)) {
                 $this->processOperatorsGroup($item);
             }
+        }
+    }
+
+    protected function initFunctionModules() {
+        $fmNs = 'MSSLib\\EmbeddedFunctions\\';
+        foreach ($this->getSettings()->functionModules as $functionModuleClass) {
+            $class = $fmNs . ucfirst($functionModuleClass) . 'Module';
+            if (class_exists($class)) {
+                $this->getListManager()->getList('FunctionModule')->addFunctional(new $class);
+            }
+        }
+    }
+
+    protected function initFunctionRenderers() {
+        $frNs = 'MSSLib\\Essentials\\FunctionRenderers\\';
+        $availableRenderers = require(self::WORKDIR . DS . 'Etc' . DS . 'Includes' . DS . 'EmbeddedFunctionRenderers' . EXT);
+        foreach ($availableRenderers as $renderer) {
+            $class = $frNs . ucfirst($renderer) . 'Renderer';
+            $this->getListManager()->getList('FunctionRenderer')->addFunctional(new $class);
         }
     }
 
